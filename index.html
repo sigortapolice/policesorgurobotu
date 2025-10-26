@@ -46,14 +46,13 @@
     -moz-osx-font-smoothing: grayscale;
     font-size: 14px;
     font-weight: 400;
-    letter-spacing: -0.2px;
   }
 
   #landing-page {
       display: grid;
       place-content: center;
       justify-items: center;
-      min-height: 100vh;
+      height: 100vh;
       text-align: center;
       padding: 24px;
       box-sizing: border-box;
@@ -61,7 +60,7 @@
   }
 
   .landing-title {
-      font-size: 22px;
+      font-size: 33px;
       font-weight: 400;
       color: var(--primary-text);
       margin-bottom: 16px;
@@ -621,15 +620,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const goToCalculatorBtn = document.getElementById('goToCalculatorBtn');
   const goBackBtn = document.getElementById('goBackBtn');
 
-  goToCalculatorBtn.addEventListener('click', () => {
+  function updateView() {
+    if (window.location.hash === '#calculator') {
       landingPage.style.display = 'none';
       calculatorPage.style.display = 'block';
+    } else {
+      landingPage.style.display = 'grid';
+      calculatorPage.style.display = 'none';
+    }
+  }
+
+  goToCalculatorBtn.addEventListener('click', () => {
+    window.location.hash = 'calculator';
   });
 
   goBackBtn.addEventListener('click', () => {
-      calculatorPage.style.display = 'none';
-      landingPage.style.display = 'block';
+    window.location.hash = '';
   });
+
+  window.addEventListener('hashchange', updateView);
+  updateView();
   
   let projectionChartInstances = {};
   Chart.defaults.font.size = 14;
