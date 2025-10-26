@@ -246,24 +246,33 @@
   }
   
   .summary-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0 16px;
   }
   .summary-item {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0 16px;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
     font-size: 14px;
     color: var(--primary-text);
     padding: 10px 0;
     border-bottom: 1px solid var(--border-color);
+    align-items: baseline;
   }
   .summary-list > .summary-item:last-child {
     padding-bottom: 0;
     border-bottom: none;
   }
-  .summary-item > div:nth-child(odd) { color: var(--muted-text); }
-  .summary-item > div:nth-child(even) { font-weight: 400; text-align: right; }
+  .summary-item > div:first-child { color: var(--muted-text); }
+  .summary-item > div:not(:first-child) { 
+    font-weight: 400; 
+    text-align: right; 
+  }
+  .summary-item > div:nth-child(2) {
+    color: #6b7280; /* gray-500 */
+    font-weight: 400;
+  }
   
   .summary-item .highlight,
   .summary-item .highlight-label {
@@ -377,7 +386,7 @@
         padding: 6.6px 0;
     }
     
-    .summary-item > div:nth-child(even) {
+    .summary-item > div:not(:first-child) {
       white-space: nowrap;
     }
     
@@ -543,6 +552,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let cumulativeIncome = 0;
     let tableRows = "";
     
+    let totalProfitUsd = 0;
+    let totalExpenseUsd = 0;
+    
     for (let i = 0; i < 12; i++) {
         const monthName = months[i];
         
@@ -564,6 +576,8 @@ document.addEventListener('DOMContentLoaded', () => {
         totalRebateTl += rebateTl;
         totalProfitTl += profitThisMonthUsd * usdTry;
         totalExpenseTl += expenseThisMonthUsd * usdTry;
+        totalProfitUsd += profitThisMonthUsd;
+        totalExpenseUsd += expenseThisMonthUsd;
         
         tableRows += `<tr>
           <td>${monthName}</td> <td>${fmtTL(monthlySalary)}</td>
@@ -590,6 +604,11 @@ document.addEventListener('DOMContentLoaded', () => {
         yearlyProfitTl: totalProfitTl,
         yearlyExpenseTl: totalExpenseTl,
         yearEndTl: yearEndTl,
+        yearlyPremiumUsd: totalPremiumUsd,
+        totalRebateUsd: totalRebateUsd,
+        yearlyProfitUsd: totalProfitUsd,
+        yearlyExpenseUsd: totalExpenseUsd,
+        yearEndUsd: fundUsd,
     };
 }
 
@@ -617,6 +636,12 @@ function compute10YearProjection(params) {
     let cumulativeProfitTl = 0;
     let cumulativeExpenseTl = 0;
 
+    let cumulativePremiumUsd = 0;
+    let cumulativeRebateUsd = 0;
+    let cumulativeProfitUsd = 0;
+    let cumulativeExpenseUsd = 0;
+    let cumulativePremiumUsdForChart = 0;
+
     for (let y = 1; y <= years; y++) {
         const yearMonthlySalary = monthlySalary * Math.pow(1 + salaryGrowth, y - 1);
         const yearUsdRate = usdTryBase * Math.pow(1 + usdGrowth, y - 1);
@@ -632,6 +657,8 @@ function compute10YearProjection(params) {
         let annualPremiumTlForYear = 0;
         let annualProfitTlForYear = 0;
         let annualExpenseTlForYear = 0;
+
+        let rebateAnnualUsd = 0;
 
         for (let m = 1; m <= 12; m++) {
             const profitThisMonthUsd = cumulativeFundUsd * monthlyProfitRate;
@@ -650,9 +677,18 @@ function compute10YearProjection(params) {
 
             annualPremiumTlForYear += monthlyPremiumTl;
             rebateAnnualTl += rebateTlForMonth;
+            rebateAnnualUsd += rebateUsdForMonth;
             annualProfitTlForYear += profitThisMonthUsd * yearUsdRate;
             annualExpenseTlForYear += expenseThisMonthUsd * yearUsdRate;
+
+            cumulativePremiumUsd += yearMonthlyPremiumUsd;
+            cumulativeRebateUsd += rebateUsdForMonth;
+            cumulativeProfitUsd += profitThisMonthUsd;
+            cumulativeExpenseUsd += expenseThisMonthUsd;
         }
+        
+        const annualPremiumUsdForYear = yearMonthlyPremiumUsd * 12;
+        cumulativePremiumUsdForChart += annualPremiumUsdForYear;
 
         cumulativePremiumTl += annualPremiumTlForYear;
         cumulativeRebateTl += rebateAnnualTl;
@@ -665,11 +701,12 @@ function compute10YearProjection(params) {
             year: y,
             annualPremiumTl: annualPremiumTlForYear,
             annualRebateTl: rebateAnnualTl,
-            annualProfitTl: annualProfitTlForYear,
-            annualExpenseTl: annualExpenseTlForYear,
             endOfYearFundTl: endOfYearFundTl,
-            totalPremiumTl: cumulativePremiumTl,
-            accWithRebateTl: endOfYearFundTl
+            annualPremiumUsd: annualPremiumUsdForYear,
+            annualRebateUsd: rebateAnnualUsd,
+            endOfYearFundUsd: cumulativeFundUsd,
+            totalPremiumUsd: cumulativePremiumUsdForChart,
+            accWithRebateUsd: cumulativeFundUsd,
         });
     }
 
@@ -681,6 +718,11 @@ function compute10YearProjection(params) {
         totalProfitTl: cumulativeProfitTl,
         totalExpenseTl: cumulativeExpenseTl,
         accWithRebateTl: accWithRebateTl,
+        totalPremiumUsd: cumulativePremiumUsd,
+        totalRebateUsd: cumulativeRebateUsd,
+        totalProfitUsd: cumulativeProfitUsd,
+        totalExpenseUsd: cumulativeExpenseUsd,
+        accWithRebateUsd: cumulativeFundUsd,
     };
 
     return { totals, yearlyData };
@@ -703,15 +745,15 @@ function compute10YearProjection(params) {
     }
     const ctx = document.getElementById('projectionChart').getContext('2d');
     const labels = data.map(d => `${d.year}. Yıl`);
-    const premiumData = data.map(d => d.totalPremiumTl);
-    const gainData = data.map(d => d.accWithRebateTl);
+    const premiumData = data.map(d => d.totalPremiumUsd);
+    const gainData = data.map(d => d.accWithRebateUsd);
 
     projectionChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels,
         datasets: [{
-          label: 'Toplam Birikim (₺)',
+          label: 'Toplam Birikim ($)',
           data: gainData,
           borderColor: '#1414b8',
           backgroundColor: 'rgba(20, 20, 184, 0.1)',
@@ -720,7 +762,7 @@ function compute10YearProjection(params) {
           pointBackgroundColor: '#1414b8',
           pointRadius: 4
         },{
-          label: 'Toplam Prim Ödemesi (₺)',
+          label: 'Toplam Prim Ödemesi ($)',
           data: premiumData,
           borderColor: '#9ca3af',
           backgroundColor: 'rgba(156, 163, 175, 0.2)',
@@ -740,12 +782,12 @@ function compute10YearProjection(params) {
               callback: function(value) {
                 if (value >= 1000000) {
                   const millions = parseFloat((value / 1000000).toFixed(1));
-                  return millions + 'M ₺';
+                  return millions + 'M $';
                 }
                 if (value >= 1000) {
-                  return (value / 1000) + 'B ₺';
+                  return (value / 1000) + 'K $';
                 }
-                return value + ' ₺';
+                return value + ' $';
               }
             }
           }
@@ -781,7 +823,7 @@ function compute10YearProjection(params) {
               },
               afterLabel: function(context) {
                 if (context.parsed.y !== null) {
-                  return fmtTL(context.parsed.y);
+                  return fmtUSD(context.parsed.y);
                 }
                 return '';
               }
@@ -833,19 +875,19 @@ function compute10YearProjection(params) {
         </h3>
         <div class="summary-list">
           <div class="summary-item">
-            <div>Yıllık Prim Ödemesi</div><div>${fmtTL(proj1.yearlyTl)}</div>
+            <div>Yıllık Prim Ödemesi</div><div>${fmtTL(proj1.yearlyTl)}</div><div class="highlight">${fmtUSD(proj1.yearlyPremiumUsd)}</div>
           </div>
           <div class="summary-item">
-            <div class="highlight-label">Yıllık Vergi İadesi</div><div class="highlight">${fmtTL(proj1.totalRebateTl)}</div>
+            <div class="highlight-label">Yıllık Vergi İadesi</div><div>${fmtTL(proj1.totalRebateTl)}</div><div class="highlight">${fmtUSD(proj1.totalRebateUsd)}</div>
           </div>
           <div class="summary-item">
-            <div>Yıllık Kâr Payı</div><div>${fmtTL(proj1.yearlyProfitTl)}</div>
+            <div>Yıllık Kâr Payı</div><div>${fmtTL(proj1.yearlyProfitTl)}</div><div class="highlight">${fmtUSD(proj1.yearlyProfitUsd)}</div>
           </div>
           <div class="summary-item">
-            <div>Yıllık Gider Payı</div><div>${fmtTL(proj1.yearlyExpenseTl)}</div>
+            <div>Yıllık Gider Payı</div><div>${fmtTL(proj1.yearlyExpenseTl)}</div><div class="highlight">${fmtUSD(proj1.yearlyExpenseUsd)}</div>
           </div>
           <div class="summary-item">
-            <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div>
+            <div class="highlight-label">Yıl Sonu Birikim</div><div>${fmtTL(proj1.yearEndTl)}</div><div class="highlight">${fmtUSD(proj1.yearEndUsd)}</div>
           </div>
         </div>
       </div>
@@ -855,19 +897,19 @@ function compute10YearProjection(params) {
         </h3>
         <div class="summary-list">
             <div class="summary-item">
-              <div>Toplam Prim Ödemesi</div><div>${fmtTL(proj10.totals.totalPremiumTl)}</div>
+              <div>Prim Ödemesi</div><div>${fmtTL(proj10.totals.totalPremiumTl)}</div><div class="highlight">${fmtUSD(proj10.totals.totalPremiumUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">Toplam Vergi İadesi</div><div class="highlight">${fmtTL(proj10.totals.totalRebateTl)}</div>
+              <div class="highlight-label">Vergi İadesi</div><div>${fmtTL(proj10.totals.totalRebateTl)}</div><div class="highlight">${fmtUSD(proj10.totals.totalRebateUsd)}</div>
             </div>
             <div class="summary-item">
-              <div>Toplam Kâr Payı</div><div>${fmtTL(proj10.totals.totalProfitTl)}</div>
+              <div>Kâr Payı</div><div>${fmtTL(proj10.totals.totalProfitTl)}</div><div class="highlight">${fmtUSD(proj10.totals.totalProfitUsd)}</div>
             </div>
             <div class="summary-item">
-              <div>Toplam Gider Payı</div><div>${fmtTL(proj10.totals.totalExpenseTl)}</div>
+              <div>Gider Payı</div><div>${fmtTL(proj10.totals.totalExpenseTl)}</div><div class="highlight">${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div>
+              <div class="highlight-label">10. Yıl Sonu Birikim</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div class="highlight">${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
             </div>
         </div>
       </div>
@@ -888,22 +930,22 @@ function compute10YearProjection(params) {
         </h3>
         <table class="projection-details-table ten-year-table">
           <thead><tr>
-            <th>Yıl</th><th>Yıllık Prim</th><th>Yıllık İade</th><th>Birikim</th>
+            <th>Yıl</th><th>Yıllık Prim ($)</th><th>Yıllık İade ($)</th><th>Birikim ($)</th>
           </tr></thead>
           <tbody>
             ${proj10.yearlyData.map(d => `
               <tr>
                 <td>${d.year}. Yıl</td>
-                <td>${fmtTL(d.annualPremiumTl)}</td>
-                <td>${fmtTL(d.annualRebateTl)}</td>
-                <td>${fmtTL(d.endOfYearFundTl)}</td>
+                <td>${fmtUSD(d.annualPremiumUsd)}</td>
+                <td>${fmtUSD(d.annualRebateUsd)}</td>
+                <td>${fmtUSD(d.endOfYearFundUsd)}</td>
               </tr>
             `).join('')}
             <tr class="total-row">
               <td>Toplam</td>
-              <td>${fmtTL(proj10.totals.totalPremiumTl)}</td>
-              <td>${fmtTL(proj10.totals.totalRebateTl)}</td>
-              <td>${fmtTL(proj10.totals.accWithRebateTl)}</td>
+              <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
+              <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
+              <td>${fmtUSD(proj10.totals.accWithRebateUsd)}</td>
             </tr>
           </tbody>
         </table>
