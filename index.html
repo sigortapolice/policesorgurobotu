@@ -488,7 +488,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  let projectionChartInstance = null;
+  let projectionChartInstances = {};
   Chart.defaults.font.size = 14;
   Chart.defaults.font.family = "'Inter', sans-serif";
   Chart.defaults.color = '#1f2937';
@@ -707,6 +707,8 @@ function compute10YearProjection(params) {
             endOfYearFundUsd: cumulativeFundUsd,
             totalPremiumUsd: cumulativePremiumUsdForChart,
             accWithRebateUsd: cumulativeFundUsd,
+            totalPremiumTl: cumulativePremiumTl,
+            accWithRebateTl: endOfYearFundTl,
         });
     }
 
@@ -739,21 +741,45 @@ function compute10YearProjection(params) {
     if(autoCompute) computeAndRender();
   }
 
-  function renderChart(data) {
-    if (projectionChartInstance) {
-      projectionChartInstance.destroy();
+  function renderChart(canvasId, data, currency) {
+    if (projectionChartInstances[canvasId]) {
+      projectionChartInstances[canvasId].destroy();
     }
-    const ctx = document.getElementById('projectionChart').getContext('2d');
+    const ctx = document.getElementById(canvasId).getContext('2d');
     const labels = data.map(d => `${d.year}. Yıl`);
-    const premiumData = data.map(d => d.totalPremiumUsd);
-    const gainData = data.map(d => d.accWithRebateUsd);
+    
+    let premiumData, gainData, gainLabel, premiumLabel, yTicksFormatter, tooltipFormatter;
 
-    projectionChartInstance = new Chart(ctx, {
+    if (currency === 'USD') {
+        premiumData = data.map(d => d.totalPremiumUsd);
+        gainData = data.map(d => d.accWithRebateUsd);
+        gainLabel = 'Toplam Birikim ($)';
+        premiumLabel = 'Toplam Prim Ödemesi ($)';
+        yTicksFormatter = value => {
+            if (value >= 1000000) return `${parseFloat((value / 1000000).toFixed(1))}M $`;
+            if (value >= 1000) return `${(value / 1000)}K $`;
+            return `${value} $`;
+        };
+        tooltipFormatter = fmtUSD;
+    } else { // TL
+        premiumData = data.map(d => d.totalPremiumTl);
+        gainData = data.map(d => d.accWithRebateTl);
+        gainLabel = 'Toplam Birikim (₺)';
+        premiumLabel = 'Toplam Prim Ödemesi (₺)';
+        yTicksFormatter = value => {
+            if (value >= 1000000) return `${parseFloat((value / 1000000).toFixed(1))}M ₺`;
+            if (value >= 1000) return `${(value / 1000).toLocaleString('tr-TR')}B ₺`;
+            return value.toLocaleString('tr-TR') + ' ₺';
+        };
+        tooltipFormatter = fmtTL;
+    }
+
+    projectionChartInstances[canvasId] = new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels,
         datasets: [{
-          label: 'Toplam Birikim ($)',
+          label: gainLabel,
           data: gainData,
           borderColor: '#1414b8',
           backgroundColor: 'rgba(20, 20, 184, 0.1)',
@@ -762,7 +788,7 @@ function compute10YearProjection(params) {
           pointBackgroundColor: '#1414b8',
           pointRadius: 4
         },{
-          label: 'Toplam Prim Ödemesi ($)',
+          label: premiumLabel,
           data: premiumData,
           borderColor: '#9ca3af',
           backgroundColor: 'rgba(156, 163, 175, 0.2)',
@@ -778,55 +804,27 @@ function compute10YearProjection(params) {
         scales: {
           y: {
             beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                if (value >= 1000000) {
-                  const millions = parseFloat((value / 1000000).toFixed(1));
-                  return millions + 'M $';
-                }
-                if (value >= 1000) {
-                  return (value / 1000) + 'K $';
-                }
-                return value + ' $';
-              }
-            }
+            ticks: { callback: yTicksFormatter }
           }
         },
         plugins: {
           legend: {
             position: 'bottom',
-            labels: {
-              usePointStyle: false,
-              boxWidth: 16,
-              boxHeight: 6,
-              padding: 20
-            }
+            labels: { usePointStyle: false, boxWidth: 16, boxHeight: 6, padding: 20 }
           },
           tooltip: {
             backgroundColor: '#f3f4f6',
             titleColor: '#1f2937',
             bodyColor: '#1f2937',
-            titleFont: {
-              family: "'Inter', sans-serif",
-              weight: '400'
-            },
-            bodyFont: {
-              family: "'Inter', sans-serif",
-            },
+            titleFont: { family: "'Inter', sans-serif", weight: '400' },
+            bodyFont: { family: "'Inter', sans-serif" },
             padding: 12,
             displayColors: false,
             bodySpacing: 4,
             titleMarginBottom: 4,
             callbacks: {
-              label: function(context) {
-                return context.dataset.label || '';
-              },
-              afterLabel: function(context) {
-                if (context.parsed.y !== null) {
-                  return fmtUSD(context.parsed.y);
-                }
-                return '';
-              }
+              label: context => context.dataset.label || '',
+              afterLabel: context => (context.parsed.y !== null) ? tooltipFormatter(context.parsed.y) : ''
             }
           }
         }
@@ -875,19 +873,19 @@ function compute10YearProjection(params) {
         </h3>
         <div class="summary-list">
           <div class="summary-item">
-            <div>Yıllık Prim Ödemesi</div><div>${fmtTL(proj1.yearlyTl)}</div><div class="highlight">${fmtUSD(proj1.yearlyPremiumUsd)}</div>
+            <div>Yıllık Prim Ödemesi</div><div class="highlight">${fmtTL(proj1.yearlyTl)}</div><div>${fmtUSD(proj1.yearlyPremiumUsd)}</div>
           </div>
           <div class="summary-item">
-            <div class="highlight-label">Yıllık Vergi İadesi</div><div>${fmtTL(proj1.totalRebateTl)}</div><div class="highlight">${fmtUSD(proj1.totalRebateUsd)}</div>
+            <div class="highlight-label">Yıllık Vergi İadesi</div><div class="highlight">${fmtTL(proj1.totalRebateTl)}</div><div>${fmtUSD(proj1.totalRebateUsd)}</div>
           </div>
           <div class="summary-item">
-            <div>Yıllık Kâr Payı</div><div>${fmtTL(proj1.yearlyProfitTl)}</div><div class="highlight">${fmtUSD(proj1.yearlyProfitUsd)}</div>
+            <div>Yıllık Kâr Payı</div><div class="highlight">${fmtTL(proj1.yearlyProfitTl)}</div><div>${fmtUSD(proj1.yearlyProfitUsd)}</div>
           </div>
           <div class="summary-item">
-            <div>Yıllık Gider Payı</div><div>${fmtTL(proj1.yearlyExpenseTl)}</div><div class="highlight">${fmtUSD(proj1.yearlyExpenseUsd)}</div>
+            <div>Yıllık Gider Payı</div><div class="highlight">${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
           </div>
           <div class="summary-item">
-            <div class="highlight-label">Yıl Sonu Birikim</div><div>${fmtTL(proj1.yearEndTl)}</div><div class="highlight">${fmtUSD(proj1.yearEndUsd)}</div>
+            <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
           </div>
         </div>
       </div>
@@ -897,19 +895,19 @@ function compute10YearProjection(params) {
         </h3>
         <div class="summary-list">
             <div class="summary-item">
-              <div>Prim Ödemesi</div><div>${fmtTL(proj10.totals.totalPremiumTl)}</div><div class="highlight">${fmtUSD(proj10.totals.totalPremiumUsd)}</div>
+              <div>Prim Ödemesi</div><div class="highlight">${fmtTL(proj10.totals.totalPremiumTl)}</div><div>${fmtUSD(proj10.totals.totalPremiumUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">Vergi İadesi</div><div>${fmtTL(proj10.totals.totalRebateTl)}</div><div class="highlight">${fmtUSD(proj10.totals.totalRebateUsd)}</div>
+              <div class="highlight-label">Vergi İadesi</div><div class="highlight">${fmtTL(proj10.totals.totalRebateTl)}</div><div>${fmtUSD(proj10.totals.totalRebateUsd)}</div>
             </div>
             <div class="summary-item">
-              <div>Kâr Payı</div><div>${fmtTL(proj10.totals.totalProfitTl)}</div><div class="highlight">${fmtUSD(proj10.totals.totalProfitUsd)}</div>
+              <div>Kâr Payı</div><div class="highlight">${fmtTL(proj10.totals.totalProfitTl)}</div><div>${fmtUSD(proj10.totals.totalProfitUsd)}</div>
             </div>
             <div class="summary-item">
-              <div>Gider Payı</div><div>${fmtTL(proj10.totals.totalExpenseTl)}</div><div class="highlight">${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
+              <div>Gider Payı</div><div class="highlight">${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">10. Yıl Sonu Birikim</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div class="highlight">${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
+              <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
             </div>
         </div>
       </div>
@@ -955,13 +953,20 @@ function compute10YearProjection(params) {
       </div>
       <div class="results-card">
         <h3>
-          10 Yıllık Projeksiyon Grafiği
+          10 Yıllık Projeksiyon Grafiği (USD)
         </h3>
         <div class="chart-container"><canvas id="projectionChart"></canvas></div>
       </div>
+       <div class="results-card">
+        <h3>
+          10 Yıllık Projeksiyon Grafiği (TL)
+        </h3>
+        <div class="chart-container"><canvas id="projectionChartTl"></canvas></div>
+      </div>
     `;
     resultsDiv.style.display = 'block';
-    renderChart(proj10.yearlyData);
+    renderChart('projectionChart', proj10.yearlyData, 'USD');
+    renderChart('projectionChartTl', proj10.yearlyData, 'TL');
   }
 
   // --- Event Listeners and Initial Setup ---
