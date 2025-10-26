@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-title" content="Poliçe Sorgu">
 
   <link rel="manifest" href="manifest.json">
-<meta charset="utf-8"/>
+<meta charset="utf-t"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Poliçe Sorgu Robotu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -824,15 +824,35 @@ function compute10YearProjection(params) {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
+          x: {
+            ticks: {
+              font: {
+                size: 12
+              }
+            }
+          },
           y: {
             beginAtZero: true,
-            ticks: { callback: yTicksFormatter }
+            ticks: {
+              callback: yTicksFormatter,
+              font: {
+                size: 12
+              }
+            }
           }
         },
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { usePointStyle: false, boxWidth: 16, boxHeight: 6, padding: 20 }
+            labels: {
+              usePointStyle: false,
+              boxWidth: 16,
+              boxHeight: 6,
+              padding: 20,
+              font: {
+                size: 12
+              }
+            }
           },
           tooltip: {
             backgroundColor: '#f3f4f6',
