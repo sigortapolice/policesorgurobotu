@@ -733,7 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
         excelResults.innerHTML = `
           <div class="results-card">
             <h3>Yüklenen Görsel Önizlemesi</h3>
-            <div style="max-height: 50vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-m); margin-bottom: 16px;">
+            <div style="max-height: 30vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-m); margin-bottom: 16px;">
               <img id="previewImage" src="${imageSrc}" alt="Yüklenen görsel önizlemesi" style="width: 100%; display: block; vertical-align: top;"/>
             </div>
             <button id="generateExcelBtn" class="button" style="width: 100%;">
@@ -849,6 +849,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (e.target && e.target.id === 'generateExcelBtn') {
+        if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
+            const hasKey = await window.aistudio.hasSelectedApiKey();
+            if (!hasKey) {
+                if (typeof window.aistudio.openSelectKey === 'function') {
+                    await window.aistudio.openSelectKey();
+                } else {
+                    showError("API anahtarı seçme arayüzü yüklenemedi. Lütfen sayfayı yenileyip tekrar deneyin.");
+                    return;
+                }
+            }
+        }
+
         const generateBtn = e.target;
         const previewImg = document.getElementById('previewImage');
 
