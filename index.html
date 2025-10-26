@@ -242,7 +242,7 @@
     font-weight: 400;
   }
   
-  input[type=number], input[type=text] {
+  input[type=number], input[type=text], input[type=password] {
     width: 100%;
     padding: 11px 14px;
     margin-top: 0;
@@ -327,7 +327,6 @@
     background: #fff;
     border-radius: var(--radius-l);
     padding: 19px;
-    margin-bottom: 16px;
     box-shadow: var(--shadow);
   }
 
@@ -667,12 +666,34 @@
           </div>
         </div>
       </div>
-      <div id="excel-results" class="results" aria-live="polite"></div>
+      <div id="excel-results" class="results" aria-live="polite">
+        <div id="apiKeyCard" class="results-card">
+            <h3>API Anahtarı</h3>
+            <div class="form-section" style="gap: 8px;">
+                <p class="sub" style="margin: 0; line-height: 1.6;">Bu aracın çalışması için bir Google Gemini API anahtarı gereklidir. Anahtarınız tarayıcınızda yerel olarak saklanır ve harici sunuculara gönderilmez.</p>
+                <div class="input-group">
+                    <label for="apiKeyInput">Gemini API Anahtarı</label>
+                    <input type="password" id="apiKeyInput" style="margin-top: 4px;" placeholder="API anahtarınızı buraya yapıştırın">
+                </div>
+                <button id="saveApiKeyBtn" class="button">Kaydet</button>
+                <p id="apiKeyStatus" style="font-size: 12px; color: var(--muted-text); margin: 0; min-height: 18px;"></p>
+            </div>
+        </div>
+        <div id="excel-output-card-wrapper" style="margin-top: 16px;">
+            <!-- Dynamic content will go here -->
+        </div>
+      </div>
     </div>
   </div>
 
 <script type="module">
 document.addEventListener('DOMContentLoaded', () => {
+  // This is a placeholder for the Vercel environment variable.
+  // Vercel (or another hosting provider) should replace "%%API_KEY%%" with the actual API key during deployment.
+  // If it's not replaced, the fallback local storage input will be used.
+  const HOSTED_API_KEY = "%%API_KEY%%";
+  const isHostedKeyAvailable = HOSTED_API_KEY && HOSTED_API_KEY !== '%%API_KEY%%';
+
   // --- Page Navigation ---
   const landingPage = document.getElementById('landing-page');
   const calculatorPage = document.getElementById('calculator-page');
@@ -698,7 +719,8 @@ document.addEventListener('DOMContentLoaded', () => {
       excelPage.style.display = 'block';
       const excelResults = document.getElementById('excel-results');
       excelResults.style.display = 'block';
-      excelResults.innerHTML = `
+      const excelOutputWrapper = document.getElementById('excel-output-card-wrapper');
+      excelOutputWrapper.innerHTML = `
           <div class="results-card">
             <h3>Başlamaya Hazır</h3>
             <p class="sub" style="color: var(--muted-text);">Lütfen soldaki alana bir görsel yükleyin. Yüklediğiniz görselin önizlemesi burada görünecektir.</p>
@@ -715,10 +737,46 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('hashchange', updateView);
   updateView();
   
+  // --- API Key Management for Excel Page ---
+  const apiKeyCard = document.getElementById('apiKeyCard');
+  if (isHostedKeyAvailable) {
+    if (apiKeyCard) apiKeyCard.style.display = 'none';
+  } else {
+    // Only set up local storage management if there's no hosted key
+    const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const apiKeyStatus = document.getElementById('apiKeyStatus');
+
+    if (saveApiKeyBtn && apiKeyInput && apiKeyStatus) {
+      const savedApiKey = localStorage.getItem('geminiApiKey');
+      if (savedApiKey) {
+          apiKeyInput.value = savedApiKey;
+          apiKeyStatus.textContent = 'Kaydedilmiş API anahtarı yüklendi.';
+          apiKeyStatus.style.color = 'var(--success)';
+      }
+
+      saveApiKeyBtn.addEventListener('click', () => {
+        const key = apiKeyInput.value.trim();
+        if (key) {
+          localStorage.setItem('geminiApiKey', key);
+          apiKeyStatus.textContent = 'API anahtarı kaydedildi!';
+          apiKeyStatus.style.color = 'var(--success)';
+          setTimeout(() => { 
+              apiKeyStatus.textContent = 'Kaydedilmiş API anahtarı yüklendi.';
+          }, 3000);
+        } else {
+          localStorage.removeItem('geminiApiKey');
+          apiKeyStatus.textContent = 'Lütfen geçerli bir anahtar girin.';
+          apiKeyStatus.style.color = 'var(--warning)';
+        }
+      });
+    }
+  }
+  
   // --- Excel Page Functionality ---
   const uploadArea = document.getElementById('uploadArea');
   const fileInput = document.getElementById('fileInput');
-  const excelResults = document.getElementById('excel-results');
+  const excelOutputWrapper = document.getElementById('excel-output-card-wrapper');
   let latestTableData = [];
 
   function handleFiles(files) {
@@ -729,14 +787,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageSrc = e.target.result;
-        excelResults.style.display = 'block';
-        excelResults.innerHTML = `
+        excelOutputWrapper.innerHTML = `
           <div class="results-card">
             <h3>Yüklenen Görsel Önizlemesi</h3>
             <div style="max-height: 30vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-m); margin-bottom: 16px;">
               <img id="previewImage" src="${imageSrc}" alt="Yüklenen görsel önizlemesi" style="width: 100%; display: block; vertical-align: top;"/>
             </div>
-            <button id="generateExcelBtn" class="button" style="width: 100%;">
+            <button id="generateExcelBtn" class="button primary" style="width: 100%;">
                 Excel'e Dönüştür
             </button>
           </div>
@@ -744,14 +801,8 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       reader.readAsDataURL(file);
     } else {
-      alert('Lütfen geçerli bir resim dosyası seçin (JPG, PNG, WEBP, TIFF).');
+      showError('Geçersiz dosya türü. Lütfen desteklenen bir görsel dosyası (JPG, PNG, WEBP, TIFF) yükleyin.');
       fileInput.value = ''; // Reset file input
-      excelResults.innerHTML = `
-        <div class="results-card">
-            <h3>Hata</h3>
-            <p class="sub" style="color: var(--muted-text);">Geçersiz dosya türü. Lütfen desteklenen bir görsel dosyası yükleyin.</p>
-        </div>
-      `;
     }
   }
 
@@ -799,7 +850,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </table>
       `;
 
-      excelResults.innerHTML = `
+      excelOutputWrapper.innerHTML = `
           <div class="results-card">
             <h3>Çıkarılan Excel Verileri</h3>
             <p class="sub" style="margin-bottom: 16px; color: var(--muted-text);">Bu, görselden çıkarılan verilerin bir önizlemesidir. Aşağıdaki buton ile verileri .xlsx formatında indirebilirsiniz.</p>
@@ -809,20 +860,21 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="overflow-x: auto;">${tableHtml}</div>
           </div>
       `;
-      excelResults.style.display = 'block';
   }
 
   function showError(message) {
-      excelResults.innerHTML = `
+      excelOutputWrapper.innerHTML = `
           <div class="results-card">
             <h3>Hata</h3>
             <p style="color: var(--muted-text);">${message}</p>
           </div>
       `;
-      excelResults.style.display = 'block';
   }
 
   function escapeHtml(unsafe) {
+      if (typeof unsafe !== 'string') {
+        return unsafe;
+      }
       return unsafe
            .replace(/&/g, "&amp;")
            .replace(/</g, "&lt;")
@@ -849,23 +901,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (e.target && e.target.id === 'generateExcelBtn') {
-        if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
-            const hasKey = await window.aistudio.hasSelectedApiKey();
-            if (!hasKey) {
-                if (typeof window.aistudio.openSelectKey === 'function') {
-                    await window.aistudio.openSelectKey();
-                } else {
-                    showError("API anahtarı seçme arayüzü yüklenemedi. Lütfen sayfayı yenileyip tekrar deneyin.");
-                    return;
-                }
-            }
+        const apiKey = isHostedKeyAvailable ? HOSTED_API_KEY : localStorage.getItem('geminiApiKey');
+        
+        if (!apiKey) {
+            showError("Lütfen önce Gemini API anahtarınızı yukarıdaki alana girip kaydedin.");
+            document.getElementById('apiKeyInput')?.focus();
+            return;
         }
 
         const generateBtn = e.target;
         const previewImg = document.getElementById('previewImage');
 
         if (!previewImg || !previewImg.src || !fileInput.files[0]) {
-            alert("Lütfen önce bir resim dosyası seçin.");
+            showError("Lütfen önce bir resim dosyası seçin.");
             return;
         }
 
@@ -878,7 +926,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const base64Data = previewImg.src.split(',')[1];
             const mimeType = fileInput.files[0].type;
 
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: apiKey });
             
             const response = await ai.models.generateContent({
               model: 'gemini-2.5-flash',
@@ -920,7 +968,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("API Hatası:", error);
-            showError("Veri çıkarılırken bir hata oluştu. Lütfen görseli kontrol edip tekrar deneyin.");
+            showError("Veri çıkarılırken bir hata oluştu. Lütfen görseli ve API anahtarınızı kontrol edip tekrar deneyin.");
         } finally {
             const finalGenerateBtn = document.getElementById('generateExcelBtn');
             if (finalGenerateBtn) {
