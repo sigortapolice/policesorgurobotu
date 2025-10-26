@@ -14,16 +14,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #f9fafb; /* gray-50 */
+    --bg: #f3f4f6; /* gray-100 */
     --card: #ffffff;
     --muted-text: #1f2937; /* gray-800 */
     --primary-text: #1f2937; /* gray-800 */
     --primary: #1f2937; /* gray-800 */
     --primary-hover: #111827; /* gray-900 */
-    --primary-light: #f3f4f6; /* gray-100 */
+    --primary-light: #e5e7eb; /* gray-200 */
     --border-color: #d1d5db; /* gray-300 */
-    --input-bg: #f9fafb; /* gray-50 */
-    --input-focus-bg: #f3f4f6; /* gray-100 */
+    --input-bg: #f3f4f6; /* gray-100 */
+    --input-focus-bg: #e5e7eb; /* gray-200 */
     --shadow: 0 1px 2px 0 rgba(60,64,67,0.075), 0 2px 6px 2px rgba(60,64,67,0.0375);
     --radius-m: 20px;
     --radius-l: 20px;
@@ -109,7 +109,7 @@
   }
   
   .rate{
-    background: var(--primary-light);
+    background: var(--input-bg);
     border-radius: var(--radius-m);
     padding: 12px 16px;
     display: flex;
@@ -321,7 +321,6 @@
 
   tr.total-row {
     font-weight: 400;
-    background: var(--primary-light);
   }
   tr.total-row td {
     color: var(--primary-text);
@@ -885,12 +884,6 @@ function compute10YearProjection(params) {
       </div>
       <div class="results-card">
         <h3>
-          10 Yıllık Projeksiyon Grafiği
-        </h3>
-        <div class="chart-container"><canvas id="projectionChart"></canvas></div>
-      </div>
-       <div class="results-card">
-        <h3>
           10 Yıllık Detay
         </h3>
         <table class="projection-details-table ten-year-table">
@@ -917,6 +910,12 @@ function compute10YearProjection(params) {
         <div class="results-note">
             <strong>Not:</strong> 10 yıllık projeksiyon, girdiğiniz yıllık artış varsayımlarına dayanmaktadır. Gerçekleşen değerler farklılık gösterebilir.
         </div>
+      </div>
+      <div class="results-card">
+        <h3>
+          10 Yıllık Projeksiyon Grafiği
+        </h3>
+        <div class="chart-container"><canvas id="projectionChart"></canvas></div>
       </div>
     `;
     resultsDiv.style.display = 'block';
