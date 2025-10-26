@@ -322,6 +322,16 @@
     color: var(--primary-text);
     font-size: 14px;
   }
+
+  .projection-details-table {
+    table-layout: fixed;
+  }
+  .one-year-table th:first-child, .one-year-table td:first-child {
+    width: 15%;
+  }
+  .ten-year-table th:first-child, .ten-year-table td:first-child {
+    width: 20%;
+  }
   
   .spinner {
     width: 14px;
@@ -348,9 +358,9 @@
   @media(max-width: 460px){ 
     .main-wrapper { padding: 19px; }
     .card { padding: 19px; }
-    h2 { font-size: 22px; }
-    .sub { font-size: 14px; }
-    th, td { font-size: 14px; padding: 8px 4px; }
+    h2 { font-size: 20px; }
+    .sub { font-size: 12.5px; }
+    th, td { font-size: 13.2px; padding: 8.8px 4.4px; }
     .header-box {
         margin: -19px -19px 19px -19px;
         padding: 19px;
@@ -358,9 +368,15 @@
   }
   
   @media(max-width: 600px) {
+    body, .sub, .rate, .refresh, label, input[type=number], input[type=text], .button, h3, .summary-grid, .summary-grid .highlight, table, thead th, tr.total-row td {
+      font-size: 13.2px;
+    }
+    h2 { font-size: 22px; }
+    .results-note, .note { font-size: 12.1px; }
+    
     .projection-details-table th, .projection-details-table td {
-        padding: 6px 3px;
-        font-size: 14px;
+        padding: 6.6px 3.3px;
+        font-size: 13.2px;
     }
   }
 </style>
@@ -550,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const yearEndTl = fundUsd * usdTry;
     
     tableRows += `<tr class="total-row">
-        <td>Yıllık Toplam</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
+        <td>Toplam</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
         <td>${fmtUSD(totalPremiumUsd)}</td> <td>${fmtUSD(totalRebateUsd)}</td>
       </tr>`;
 
@@ -784,7 +800,7 @@ function compute10YearProjection(params) {
           <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div>
         </div>
       </div>
-       <div class="results-card">
+      <div class="results-card">
         <h3>
           10 Yıllık Projeksiyon Özeti
         </h3>
@@ -798,26 +814,26 @@ function compute10YearProjection(params) {
       </div>
       <div class="results-card">
         <h3>
-          10 Yıllık Projeksiyon Grafiği
-        </h3>
-        <div style="height: 250px; position: relative;"><canvas id="projectionChart"></canvas></div>
-      </div>
-      <div class="results-card">
-        <h3>
           1 Yıllık Detay
         </h3>
-        <table class="projection-details-table">
+        <table class="projection-details-table one-year-table">
             <thead><tr>
                 <th>Ay</th><th>Brüt Maaş</th><th>Vergi D.</th><th>Prim</th><th>İade</th>
             </tr></thead>
             <tbody>${proj1.tableRowsHTML}</tbody>
         </table>
       </div>
+      <div class="results-card">
+        <h3>
+          10 Yıllık Projeksiyon Grafiği
+        </h3>
+        <div style="height: 250px; position: relative;"><canvas id="projectionChart"></canvas></div>
+      </div>
        <div class="results-card">
         <h3>
           10 Yıllık Detay
         </h3>
-        <table class="projection-details-table">
+        <table class="projection-details-table ten-year-table">
           <thead><tr>
             <th>Yıl</th><th>Yıllık Prim</th><th>Yıllık İade</th><th>Yıl Sonu Birikim</th>
           </tr></thead>
