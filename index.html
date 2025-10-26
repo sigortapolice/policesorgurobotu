@@ -362,6 +362,28 @@
     100% { transform: rotate(360deg); }
   }
 
+  .methodology-text {
+    font-size: 14px;
+    color: var(--muted-text);
+    line-height: 1.6;
+  }
+  .methodology-text p {
+    margin-top: 0;
+  }
+  .methodology-text ul {
+    padding-left: 20px;
+    margin-top: 12px;
+    margin-bottom: 0;
+    display: grid;
+    gap: 8px;
+  }
+   .methodology-text li::marker {
+      color: #1414b8;
+  }
+  .methodology-text strong {
+    color: var(--primary-text);
+    font-weight: 400;
+  }
 
   @media(max-width: 460px){ 
     .main-wrapper { padding: 19px; }
@@ -376,7 +398,7 @@
   }
   
   @media(max-width: 600px) {
-    body, .sub, .rate, .refresh, label, input[type=number], input[type=text], .button, h3, .summary-item, .summary-item .highlight, table, thead th, tr.total-row td {
+    body, .sub, .rate, .refresh, label, input[type=number], input[type=text], .button, h3, .summary-item, .summary-item .highlight, table, thead th, tr.total-row td, .methodology-text {
       font-size: 13.2px;
     }
     h2 { font-size: 22px; }
@@ -786,7 +808,7 @@ function compute10YearProjection(params) {
           fill: true,
           tension: 0.4,
           pointBackgroundColor: '#1414b8',
-          pointRadius: 4
+          pointRadius: 8
         },{
           label: premiumLabel,
           data: premiumData,
@@ -795,7 +817,7 @@ function compute10YearProjection(params) {
           fill: true,
           tension: 0.4,
           pointBackgroundColor: '#9ca3af',
-          pointRadius: 4
+          pointRadius: 8
         }]
       },
       options: {
@@ -891,6 +913,17 @@ function compute10YearProjection(params) {
       </div>
       <div class="results-card">
         <h3>
+          1 Yıllık Detay
+        </h3>
+        <table class="projection-details-table one-year-table">
+            <thead><tr>
+                <th>Ay</th><th>Brüt Maaş</th><th>Vergi D.</th><th>Prim</th><th>İade</th>
+            </tr></thead>
+            <tbody>${proj1.tableRowsHTML}</tbody>
+        </table>
+      </div>
+      <div class="results-card">
+        <h3>
           10 Yıllık Projeksiyon Özeti
         </h3>
         <div class="summary-list">
@@ -911,18 +944,7 @@ function compute10YearProjection(params) {
             </div>
         </div>
       </div>
-      <div class="results-card">
-        <h3>
-          1 Yıllık Detay
-        </h3>
-        <table class="projection-details-table one-year-table">
-            <thead><tr>
-                <th>Ay</th><th>Brüt Maaş</th><th>Vergi D.</th><th>Prim</th><th>İade</th>
-            </tr></thead>
-            <tbody>${proj1.tableRowsHTML}</tbody>
-        </table>
-      </div>
-      <div class="results-card">
+       <div class="results-card">
         <h3>
           10 Yıllık Detay
         </h3>
@@ -962,6 +984,19 @@ function compute10YearProjection(params) {
           10 Yıllık Projeksiyon Grafiği (TL)
         </h3>
         <div class="chart-container"><canvas id="projectionChartTl"></canvas></div>
+      </div>
+      <div class="results-card">
+        <h3>Hesaplama Metodolojisi</h3>
+        <div class="methodology-text">
+            <p>Bu simülatör, girdiğiniz verilere dayanarak potansiyel birikim ve vergi iadesi projeksiyonu sunar. Aşağıda hesaplamaların nasıl yapıldığına dair temel prensipler yer almaktadır:</p>
+            <ul>
+                <li><strong>Vergi İadesi:</strong> Aylık ödenen primin, brüt maaşın %15'ini aşmayacak kısmı için hesaplanır. İade tutarı, o ay içinde bulunulan gelir vergisi dilimi oranına göre belirlenir.</li>
+                <li><strong>Gelir Vergisi Dilimi:</strong> Yıl içindeki kümülatif brüt maaşınıza göre dinamik olarak hesaplanır. Gelecek yıllar için vergi dilimi matrahları, girdiğiniz "Vergi Dilimi Artışı" oranında bileşik olarak artırılır. Örneğin, 2024 yılı için 158.000 TL olan ilk dilim sınırı, %25'lik bir artış varsayımıyla <strong>2025 yılı için 158.000 ₺ * 1.25 = 197.500 ₺</strong> olarak hesaplanır. Bu hesaplama her yıl tüm dilimler için tekrarlanır.</li>
+                <li><strong>Birikim Hesabı (USD):</strong> USD cinsinden olan birikim fonunuz, her ay ödediğiniz <strong>USD prim tutarı</strong>, TL olarak hesaplanıp o anki kurdan <strong>USD'ye çevrilen vergi iadesi</strong> ve mevcut birikiminiz üzerinden hesaplanan <strong>kâr payının</strong> eklenmesiyle büyür. Aynı şekilde, mevcut birikiminiz üzerinden hesaplanan <strong>gider payı</strong> bu toplamdan düşülür.</li>
+                <li><strong>10 Yıllık Projeksiyon ve Varsayımlar:</strong> Maaş, prim ve vergi dilimleri için girdiğiniz yıllık artış oranları varsayımlarına dayanır. Benzer şekilde, <strong>gelecek yıllardaki USD/TRY kuru</strong> da mevcut kur üzerine girdiğiniz yıllık "Kur Artışı (%)" oranının bileşik olarak eklenmesiyle tahmin edilir. Bu sebeple sonuçlar, gelecekteki piyasa koşullarına göre farklılık gösterebilecek birer tahmindir.</li>
+                <li><strong>Anlık Döviz Kuru:</strong> Simülasyonun başlangıç yılı için güncel USD/TRY kuru anlık olarak harici bir servis üzerinden çekilir. Servise ulaşılamaması durumunda sistemde tanımlı bir kur değeri kullanılır.</li>
+            </ul>
+        </div>
       </div>
     `;
     resultsDiv.style.display = 'block';
