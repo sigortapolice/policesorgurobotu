@@ -378,7 +378,7 @@
     gap: 8px;
   }
    .methodology-text li::marker {
-      color: var(--muted-text);
+      color: var(--primary-text);
   }
   .methodology-text strong {
     color: var(--primary-text);
@@ -482,8 +482,8 @@
               <input id="usdTry" type="number" step="0.0001" placeholder="Otomatik çekilecek"/>
             </div>
           </div>
-          <div class="two-col">
-              <div class="input-group">
+          <div class="two-col" style="grid-template-columns: 1fr 1fr; align-items: end;">
+            <div class="input-group">
               <label for="annualProfitRate">Kâr Payı (%)</label>
               <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
             </div>
@@ -491,8 +491,6 @@
                 <label for="annualExpenseRate">Gider Payı (%)</label>
                 <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
             </div>
-          </div>
-          <div class="input-with-button">
             <div class="input-group">
               <label for="annualTaxBracketGrowth">Vergi Dilimi Artışı (%)</label>
               <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
@@ -776,7 +774,7 @@ function compute10YearProjection(params) {
         premiumData = data.map(d => d.totalPremiumUsd);
         gainData = data.map(d => d.accWithRebateUsd);
         gainLabel = 'Toplam Birikim ($)';
-        premiumLabel = 'Toplam Prim Ödemesi ($)';
+        premiumLabel = 'Prim Ödemesi ($)';
         yTicksFormatter = value => {
             if (value >= 1000000) return `${parseFloat((value / 1000000).toFixed(1))}M $`;
             if (value >= 1000) return `${(value / 1000)}K $`;
@@ -787,7 +785,7 @@ function compute10YearProjection(params) {
         premiumData = data.map(d => d.totalPremiumTl);
         gainData = data.map(d => d.accWithRebateTl);
         gainLabel = 'Toplam Birikim (₺)';
-        premiumLabel = 'Toplam Prim Ödemesi (₺)';
+        premiumLabel = 'Prim Ödemesi (₺)';
         yTicksFormatter = value => {
             if (value >= 1000000) return `${parseFloat((value / 1000000).toFixed(1))}M ₺`;
             if (value >= 1000) return `${(value / 1000).toLocaleString('tr-TR')}B ₺`;
@@ -845,10 +843,9 @@ function compute10YearProjection(params) {
           legend: {
             position: 'bottom',
             labels: {
-              usePointStyle: false,
-              boxWidth: 16,
-              boxHeight: 6,
-              padding: 20,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              padding: 12,
               font: {
                 size: 12
               }
