@@ -555,7 +555,7 @@
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/genai-google-web-sdk/v0.12.0/google-genai-web.mjs"
+    "@google/genai": "https://esm.sh/@google/genai"
   }
 }
 </script>
@@ -574,7 +574,6 @@
   <div id="calculator-page">
     <div class="main-wrapper">
       <div class="form-column">
-        <button id="goBackBtn" class="landing-button primary">Anasayfaya Geri Dön</button>
         <div class="card" role="region" aria-label="Sigorta Poliçesi Simülatörü">
           <div class="card-main-content">
             <div class="header-box">
@@ -652,7 +651,6 @@
   <div id="excel-page">
     <div class="main-wrapper">
       <div class="form-column">
-        <button id="goBackBtnFromExcel" class="landing-button primary">Anasayfaya Geri Dön</button>
         <div class="card" role="region" aria-label="Görselden Excel Oluşturucu">
           <div class="card-main-content">
             <div class="header-box">
@@ -666,14 +664,6 @@
               <p style="font-size: 16px; color: var(--primary-text); margin: 0; font-weight: 400;">Görseli Sürükleyin veya dosya seçin</p>
               <p style="font-size: 12px; color: var(--muted-text); margin: 0;">JPG, PNG, WEBP, TIFF desteklenir</p>
             </div>
-
-            <div id="imagePreview" style="margin-top: 24px; display: none;">
-                <p style="margin: 0 0 10px; font-weight: 400; color: var(--muted-text);">Yüklenen Görsel:</p>
-                <img id="previewImage" src="" alt="Yüklenen görsel önizlemesi" style="max-width: 100%; border-radius: var(--radius-m); border: 1px solid var(--border-color);"/>
-                <button id="generateExcelBtn" class="button primary" style="width: 100%; margin-top: 16px;">
-                    Excel Oluştur
-                </button>
-            </div>
           </div>
         </div>
       </div>
@@ -682,8 +672,6 @@
   </div>
 
 <script type="module">
-import { GoogleGenAI, Type } from "@google/genai";
-
 document.addEventListener('DOMContentLoaded', () => {
   // --- Page Navigation ---
   const landingPage = document.getElementById('landing-page');
@@ -692,9 +680,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const goToCalculatorBtn = document.getElementById('goToCalculatorBtn');
   const goToExcelBtn = document.getElementById('goToExcelBtn');
-  
-  const goBackBtn = document.getElementById('goBackBtn');
-  const goBackBtnFromExcel = document.getElementById('goBackBtnFromExcel');
 
   function updateView() {
     const hash = window.location.hash;
@@ -711,6 +696,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } else if (hash === '#excel') {
       excelPage.style.display = 'block';
+      const excelResults = document.getElementById('excel-results');
+      excelResults.style.display = 'block';
+      excelResults.innerHTML = `
+          <div class="results-card">
+            <h3>Başlamaya Hazır</h3>
+            <p class="sub" style="color: var(--muted-text);">Lütfen soldaki alana bir görsel yükleyin. Yüklediğiniz görselin önizlemesi burada görünecektir.</p>
+          </div>
+      `;
     } else {
       landingPage.style.display = 'grid';
     }
@@ -718,8 +711,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   goToCalculatorBtn.addEventListener('click', () => { window.location.hash = 'calculator'; });
   goToExcelBtn.addEventListener('click', () => { window.location.hash = 'excel'; });
-  goBackBtn.addEventListener('click', () => { window.location.hash = ''; });
-  goBackBtnFromExcel.addEventListener('click', () => { window.location.hash = ''; });
 
   window.addEventListener('hashchange', updateView);
   updateView();
@@ -727,9 +718,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Excel Page Functionality ---
   const uploadArea = document.getElementById('uploadArea');
   const fileInput = document.getElementById('fileInput');
-  const imagePreview = document.getElementById('imagePreview');
-  const previewImage = document.getElementById('previewImage');
-  const generateExcelBtn = document.getElementById('generateExcelBtn');
   const excelResults = document.getElementById('excel-results');
   let latestTableData = [];
 
@@ -740,16 +728,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (file && allowedTypes.includes(file.type)) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        previewImage.src = e.target.result;
-        imagePreview.style.display = 'block';
-        excelResults.style.display = 'none'; // Hide previous results
+        const imageSrc = e.target.result;
+        excelResults.style.display = 'block';
+        excelResults.innerHTML = `
+          <div class="results-card">
+            <h3>Yüklenen Görsel Önizlemesi</h3>
+            <div style="max-height: 50vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-m); margin-bottom: 16px;">
+              <img id="previewImage" src="${imageSrc}" alt="Yüklenen görsel önizlemesi" style="width: 100%; display: block; vertical-align: top;"/>
+            </div>
+            <button id="generateExcelBtn" class="button" style="width: 100%;">
+                Excel'e Dönüştür
+            </button>
+          </div>
+        `;
       };
       reader.readAsDataURL(file);
     } else {
       alert('Lütfen geçerli bir resim dosyası seçin (JPG, PNG, WEBP, TIFF).');
-      imagePreview.style.display = 'none';
-      previewImage.src = '';
       fileInput.value = ''; // Reset file input
+      excelResults.innerHTML = `
+        <div class="results-card">
+            <h3>Hata</h3>
+            <p class="sub" style="color: var(--muted-text);">Geçersiz dosya türü. Lütfen desteklenen bir görsel dosyası yükleyin.</p>
+        </div>
+      `;
     }
   }
 
@@ -781,19 +783,87 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  if (generateExcelBtn) {
-    generateExcelBtn.addEventListener('click', async () => {
-        if (!previewImage.src || !fileInput.files[0]) {
+  function renderExcelResults(tableData) {
+      latestTableData = tableData;
+      const headers = tableData[0] || [];
+      const rows = tableData.slice(1);
+
+      const tableHtml = `
+          <table class="projection-details-table">
+            <thead>
+              <tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
+            </tbody>
+          </table>
+      `;
+
+      excelResults.innerHTML = `
+          <div class="results-card">
+            <h3>Çıkarılan Excel Verileri</h3>
+            <p class="sub" style="margin-bottom: 16px; color: var(--muted-text);">Bu, görselden çıkarılan verilerin bir önizlemesidir. Aşağıdaki buton ile verileri .xlsx formatında indirebilirsiniz.</p>
+            <button id="downloadExcelBtn" class="button" style="width: 100%; margin-bottom: 16px;">
+                Excel'i İndir (.xlsx)
+            </button>
+            <div style="overflow-x: auto;">${tableHtml}</div>
+          </div>
+      `;
+      excelResults.style.display = 'block';
+  }
+
+  function showError(message) {
+      excelResults.innerHTML = `
+          <div class="results-card">
+            <h3>Hata</h3>
+            <p style="color: var(--muted-text);">${message}</p>
+          </div>
+      `;
+      excelResults.style.display = 'block';
+  }
+
+  function escapeHtml(unsafe) {
+      return unsafe
+           .replace(/&/g, "&amp;")
+           .replace(/</g, "&lt;")
+           .replace(/>/g, "&gt;")
+           .replace(/"/g, "&quot;")
+           .replace(/'/g, "&#039;");
+   }
+
+   function downloadAsXLSX() {
+        if (latestTableData.length === 0) {
+            alert("İndirilecek veri bulunmuyor.");
+            return;
+        }
+        
+        const ws = XLSX.utils.aoa_to_sheet(latestTableData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Çıkarılan Veriler");
+        XLSX.writeFile(wb, "tablo_verileri.xlsx");
+    }
+
+   document.body.addEventListener('click', async (e) => {
+      if (e.target && e.target.id === 'downloadExcelBtn') {
+          downloadAsXLSX();
+      }
+
+      if (e.target && e.target.id === 'generateExcelBtn') {
+        const generateBtn = e.target;
+        const previewImg = document.getElementById('previewImage');
+
+        if (!previewImg || !previewImg.src || !fileInput.files[0]) {
             alert("Lütfen önce bir resim dosyası seçin.");
             return;
         }
 
-        generateExcelBtn.disabled = true;
-        generateExcelBtn.innerHTML = '<span class="spinner"></span> Oluşturuluyor...';
-        excelResults.style.display = 'none';
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<span class="spinner"></span> Dönüştürülüyor...';
 
         try {
-            const base64Data = previewImage.src.split(',')[1];
+            const { GoogleGenAI, Type } = await import("@google/genai");
+
+            const base64Data = previewImg.src.split(',')[1];
             const mimeType = fileInput.files[0].type;
 
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -840,82 +910,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("API Hatası:", error);
             showError("Veri çıkarılırken bir hata oluştu. Lütfen görseli kontrol edip tekrar deneyin.");
         } finally {
-            generateExcelBtn.disabled = false;
-            generateExcelBtn.innerHTML = 'Excel Oluştur';
+            const finalGenerateBtn = document.getElementById('generateExcelBtn');
+            if (finalGenerateBtn) {
+              finalGenerateBtn.disabled = false;
+              finalGenerateBtn.innerHTML = "Excel'e Dönüştür";
+            }
         }
-    });
-  }
-
-  function renderExcelResults(tableData) {
-      latestTableData = tableData;
-      const headers = tableData[0] || [];
-      const rows = tableData.slice(1);
-
-      const tableHtml = `
-          <table class="projection-details-table">
-            <thead>
-              <tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>
-            </thead>
-            <tbody>
-              ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
-            </tbody>
-          </table>
-      `;
-
-      excelResults.innerHTML = `
-          <div class="results-card">
-            <h3>Çıkarılan Excel Verileri</h3>
-            <p class="sub" style="margin-bottom: 16px; color: var(--muted-text);">Bu, görselden çıkarılan verilerin bir önizlemesidir. Aşağıdaki buton ile verileri .xlsx formatında indirebilirsiniz.</p>
-            <div style="overflow-x: auto;">${tableHtml}</div>
-            <button id="downloadExcelBtn" class="button primary" style="width: 100%; margin-top: 16px;">
-                Excel'i İndir (.xlsx)
-            </button>
-          </div>
-      `;
-      excelResults.style.display = 'block';
-  }
-
-  function showError(message) {
-      excelResults.innerHTML = `
-          <div class="results-card">
-            <h3>Hata</h3>
-            <p style="color: var(--muted-text);">${message}</p>
-          </div>
-      `;
-      excelResults.style.display = 'block';
-  }
-
-  function escapeHtml(unsafe) {
-      return unsafe
-           .replace(/&/g, "&amp;")
-           .replace(/</g, "&lt;")
-           .replace(/>/g, "&gt;")
-           .replace(/"/g, "&quot;")
-           .replace(/'/g, "&#039;");
-   }
-
-   function downloadAsXLSX() {
-        if (latestTableData.length === 0) {
-            alert("İndirilecek veri bulunmuyor.");
-            return;
-        }
-        
-        // Create worksheet from array of arrays
-        const ws = XLSX.utils.aoa_to_sheet(latestTableData);
-
-        // Create a new workbook
-        const wb = XLSX.utils.book_new();
-
-        // Append the worksheet to the workbook
-        XLSX.utils.book_append_sheet(wb, ws, "Çıkarılan Veriler");
-
-        // Write the workbook and trigger download
-        XLSX.writeFile(wb, "tablo_verileri.xlsx");
-    }
-
-   document.body.addEventListener('click', (e) => {
-      if (e.target && e.target.id === 'downloadExcelBtn') {
-          downloadAsXLSX();
       }
    });
 
