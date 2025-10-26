@@ -762,12 +762,29 @@ function compute10YearProjection(params) {
             }
           },
           tooltip: {
+            backgroundColor: '#f3f4f6',
+            titleColor: '#1f2937',
+            bodyColor: '#1f2937',
+            titleFont: {
+              family: "'Inter', sans-serif",
+              weight: '400'
+            },
+            bodyFont: {
+              family: "'Inter', sans-serif",
+            },
+            padding: 12,
+            displayColors: false,
+            bodySpacing: 4,
+            titleMarginBottom: 4,
             callbacks: {
               label: function(context) {
-                let label = context.dataset.label || '';
-                if (label) { label += ': '; }
-                if (context.parsed.y !== null) { label += fmtTL(context.parsed.y); }
-                return label;
+                return context.dataset.label || '';
+              },
+              afterLabel: function(context) {
+                if (context.parsed.y !== null) {
+                  return fmtTL(context.parsed.y);
+                }
+                return '';
               }
             }
           }
