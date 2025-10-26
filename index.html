@@ -115,7 +115,7 @@
       background-color: #11119f;
   }
 
-  #calculator-page {
+  #calculator-page, #excel-page {
       display: none;
   }
   
@@ -156,7 +156,7 @@
     padding: 29px;
   }
   
-  #goBackBtn {
+  #goBackBtn, #goBackBtnFromExcel {
     margin-bottom: 16px;
   }
 
@@ -286,12 +286,24 @@
     justify-content: center;
     gap: 8px;
   }
-  .button:hover {
+  .button:hover:not(:disabled) {
     background-color: var(--input-bg);
   }
   .button:disabled {
       cursor: not-allowed;
       opacity: 0.7;
+  }
+  .button.primary {
+    background-color: #1414b8;
+    color: #f9fafb;
+    border-color: #1414b8;
+  }
+  .button.primary:hover:not(:disabled) {
+      background-color: #11119f;
+  }
+  .button.primary .spinner {
+      border-color: #fff;
+      border-bottom-color: transparent;
   }
 
   .results{
@@ -475,6 +487,28 @@
     font-weight: 400;
   }
 
+  .upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-l);
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 150px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .upload-area:hover {
+      background-color: var(--bg);
+  }
+  .upload-area.drag-over {
+      border-color: #1414b8;
+      background-color: #eef2ff; /* indigo-50 */
+  }
+
   @media(max-width: 460px){ 
     .main-wrapper { padding: 19px; }
     .card-main-content { padding: 19px; }
@@ -514,12 +548,14 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/genai-google-web-sdk/v0.12.0/google-genai-web.mjs"
   }
 }
 </script>
@@ -531,7 +567,7 @@
     <p class="landing-subtitle">Poliçe projeksiyonlarınızı kolayca oluşturun veya görsellerinizdeki verileri anında Excel'e aktarın.</p>
     <div class="landing-actions">
       <button id="goToCalculatorBtn" class="landing-button primary">Poliçe Hesaplama Robotu</button>
-      <button id="goToExcelBtn" class="landing-button" disabled>Görselden Excel Oluştur (Yakında)</button>
+      <button id="goToExcelBtn" class="landing-button">Görselden Excel Oluştur</button>
     </div>
   </div>
 
@@ -613,34 +649,278 @@
     </div>
   </div>
 
-<script>
+  <div id="excel-page">
+    <div class="main-wrapper">
+      <div class="form-column">
+        <button id="goBackBtnFromExcel" class="landing-button primary">Anasayfaya Geri Dön</button>
+        <div class="card" role="region" aria-label="Görselden Excel Oluşturucu">
+          <div class="card-main-content">
+            <div class="header-box">
+              <h2>Görselden Excel Oluştur</h2>
+              <div class="sub">Yüklediğiniz görseldeki tablo verilerini analiz ederek sizin için bir Excel dosyası oluşturur.</div>
+            </div>
+            
+            <div class="upload-area" id="uploadArea">
+              <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/tiff" style="display: none;" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color: var(--border-color);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              <p style="font-size: 16px; color: var(--primary-text); margin: 0; font-weight: 400;">Görseli Sürükleyin veya dosya seçin</p>
+              <p style="font-size: 12px; color: var(--muted-text); margin: 0;">JPG, PNG, WEBP, TIFF desteklenir</p>
+            </div>
+
+            <div id="imagePreview" style="margin-top: 24px; display: none;">
+                <p style="margin: 0 0 10px; font-weight: 400; color: var(--muted-text);">Yüklenen Görsel:</p>
+                <img id="previewImage" src="" alt="Yüklenen görsel önizlemesi" style="max-width: 100%; border-radius: var(--radius-m); border: 1px solid var(--border-color);"/>
+                <button id="generateExcelBtn" class="button primary" style="width: 100%; margin-top: 16px;">
+                    Excel Oluştur
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="excel-results" class="results" aria-live="polite"></div>
+    </div>
+  </div>
+
+<script type="module">
+import { GoogleGenAI, Type } from "@google/genai";
+
 document.addEventListener('DOMContentLoaded', () => {
+  // --- Page Navigation ---
   const landingPage = document.getElementById('landing-page');
   const calculatorPage = document.getElementById('calculator-page');
+  const excelPage = document.getElementById('excel-page');
+  
   const goToCalculatorBtn = document.getElementById('goToCalculatorBtn');
+  const goToExcelBtn = document.getElementById('goToExcelBtn');
+  
   const goBackBtn = document.getElementById('goBackBtn');
+  const goBackBtnFromExcel = document.getElementById('goBackBtnFromExcel');
 
   function updateView() {
-    if (window.location.hash === '#calculator') {
-      landingPage.style.display = 'none';
+    const hash = window.location.hash;
+    
+    landingPage.style.display = 'none';
+    calculatorPage.style.display = 'none';
+    excelPage.style.display = 'none';
+
+    if (hash === '#calculator') {
       calculatorPage.style.display = 'block';
+      if (document.getElementById('monthlySalary')) {
+        document.getElementById('monthlySalary').value = formatNumber(document.getElementById('monthlySalary').value);
+        updateRateAndShow(true);
+      }
+    } else if (hash === '#excel') {
+      excelPage.style.display = 'block';
     } else {
       landingPage.style.display = 'grid';
-      calculatorPage.style.display = 'none';
     }
   }
 
-  goToCalculatorBtn.addEventListener('click', () => {
-    window.location.hash = 'calculator';
-  });
-
-  goBackBtn.addEventListener('click', () => {
-    window.location.hash = '';
-  });
+  goToCalculatorBtn.addEventListener('click', () => { window.location.hash = 'calculator'; });
+  goToExcelBtn.addEventListener('click', () => { window.location.hash = 'excel'; });
+  goBackBtn.addEventListener('click', () => { window.location.hash = ''; });
+  goBackBtnFromExcel.addEventListener('click', () => { window.location.hash = ''; });
 
   window.addEventListener('hashchange', updateView);
   updateView();
   
+  // --- Excel Page Functionality ---
+  const uploadArea = document.getElementById('uploadArea');
+  const fileInput = document.getElementById('fileInput');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImage = document.getElementById('previewImage');
+  const generateExcelBtn = document.getElementById('generateExcelBtn');
+  const excelResults = document.getElementById('excel-results');
+  let latestTableData = [];
+
+  function handleFiles(files) {
+    const file = files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/tiff'];
+    
+    if (file && allowedTypes.includes(file.type)) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        imagePreview.style.display = 'block';
+        excelResults.style.display = 'none'; // Hide previous results
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('Lütfen geçerli bir resim dosyası seçin (JPG, PNG, WEBP, TIFF).');
+      imagePreview.style.display = 'none';
+      previewImage.src = '';
+      fileInput.value = ''; // Reset file input
+    }
+  }
+
+  if (uploadArea) {
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('drag-over');
+    });
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('drag-over');
+    });
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        fileInput.files = files;
+        handleFiles(files);
+      }
+    });
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) {
+        handleFiles(fileInput.files);
+      }
+    });
+  }
+  
+  if (generateExcelBtn) {
+    generateExcelBtn.addEventListener('click', async () => {
+        if (!previewImage.src || !fileInput.files[0]) {
+            alert("Lütfen önce bir resim dosyası seçin.");
+            return;
+        }
+
+        generateExcelBtn.disabled = true;
+        generateExcelBtn.innerHTML = '<span class="spinner"></span> Oluşturuluyor...';
+        excelResults.style.display = 'none';
+
+        try {
+            const base64Data = previewImage.src.split(',')[1];
+            const mimeType = fileInput.files[0].type;
+
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            
+            const response = await ai.models.generateContent({
+              model: 'gemini-2.5-flash',
+              contents: {
+                parts: [
+                  { inlineData: { mimeType, data: base64Data } },
+                  { text: 'Analyze the table in the provided image. Extract all data, including headers, and return it. Preserve the original order of rows and columns.' }
+                ]
+              },
+              config: {
+                 responseMimeType: "application/json",
+                 responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                      tableData: {
+                        type: Type.ARRAY,
+                        description: 'The extracted table data, where each inner array represents a row.',
+                        items: {
+                          type: Type.ARRAY,
+                          items: {
+                            type: Type.STRING
+                          }
+                        }
+                      }
+                    }
+                 },
+              },
+              systemInstruction: 'You are an expert data entry assistant specializing in accurately extracting tabular data from images.'
+            });
+
+            const jsonText = response.text.trim();
+            const resultData = JSON.parse(jsonText);
+            
+            if (resultData.tableData && resultData.tableData.length > 0) {
+              renderExcelResults(resultData.tableData);
+            } else {
+              showError("Görselde okunabilir bir tablo bulunamadı veya veri çıkarılamadı.");
+            }
+
+        } catch (error) {
+            console.error("API Hatası:", error);
+            showError("Veri çıkarılırken bir hata oluştu. Lütfen görseli kontrol edip tekrar deneyin.");
+        } finally {
+            generateExcelBtn.disabled = false;
+            generateExcelBtn.innerHTML = 'Excel Oluştur';
+        }
+    });
+  }
+
+  function renderExcelResults(tableData) {
+      latestTableData = tableData;
+      const headers = tableData[0] || [];
+      const rows = tableData.slice(1);
+
+      const tableHtml = `
+          <table class="projection-details-table">
+            <thead>
+              <tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
+            </tbody>
+          </table>
+      `;
+
+      excelResults.innerHTML = `
+          <div class="results-card">
+            <h3>Çıkarılan Excel Verileri</h3>
+            <p class="sub" style="margin-bottom: 16px; color: var(--muted-text);">Bu, görselden çıkarılan verilerin bir önizlemesidir. Aşağıdaki buton ile verileri .xlsx formatında indirebilirsiniz.</p>
+            <div style="overflow-x: auto;">${tableHtml}</div>
+            <button id="downloadExcelBtn" class="button primary" style="width: 100%; margin-top: 16px;">
+                Excel'i İndir (.xlsx)
+            </button>
+          </div>
+      `;
+      excelResults.style.display = 'block';
+  }
+
+  function showError(message) {
+      excelResults.innerHTML = `
+          <div class="results-card">
+            <h3>Hata</h3>
+            <p style="color: var(--muted-text);">${message}</p>
+          </div>
+      `;
+      excelResults.style.display = 'block';
+  }
+
+  function escapeHtml(unsafe) {
+      return unsafe
+           .replace(/&/g, "&amp;")
+           .replace(/</g, "&lt;")
+           .replace(/>/g, "&gt;")
+           .replace(/"/g, "&quot;")
+           .replace(/'/g, "&#039;");
+   }
+
+   function downloadAsXLSX() {
+        if (latestTableData.length === 0) {
+            alert("İndirilecek veri bulunmuyor.");
+            return;
+        }
+        
+        // Create worksheet from array of arrays
+        const ws = XLSX.utils.aoa_to_sheet(latestTableData);
+
+        // Create a new workbook
+        const wb = XLSX.utils.book_new();
+
+        // Append the worksheet to the workbook
+        XLSX.utils.book_append_sheet(wb, ws, "Çıkarılan Veriler");
+
+        // Write the workbook and trigger download
+        XLSX.writeFile(wb, "tablo_verileri.xlsx");
+    }
+
+   document.body.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'downloadExcelBtn') {
+          downloadAsXLSX();
+      }
+   });
+
+
+  // --- Calculator Page Functionality ---
   let projectionChartInstances = {};
   Chart.defaults.font.size = 14;
   Chart.defaults.font.family = "'Inter', sans-serif";
@@ -886,6 +1166,7 @@ function compute10YearProjection(params) {
 
   async function updateRateAndShow(autoCompute = false){
     const rt = document.getElementById('rateText');
+    if (!rt) return; // Exit if we are not on calculator page
     rt.innerHTML = '<span class="spinner"></span> Kur çekiliyor...';
     const { rate, source } = await safeFetchUsdTry();
     const usdInput = document.getElementById('usdTry');
@@ -898,7 +1179,9 @@ function compute10YearProjection(params) {
     if (projectionChartInstances[canvasId]) {
       projectionChartInstances[canvasId].destroy();
     }
-    const ctx = document.getElementById(canvasId).getContext('2d');
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     const labels = data.map(d => `${d.year}. Yıl`);
     
     let premiumData, gainData, gainLabel, premiumLabel, yTicksFormatter, tooltipFormatter;
@@ -1154,7 +1437,7 @@ function compute10YearProjection(params) {
     renderChart('projectionChartTl', proj10.yearlyData, 'TL');
   }
 
-  // --- Event Listeners and Initial Setup ---
+  // --- Event Listeners and Initial Setup for Calculator ---
   
   const form = document.getElementById('calcForm');
   const salaryInput = document.getElementById('monthlySalary');
@@ -1163,41 +1446,49 @@ function compute10YearProjection(params) {
   
   let calculationTimeout;
 
-  form.addEventListener('input', (e) => {
-    if (e.target.id === 'monthlySalary') {
-      const value = e.target.value;
-      const formatted = formatNumber(value);
-      if (value !== formatted) {
-        e.target.value = formatted;
+  if (form) {
+    form.addEventListener('input', (e) => {
+      if (e.target.id === 'monthlySalary') {
+        const value = e.target.value;
+        const formatted = formatNumber(value);
+        if (value !== formatted) {
+          e.target.value = formatted;
+        }
       }
-    }
-    
-    clearTimeout(calculationTimeout);
-    calculationTimeout = setTimeout(computeAndRender, 300);
-  });
-  
-  refreshBtn.addEventListener('click', () => {
-    document.getElementById('usdTry').value = '';
-    updateRateAndShow(true);
-  });
-  
-  resetFormBtn.addEventListener('click', () => {
-      const formElements = form.elements;
-      formElements.monthlySalary.value = "100.000";
-      formElements.monthlyPremiumUsd.value = "100";
-      formElements.annualSalaryGrowth.value = "15";
-      formElements.annualPremiumGrowth.value = "5";
-      formElements.annualUsdGrowth.value = "15";
-      formElements.annualProfitRate.value = "6.24";
-      formElements.annualExpenseRate.value = "5";
-      formElements.annualTaxBracketGrowth.value = "25";
       
-      computeAndRender();
-  });
-
-  // Initial load
-  salaryInput.value = formatNumber(salaryInput.value);
-  updateRateAndShow(true);
+      clearTimeout(calculationTimeout);
+      calculationTimeout = setTimeout(computeAndRender, 300);
+    });
+  }
+  
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      document.getElementById('usdTry').value = '';
+      updateRateAndShow(true);
+    });
+  }
+  
+  if (resetFormBtn) {
+    resetFormBtn.addEventListener('click', () => {
+        const formElements = form.elements;
+        formElements.monthlySalary.value = "100.000";
+        formElements.monthlyPremiumUsd.value = "100";
+        formElements.annualSalaryGrowth.value = "15";
+        formElements.annualPremiumGrowth.value = "5";
+        formElements.annualUsdGrowth.value = "15";
+        formElements.annualProfitRate.value = "6.24";
+        formElements.annualExpenseRate.value = "5";
+        formElements.annualTaxBracketGrowth.value = "25";
+        
+        computeAndRender();
+    });
+  }
+  
+  // Initial load for calculator page
+  if (calculatorPage.style.display !== 'none' && salaryInput) {
+    salaryInput.value = formatNumber(salaryInput.value);
+    updateRateAndShow(true);
+  }
 });
 </script>
 </body>
