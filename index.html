@@ -372,7 +372,7 @@
   }
   .methodology-text ul {
     padding-left: 20px;
-    margin-top: 12px;
+    margin-top: 0;
     margin-bottom: 0;
     display: grid;
     gap: 8px;
@@ -1005,7 +1005,6 @@ function compute10YearProjection(params) {
       <div class="results-card">
         <h3>Hesaplama Metodolojisi</h3>
         <div class="methodology-text">
-            <p>Bu simülatör, girdiğiniz verilere dayanarak potansiyel birikim ve vergi iadesi projeksiyonu sunar. Aşağıda hesaplamaların nasıl yapıldığına dair temel prensipler yer almaktadır:</p>
             <ul>
                 <li><strong>Vergi İadesi:</strong> Aylık ödenen primin, brüt maaşın %15'ini aşmayacak kısmı için hesaplanır. İade tutarı, o ay içinde bulunulan gelir vergisi dilimi oranına göre belirlenir.</li>
                 <li><strong>Gelir Vergisi Dilimi:</strong> Yıl içindeki kümülatif brüt maaşınıza göre dinamik olarak hesaplanır. Gelecek yıllar için vergi dilimi matrahları, girdiğiniz "Vergi Dilimi Artışı" oranında bileşik olarak artırılır. Örneğin, 2024 yılı için 158.000 TL olan ilk dilim sınırı, %25'lik bir artış varsayımıyla <strong>2025 yılı için 158.000 ₺ * 1.25 = 197.500 ₺</strong> olarak hesaplanır. Bu hesaplama her yıl tüm dilimler için tekrarlanır.</li>
