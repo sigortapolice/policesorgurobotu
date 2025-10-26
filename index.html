@@ -204,9 +204,17 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
   .button:hover {
     background-color: var(--input-bg);
+  }
+  .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
   }
 
   .results{
@@ -356,6 +364,11 @@
      border: 2px solid var(--primary);
      border-bottom-color: transparent;
   }
+  
+  .button .spinner {
+      border-color: var(--primary-text);
+      border-bottom-color: transparent;
+  }
 
   @keyframes rotation {
     0% { transform: rotate(0deg); }
@@ -424,6 +437,8 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="importmap">
 {
   "imports": {
@@ -496,6 +511,10 @@
               <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
             </div>
             <button type="button" id="resetFormBtn" class="button">Sıfırla</button>
+          </div>
+           <div class="two-col" style="margin-top: 10px;">
+              <button type="button" id="savePdfBtn" class="button">PDF'i kaydet</button>
+              <button type="button" id="saveImgBtn" class="button">Görseli kaydet</button>
           </div>
         </div>
       </form>
@@ -1021,16 +1040,71 @@ function compute10YearProjection(params) {
     renderChart('projectionChartTl', proj10.yearlyData, 'TL');
   }
 
+  let isExporting = false;
+  async function capturePage(button, allButtons) {
+      if (isExporting) return null;
+      isExporting = true;
+      const originalText = button.innerHTML;
+      
+      allButtons.forEach(btn => {
+        btn.disabled = true;
+        if (btn === button) {
+           btn.innerHTML = '<span class="spinner"></span> Kaydediliyor...';
+        }
+      });
+
+      const mainWrapper = document.querySelector('.main-wrapper');
+      const formCard = document.querySelector('.main-wrapper > .card:first-child');
+      
+      const originalWrapperStyle = mainWrapper.style.cssText;
+      const originalFormCardStyle = formCard.style.cssText;
+
+      if (window.innerWidth >= 1024) {
+          mainWrapper.style.display = 'block';
+          formCard.style.position = 'static';
+          formCard.style.marginBottom = '24px';
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      try {
+          const canvas = await html2canvas(mainWrapper, {
+              useCORS: true,
+              allowTaint: true,
+              scale: 2
+          });
+          return canvas;
+      } catch (error) {
+          console.error('Sayfa yakalanırken hata oluştu:', error);
+          alert('Sayfa kaydedilirken bir hata oluştu.');
+          return null;
+      } finally {
+          mainWrapper.style.cssText = originalWrapperStyle;
+          formCard.style.cssText = originalFormCardStyle;
+          
+          allButtons.forEach(btn => {
+            btn.disabled = false;
+            if (btn === button) {
+              btn.innerHTML = originalText;
+            }
+          });
+          isExporting = false;
+      }
+  }
+
   // --- Event Listeners and Initial Setup ---
   
   const form = document.getElementById('calcForm');
   const salaryInput = document.getElementById('monthlySalary');
   const refreshBtn = document.getElementById('refreshBtn');
   const resetFormBtn = document.getElementById('resetFormBtn');
+  const savePdfBtn = document.getElementById('savePdfBtn');
+  const saveImgBtn = document.getElementById('saveImgBtn');
+  const exportButtons = [savePdfBtn, saveImgBtn];
+  
   let calculationTimeout;
 
   form.addEventListener('input', (e) => {
-    // Handle special formatting for salary input
     if (e.target.id === 'monthlySalary') {
       const value = e.target.value;
       const formatted = formatNumber(value);
@@ -1039,13 +1113,11 @@ function compute10YearProjection(params) {
       }
     }
     
-    // Debounce the calculation to improve performance and user experience
     clearTimeout(calculationTimeout);
     calculationTimeout = setTimeout(computeAndRender, 300);
   });
   
   refreshBtn.addEventListener('click', () => {
-    // Clear manual rate to fetch the latest, then re-calculate
     document.getElementById('usdTry').value = '';
     updateRateAndShow(true);
   });
@@ -1061,14 +1133,54 @@ function compute10YearProjection(params) {
       formElements.annualExpenseRate.value = "5";
       formElements.annualTaxBracketGrowth.value = "25";
       
-      // Manually trigger the calculation after resetting
       computeAndRender();
   });
 
+  saveImgBtn.addEventListener('click', async () => {
+    const canvas = await capturePage(saveImgBtn, exportButtons);
+    if (!canvas) return;
+    
+    const image = canvas.toDataURL('image/png', 1.0);
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = 'police-sorgu-projeksiyonu.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  savePdfBtn.addEventListener('click', async () => {
+    const canvas = await capturePage(savePdfBtn, exportButtons);
+    if (!canvas) return;
+
+    const { jsPDF } = window.jspdf;
+    const imgData = canvas.toDataURL('image/png', 1.0);
+
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    doc.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+        position = -heightLeft;
+        doc.addPage();
+        doc.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+    }
+
+    doc.save('police-sorgu-projeksiyonu.pdf');
+  });
 
   // Initial load
   salaryInput.value = formatNumber(salaryInput.value);
-  updateRateAndShow(true); // Fetch rate and run initial calculation
+  updateRateAndShow(true);
 });
 </script>
 </body>
