@@ -244,24 +244,29 @@
     margin: 0 0 12px;
     color: var(--primary-text);
   }
-
-  .summary-grid {
+  
+  .summary-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .summary-item {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 10px 16px;
+    gap: 0 16px;
     font-size: 14px;
     color: var(--primary-text);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
   }
-
-  .summary-grid > div:nth-child(odd) { color: var(--muted-text); }
-  .summary-grid > div:nth-child(even) { font-weight: 400; text-align: right; }
+  .summary-list > .summary-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .summary-item > div:nth-child(odd) { color: var(--muted-text); }
+  .summary-item > div:nth-child(even) { font-weight: 400; text-align: right; }
   
-  .summary-grid .highlight {
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--primary-text);
-  }
-  .summary-grid .highlight-label {
+  .summary-item .highlight,
+  .summary-item .highlight-label {
     font-weight: 400;
     color: var(--primary-text);
   }
@@ -358,13 +363,17 @@
   }
   
   @media(max-width: 600px) {
-    body, .sub, .rate, .refresh, label, input[type=number], input[type=text], .button, h3, .summary-grid, .summary-grid .highlight, table, thead th, tr.total-row td {
+    body, .sub, .rate, .refresh, label, input[type=number], input[type=text], .button, h3, .summary-item, .summary-item .highlight, table, thead th, tr.total-row td {
       font-size: 13.2px;
     }
     h2 { font-size: 22px; }
     .results-note, .note { font-size: 12.1px; }
     
-    .summary-grid > div:nth-child(even) {
+    .summary-item {
+        padding: 6.6px 0;
+    }
+    
+    .summary-item > div:nth-child(even) {
       white-space: nowrap;
     }
     
@@ -788,24 +797,44 @@ function compute10YearProjection(params) {
         <h3>
           1 Yıllık Projeksiyon Özeti
         </h3>
-        <div class="summary-grid">
-          <div>Yıllık Prim Ödemesi</div><div>${fmtTL(proj1.yearlyTl)}</div>
-          <div class="highlight-label">Yıllık Vergi İadesi</div><div class="highlight">${fmtTL(proj1.totalRebateTl)}</div>
-          <div>Yıllık Kâr Payı</div><div>${fmtTL(proj1.yearlyProfitTl)}</div>
-          <div>Yıllık Gider Payı</div><div>${fmtTL(proj1.yearlyExpenseTl)}</div>
-          <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div>
+        <div class="summary-list">
+          <div class="summary-item">
+            <div>Yıllık Prim Ödemesi</div><div>${fmtTL(proj1.yearlyTl)}</div>
+          </div>
+          <div class="summary-item">
+            <div class="highlight-label">Yıllık Vergi İadesi</div><div class="highlight">${fmtTL(proj1.totalRebateTl)}</div>
+          </div>
+          <div class="summary-item">
+            <div>Yıllık Kâr Payı</div><div>${fmtTL(proj1.yearlyProfitTl)}</div>
+          </div>
+          <div class="summary-item">
+            <div>Yıllık Gider Payı</div><div>${fmtTL(proj1.yearlyExpenseTl)}</div>
+          </div>
+          <div class="summary-item">
+            <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div>
+          </div>
         </div>
       </div>
-      <div class="results-card">
+      <div class="results-card" style="border-top: 1px solid var(--border-color); padding-top: 19px; margin-top: 19px;">
         <h3>
           10 Yıllık Projeksiyon Özeti
         </h3>
-        <div class="summary-grid">
-            <div>Toplam Prim Ödemesi</div><div>${fmtTL(proj10.totals.totalPremiumTl)}</div>
-            <div class="highlight-label">Toplam Vergi İadesi</div><div class="highlight">${fmtTL(proj10.totals.totalRebateTl)}</div>
-            <div>Toplam Kâr Payı</div><div>${fmtTL(proj10.totals.totalProfitTl)}</div>
-            <div>Toplam Gider Payı</div><div>${fmtTL(proj10.totals.totalExpenseTl)}</div>
-            <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div>
+        <div class="summary-list">
+            <div class="summary-item">
+              <div>Toplam Prim Ödemesi</div><div>${fmtTL(proj10.totals.totalPremiumTl)}</div>
+            </div>
+            <div class="summary-item">
+              <div class="highlight-label">Toplam Vergi İadesi</div><div class="highlight">${fmtTL(proj10.totals.totalRebateTl)}</div>
+            </div>
+            <div class="summary-item">
+              <div>Toplam Kâr Payı</div><div>${fmtTL(proj10.totals.totalProfitTl)}</div>
+            </div>
+            <div class="summary-item">
+              <div>Toplam Gider Payı</div><div>${fmtTL(proj10.totals.totalExpenseTl)}</div>
+            </div>
+            <div class="summary-item">
+              <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div>
+            </div>
         </div>
       </div>
       <div class="results-card">
