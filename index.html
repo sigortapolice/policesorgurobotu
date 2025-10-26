@@ -327,6 +327,11 @@
     color: var(--primary-text);
     font-size: 14px;
   }
+
+  .chart-container {
+    height: 313px;
+    position: relative;
+  }
   
   .spinner {
     width: 14px;
@@ -381,6 +386,10 @@
         padding: 6.6px 3.3px;
         font-size: 13.2px;
         white-space: nowrap;
+    }
+
+    .chart-container {
+        height: 391px;
     }
   }
 </style>
@@ -703,7 +712,7 @@ function compute10YearProjection(params) {
       data: {
         labels: labels,
         datasets: [{
-          label: 'Toplam Kazanım (₺)',
+          label: 'Toplam Birikim (₺)',
           data: gainData,
           borderColor: '#1414b8',
           backgroundColor: 'rgba(20, 20, 184, 0.1)',
@@ -729,7 +738,16 @@ function compute10YearProjection(params) {
           y: {
             beginAtZero: true,
             ticks: {
-              callback: function(value) { return (value / 1000) + 'k ₺'; }
+              callback: function(value) {
+                if (value >= 1000000) {
+                  const millions = parseFloat((value / 1000000).toFixed(1));
+                  return millions + 'M ₺';
+                }
+                if (value >= 1000) {
+                  return (value / 1000) + 'B ₺';
+                }
+                return value + ' ₺';
+              }
             }
           }
         },
@@ -852,7 +870,7 @@ function compute10YearProjection(params) {
         <h3>
           10 Yıllık Projeksiyon Grafiği
         </h3>
-        <div style="height: 250px; position: relative;"><canvas id="projectionChart"></canvas></div>
+        <div class="chart-container"><canvas id="projectionChart"></canvas></div>
       </div>
        <div class="results-card">
         <h3>
@@ -860,7 +878,7 @@ function compute10YearProjection(params) {
         </h3>
         <table class="projection-details-table ten-year-table">
           <thead><tr>
-            <th>Yıl</th><th>Yıllık Prim</th><th>Yıllık İade</th><th>Yıl Sonu Birikim</th>
+            <th>Yıl</th><th>Yıllık Prim</th><th>Yıllık İade</th><th>Birikim</th>
           </tr></thead>
           <tbody>
             ${proj10.yearlyData.map(d => `
