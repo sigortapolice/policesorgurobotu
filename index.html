@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Poliçe Sorgu">
+
+  <link rel="manifest" href="manifest.json">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Poliçe Sorgu Robotu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f9fafb; /* gray-50 */
+    --card: #ffffff;
+    --muted-text: #1f2937; /* gray-800 */
+    --primary-text: #1f2937; /* gray-800 */
+    --primary: #1f2937; /* gray-800 */
+    --primary-hover: #111827; /* gray-900 */
+    --primary-light: #f3f4f6; /* gray-100 */
+    --border-color: #d1d5db; /* gray-300 */
+    --input-bg: #f9fafb; /* gray-50 */
+    --input-focus-bg: #f3f4f6; /* gray-100 */
+    --shadow: 0 1px 2px 0 rgba(60,64,67,0.075), 0 2px 6px 2px rgba(60,64,67,0.0375);
+    --radius-m: 20px;
+    --radius-l: 20px;
+    --success: #34a853;
+    --warning: #fbbc05;
+  }
+  
+  html {
+    color-scheme: light;
+  }
+
+  body{
+    margin:0;
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--primary-text);
+    min-height: 100vh;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.2px;
+  }
+  
+  .main-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 29px;
+    box-sizing: border-box;
+  }
+  
+  @media (min-width: 1024px) {
+    .main-wrapper {
+      display: grid;
+      grid-template-columns: 450px 1fr;
+      gap: 24px;
+      align-items: flex-start;
+    }
+    .main-wrapper > .card:first-child {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 24px;
+    }
+  }
+
+  .card{
+    width: 100%;
+    background: var(--card);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow);
+    padding: 29px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  
+  .header-box {
+    margin: -29px -29px 24px -29px;
+    padding: 29px;
+    background-color: #1414b8;
+    border-top-left-radius: var(--radius-l);
+    border-top-right-radius: var(--radius-l);
+  }
+
+  h2{
+    margin: 0 0 8px;
+    font-size: 22px;
+    color: var(--primary-text);
+    font-weight: 400;
+  }
+  
+  .header-box h2,
+  .header-box .sub {
+    color: #ffffff;
+  }
+  
+  .sub{
+    color: var(--muted-text);
+    font-size: 14px;
+    margin-bottom: 0;
+    line-height: 1.5;
+  }
+  
+  .rate{
+    background: var(--primary-light);
+    border-radius: var(--radius-m);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 400;
+    color: var(--primary-text);
+    margin-bottom: 20px;
+    font-size: 14px;
+    min-height: 48px;
+    box-sizing: border-box;
+  }
+
+  .rate-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .refresh{
+    cursor: pointer;
+    color: var(--primary);
+    font-size: 14px;
+    transition: transform .2s ease-in-out;
+    border: none;
+    background: none;
+    padding: 0;
+    font-weight: 400;
+  }
+  
+  .refresh:hover{ text-decoration: underline; }
+  
+  .form-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .form-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .input-group {
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--muted-text);
+    font-weight: 400;
+  }
+  
+  input[type=number], input[type=text] {
+    width: 100%;
+    padding: 11px 14px;
+    margin-top: 0;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    font-size: 14px;
+    box-sizing: border-box;
+    color: var(--primary-text);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--border-color);
+    background-color: var(--input-focus-bg);
+    box-shadow: none;
+  }
+
+  .two-col{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  
+  .input-with-button {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: end;
+  }
+  .button {
+    background-color: var(--card);
+    color: var(--primary-text);
+    border: 1px solid var(--border-color);
+    padding: 11px 20px;
+    border-radius: var(--radius-m);
+    font-weight: 400;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+  }
+  .button:hover {
+    background-color: var(--input-bg);
+  }
+
+  .results{
+    display: none;
+    animation: fadeIn 0.5s ease;
+    margin-top: 24px;
+  }
+  
+  @media (min-width: 1024px) {
+    .results {
+      margin-top: 0;
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .results-card {
+    background: #fff;
+    border-radius: var(--radius-l);
+    padding: 19px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .results-card:last-child {
+    margin-bottom: 0;
+  }
+  
+  h3 {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0 0 12px;
+    color: var(--primary-text);
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px 16px;
+    font-size: 14px;
+    color: var(--primary-text);
+  }
+
+  .summary-grid > div:nth-child(odd) { color: var(--muted-text); }
+  .summary-grid > div:nth-child(even) { font-weight: 400; text-align: right; }
+  
+  .summary-grid .highlight {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--primary-text);
+  }
+  .summary-grid .highlight-label {
+    font-weight: 400;
+    color: var(--primary-text);
+  }
+
+  .results-note{
+    margin-top: 16px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--muted-text);
+    background-color: var(--bg);
+    border-radius: var(--radius-m);
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .results-note strong {
+    color: var(--primary-text);
+    font-weight: 400;
+  }
+  
+  .note{
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--muted-text);
+    text-align: center;
+    background: var(--bg);
+    padding: 12px;
+    border-radius: var(--radius-m);
+    font-style: italic;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 10px 8px;
+    text-align: right;
+    border-bottom: 1px solid var(--border-color);
+  }
+  thead th {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--muted-text);
+    border-bottom-width: 2px;
+  }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child, th:first-child { text-align: left; }
+  
+  tbody tr { transition: background-color 0.1s ease; }
+  tbody tr:hover { background-color: var(--bg); }
+
+  tr.total-row {
+    font-weight: 400;
+    background: var(--primary-light);
+  }
+  tr.total-row td {
+    color: var(--primary-text);
+    font-size: 14px;
+  }
+  
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #fff;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+  }
+  
+  #rateText .spinner {
+     border: 2px solid var(--primary);
+     border-bottom-color: transparent;
+  }
+
+  @keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+
+  @media(max-width: 460px){ 
+    .main-wrapper { padding: 19px; }
+    .card { padding: 19px; }
+    h2 { font-size: 22px; }
+    .sub { font-size: 14px; }
+    th, td { font-size: 14px; padding: 8px 4px; }
+    .header-box {
+        margin: -19px -19px 19px -19px;
+        padding: 19px;
+    }
+  }
+  
+  @media(max-width: 600px) {
+    .projection-details-table th, .projection-details-table td {
+        padding: 6px 3px;
+        font-size: 14px;
+    }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
+</head>
+<body>
+  <div class="main-wrapper">
+    <div class="card" role="region" aria-label="Sigorta Poliçesi Simülatörü">
+      <div class="header-box">
+        <h2>Poliçe Sorgu Robotu</h2>
+        <div class="sub">Brüt maaş ve prim bilgilerinizi girerek 1 yıllık ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</div>
+      </div>
+
+      <div class="rate" id="rateBox">
+        <div class="rate-text" id="rateText"></div>
+        <button class="refresh" id="refreshBtn" title="Kur yenile">Yenile</button>
+      </div>
+      
+      <form id="calcForm" class="form-grid">
+        <div class="form-section">
+          <div class="two-col">
+            <div class="input-group">
+              <label for="monthlySalary">Brüt Maaş</label>
+              <input id="monthlySalary" type="text" value="100.000" inputmode="numeric"/>
+            </div>
+            <div class="input-group">
+              <label for="monthlyPremiumUsd">Aylık Prim (USD)</label>
+              <input id="monthlyPremiumUsd" type="text" value="100" inputmode="decimal"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="two-col">
+            <div class="input-group">
+              <label for="annualSalaryGrowth">Maaş Artışı (%)</label>
+              <input id="annualSalaryGrowth" type="number" value="15" min="0" step="0.01"/>
+            </div>
+            <div class="input-group">
+              <label for="annualPremiumGrowth">Prim Artışı (%)</label>
+              <input id="annualPremiumGrowth" type="number" value="5" min="0" step="0.01"/>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="input-group">
+              <label for="annualUsdGrowth">Kur artışı (%)</label>
+              <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
+            </div>
+            <div class="input-group">
+              <label for="usdTry">USD/TRY</label>
+              <input id="usdTry" type="number" step="0.0001" placeholder="Otomatik çekilecek"/>
+            </div>
+          </div>
+          <div class="two-col">
+              <div class="input-group">
+              <label for="annualProfitRate">Kâr Payı (%)</label>
+              <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
+            </div>
+            <div class="input-group">
+                <label for="annualExpenseRate">Gider Payı (%)</label>
+                <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
+            </div>
+          </div>
+          <div class="input-with-button">
+            <div class="input-group">
+              <label for="annualTaxBracketGrowth">Vergi Dilimi Artışı (%)</label>
+              <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
+            </div>
+            <button type="button" id="resetFormBtn" class="button">Sıfırla</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="note">Kur kaynağı: exchangerate.host. Başarısız olursa fallback (41.95) kullanılır.</div>
+    </div>
+    
+    <div id="results" class="results" aria-live="polite"></div>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let projectionChartInstance = null;
+  Chart.defaults.font.size = 14;
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.color = '#1f2937';
+
+  const TAX_BRACKETS = [
+    { upTo: 158000, rate: 0.15 },
+    { upTo: 330000, rate: 0.20 },
+    { upTo: 800000, rate: 0.27 },
+    { upTo: 4300000, rate: 0.35 },
+    { upTo: Infinity, rate: 0.40 }
+  ];
+
+  const fmtTL = n => (Math.round(n)).toLocaleString('tr-TR') + ' ₺';
+  const fmtUSD = n => (Math.round(n)).toLocaleString('en-US') + ' $';
+  const months = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+
+  function formatNumber(value) {
+    if (!value) return '';
+    const numberString = String(value).replace(/[^\d]/g, '');
+    if (numberString === '') return '';
+    return new Intl.NumberFormat('tr-TR').format(parseInt(numberString, 10));
+  }
+
+  function parseFormattedNumber(value) {
+    if (!value) return 0;
+    return parseInt(String(value).replace(/[^\d]/g, ''), 10) || 0;
+  }
+
+  async function safeFetchUsdTry(){
+    const FALLBACK = 41.95;
+    try{
+      const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=TRY',{cache:"no-store"});
+      const j = await res.json();
+      const rate = j?.rates?.TRY;
+      if(typeof rate === 'number') return { rate, source: 'live' };
+      throw new Error();
+    }catch{ return { rate: FALLBACK, source: 'fallback' }; }
+  }
+
+  function getTaxRateForAnnualIncome(cumulativeIncome, brackets = TAX_BRACKETS){
+    for(const b of brackets) if(cumulativeIncome <= b.upTo) return b.rate;
+    return brackets[brackets.length-1].rate;
+  }
+  
+  function compute1YearProjection(params) {
+    let {
+        monthlySalary, monthlyPremiumUsd, usdTry,
+        expenseRatePct, profitRatePct
+    } = params;
+    
+    const annualExpenseRate = expenseRatePct / 100;
+    const monthlyExpenseRate = annualExpenseRate / 12;
+    const annualProfitRate = profitRatePct / 100;
+    const monthlyProfitRate = annualProfitRate / 12;
+
+    let fundUsd = 0;
+    let totalPremiumTl = 0;
+    let totalRebateTl = 0;
+    let totalProfitTl = 0;
+    let totalExpenseTl = 0;
+    let cumulativeIncome = 0;
+    let tableRows = "";
+    
+    for (let i = 0; i < 12; i++) {
+        const monthName = months[i];
+        
+        const profitThisMonthUsd = fundUsd * monthlyProfitRate;
+        const expenseThisMonthUsd = fundUsd * monthlyExpenseRate;
+
+        const monthlyPremiumTl = monthlyPremiumUsd * usdTry;
+
+        cumulativeIncome += monthlySalary;
+        const taxRate = getTaxRateForAnnualIncome(cumulativeIncome);
+        const maxRefundable = monthlySalary * 0.15;
+        const actualRefundable = Math.min(monthlyPremiumTl, maxRefundable);
+        const rebateTl = actualRefundable * taxRate;
+        const rebateUsd = rebateTl / usdTry;
+        
+        fundUsd += profitThisMonthUsd + monthlyPremiumUsd + rebateUsd - expenseThisMonthUsd;
+
+        totalPremiumTl += monthlyPremiumTl;
+        totalRebateTl += rebateTl;
+        totalProfitTl += profitThisMonthUsd * usdTry;
+        totalExpenseTl += expenseThisMonthUsd * usdTry;
+        
+        tableRows += `<tr>
+          <td>${monthName}</td> <td>${fmtTL(monthlySalary)}</td>
+          <td>${(taxRate*100).toFixed(0)}%</td> <td>${fmtUSD(monthlyPremiumUsd)}</td>
+          <td>${fmtUSD(rebateUsd)}</td>
+        </tr>`;
+    }
+
+    const totalSalary = monthlySalary * 12;
+    const totalPremiumUsd = monthlyPremiumUsd * 12;
+    const totalRebateUsd = totalRebateTl / usdTry;
+    const yearEndTl = fundUsd * usdTry;
+    
+    tableRows += `<tr class="total-row">
+        <td>Yıllık Toplam</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
+        <td>${fmtUSD(totalPremiumUsd)}</td> <td>${fmtUSD(totalRebateUsd)}</td>
+      </tr>`;
+
+    return {
+        tableRowsHTML: tableRows,
+        yearlyTl: totalPremiumTl,
+        totalRebateTl: totalRebateTl,
+        yearlyProfitTl: totalProfitTl,
+        yearlyExpenseTl: totalExpenseTl,
+        yearEndTl: yearEndTl,
+    };
+}
+
+function compute10YearProjection(params) {
+    const years = 10;
+    let {
+        monthlySalary, monthlyPremiumUsd, usdTryBase,
+        expenseRatePct, profitRatePct, premiumGrowthPct,
+        salaryGrowthPct, usdGrowthPct, taxBracketGrowthPct
+    } = params;
+
+    const annualExpenseRate = expenseRatePct / 100;
+    const monthlyExpenseRate = annualExpenseRate / 12;
+    const premiumGrowth = premiumGrowthPct / 100;
+    const salaryGrowth = salaryGrowthPct / 100;
+    const usdGrowth = usdGrowthPct / 100;
+    const annualProfitRate = profitRatePct / 100;
+    const monthlyProfitRate = annualProfitRate / 12;
+    const taxBracketGrowth = taxBracketGrowthPct / 100;
+
+    const yearlyData = [];
+    let cumulativePremiumTl = 0;
+    let cumulativeRebateTl = 0;
+    let cumulativeFundUsd = 0;
+    let cumulativeProfitTl = 0;
+    let cumulativeExpenseTl = 0;
+
+    for (let y = 1; y <= years; y++) {
+        const yearMonthlySalary = monthlySalary * Math.pow(1 + salaryGrowth, y - 1);
+        const yearUsdRate = usdTryBase * Math.pow(1 + usdGrowth, y - 1);
+        const yearMonthlyPremiumUsd = monthlyPremiumUsd * Math.pow(1 + premiumGrowth, y - 1);
+        
+        const adjustedBrackets = TAX_BRACKETS.map(b => ({
+          ...b,
+          upTo: b.upTo === Infinity ? Infinity : b.upTo * Math.pow(1 + taxBracketGrowth, y - 1)
+        }));
+
+        let cumulativeIncomeForYear = 0;
+        let rebateAnnualTl = 0;
+        let annualPremiumTlForYear = 0;
+        let annualProfitTlForYear = 0;
+        let annualExpenseTlForYear = 0;
+
+        for (let m = 1; m <= 12; m++) {
+            const profitThisMonthUsd = cumulativeFundUsd * monthlyProfitRate;
+            const expenseThisMonthUsd = cumulativeFundUsd * monthlyExpenseRate;
+
+            const monthlyPremiumTl = yearMonthlyPremiumUsd * yearUsdRate;
+
+            cumulativeIncomeForYear += yearMonthlySalary;
+            const taxRateForMonth = getTaxRateForAnnualIncome(cumulativeIncomeForYear, adjustedBrackets);
+            const maxRefundablePremiumTlForMonth = yearMonthlySalary * 0.15;
+            const actualRefundablePremiumTlForMonth = Math.min(monthlyPremiumTl, maxRefundablePremiumTlForMonth);
+            const rebateTlForMonth = actualRefundablePremiumTlForMonth * taxRateForMonth;
+            const rebateUsdForMonth = rebateTlForMonth / yearUsdRate;
+
+            cumulativeFundUsd += profitThisMonthUsd + yearMonthlyPremiumUsd + rebateUsdForMonth - expenseThisMonthUsd;
+
+            annualPremiumTlForYear += monthlyPremiumTl;
+            rebateAnnualTl += rebateTlForMonth;
+            annualProfitTlForYear += profitThisMonthUsd * yearUsdRate;
+            annualExpenseTlForYear += expenseThisMonthUsd * yearUsdRate;
+        }
+
+        cumulativePremiumTl += annualPremiumTlForYear;
+        cumulativeRebateTl += rebateAnnualTl;
+        cumulativeProfitTl += annualProfitTlForYear;
+        cumulativeExpenseTl += annualExpenseTlForYear;
+        
+        const endOfYearFundTl = cumulativeFundUsd * yearUsdRate;
+
+        yearlyData.push({
+            year: y,
+            annualPremiumTl: annualPremiumTlForYear,
+            annualRebateTl: rebateAnnualTl,
+            annualProfitTl: annualProfitTlForYear,
+            annualExpenseTl: annualExpenseTlForYear,
+            endOfYearFundTl: endOfYearFundTl,
+            totalPremiumTl: cumulativePremiumTl,
+            accWithRebateTl: endOfYearFundTl
+        });
+    }
+
+    const finalYearUsdRate = usdTryBase * Math.pow(1 + usdGrowth, years - 1);
+    const accWithRebateTl = cumulativeFundUsd * finalYearUsdRate;
+    const totals = {
+        totalPremiumTl: cumulativePremiumTl,
+        totalRebateTl: cumulativeRebateTl,
+        totalProfitTl: cumulativeProfitTl,
+        totalExpenseTl: cumulativeExpenseTl,
+        accWithRebateTl: accWithRebateTl,
+    };
+
+    return { totals, yearlyData };
+}
+
+
+  async function updateRateAndShow(autoCompute = false){
+    const rt = document.getElementById('rateText');
+    rt.innerHTML = '<span class="spinner"></span> Kur çekiliyor...';
+    const { rate, source } = await safeFetchUsdTry();
+    const usdInput = document.getElementById('usdTry');
+    if(!usdInput.value) usdInput.value = rate.toFixed(4);
+    rt.textContent = `1 USD = ${rate.toFixed(4)} ₺` + (source==='fallback'?' (fallback)':'');
+    if(autoCompute) computeAndRender();
+  }
+
+  function renderChart(data) {
+    if (projectionChartInstance) {
+      projectionChartInstance.destroy();
+    }
+    const ctx = document.getElementById('projectionChart').getContext('2d');
+    const labels = data.map(d => `${d.year}. Yıl`);
+    const premiumData = data.map(d => d.totalPremiumTl);
+    const gainData = data.map(d => d.accWithRebateTl);
+
+    projectionChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Toplam Kazanım (₺)',
+          data: gainData,
+          borderColor: '#1414b8',
+          backgroundColor: 'rgba(20, 20, 184, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#1414b8',
+          pointRadius: 4
+        },{
+          label: 'Toplam Prim Ödemesi (₺)',
+          data: premiumData,
+          borderColor: '#9ca3af',
+          backgroundColor: 'rgba(156, 163, 175, 0.2)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#9ca3af',
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) { return (value / 1000) + 'k ₺'; }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: false,
+              boxWidth: 16,
+              boxHeight: 6,
+              padding: 20
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) { label += ': '; }
+                if (context.parsed.y !== null) { label += fmtTL(context.parsed.y); }
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  function getParamsFromForm() {
+    return {
+      monthlySalary: parseFormattedNumber(document.getElementById('monthlySalary').value),
+      monthlyPremiumUsd: parseFloat(document.getElementById('monthlyPremiumUsd').value) || 0,
+      annualSalaryGrowth: parseFloat(document.getElementById('annualSalaryGrowth').value) || 0,
+      annualPremiumGrowth: parseFloat(document.getElementById('annualPremiumGrowth').value) || 0,
+      annualUsdGrowth: parseFloat(document.getElementById('annualUsdGrowth').value) || 0,
+      usdTry: parseFloat(document.getElementById('usdTry').value) || 0,
+      usdTryBase: parseFloat(document.getElementById('usdTry').value) || 0,
+      annualProfitRate: parseFloat(document.getElementById('annualProfitRate').value) || 0,
+      profitRatePct: parseFloat(document.getElementById('annualProfitRate').value) || 0,
+      annualExpenseRate: parseFloat(document.getElementById('annualExpenseRate').value) || 0,
+      expenseRatePct: parseFloat(document.getElementById('annualExpenseRate').value) || 0,
+      annualTaxBracketGrowth: parseFloat(document.getElementById('annualTaxBracketGrowth').value) || 0,
+      premiumGrowthPct: parseFloat(document.getElementById('annualPremiumGrowth').value) || 0,
+      salaryGrowthPct: parseFloat(document.getElementById('annualSalaryGrowth').value) || 0,
+      usdGrowthPct: parseFloat(document.getElementById('annualUsdGrowth').value) || 0,
+      taxBracketGrowthPct: parseFloat(document.getElementById('annualTaxBracketGrowth').value) || 0,
+    };
+  }
+  
+  function computeAndRender() {
+    const params = getParamsFromForm();
+    if (!params.usdTry || !params.monthlySalary || !params.monthlyPremiumUsd) {
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = `<div class="results-card"><p>Lütfen tüm gerekli alanları (maaş, prim, USD kuru) doldurarak tekrar deneyin.</p></div>`;
+        resultsDiv.style.display = 'block';
+        return;
+    }
+
+    const proj1 = compute1YearProjection(params);
+    const proj10 = compute10YearProjection(params);
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = `
+      <div class="results-card">
+        <h3>
+          1 Yıllık Projeksiyon Özeti
+        </h3>
+        <div class="summary-grid">
+          <div>Yıllık Prim Ödemesi</div><div>${fmtTL(proj1.yearlyTl)}</div>
+          <div class="highlight-label">Yıllık Vergi İadesi</div><div class="highlight">${fmtTL(proj1.totalRebateTl)}</div>
+          <div>Yıllık Kâr Payı</div><div>${fmtTL(proj1.yearlyProfitTl)}</div>
+          <div>Yıllık Gider Payı</div><div>${fmtTL(proj1.yearlyExpenseTl)}</div>
+          <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div>
+        </div>
+      </div>
+       <div class="results-card">
+        <h3>
+          10 Yıllık Projeksiyon Özeti
+        </h3>
+        <div class="summary-grid">
+            <div>Toplam Prim Ödemesi</div><div>${fmtTL(proj10.totals.totalPremiumTl)}</div>
+            <div class="highlight-label">Toplam Vergi İadesi</div><div class="highlight">${fmtTL(proj10.totals.totalRebateTl)}</div>
+            <div>Toplam Kâr Payı</div><div>${fmtTL(proj10.totals.totalProfitTl)}</div>
+            <div>Toplam Gider Payı</div><div>${fmtTL(proj10.totals.totalExpenseTl)}</div>
+            <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div>
+        </div>
+      </div>
+      <div class="results-card">
+        <h3>
+          10 Yıllık Projeksiyon Grafiği
+        </h3>
+        <div style="height: 250px; position: relative;"><canvas id="projectionChart"></canvas></div>
+      </div>
+      <div class="results-card">
+        <h3>
+          1 Yıllık Detay
+        </h3>
+        <table class="projection-details-table">
+            <thead><tr>
+                <th>Ay</th><th>Brüt Maaş</th><th>Vergi D.</th><th>Prim</th><th>İade</th>
+            </tr></thead>
+            <tbody>${proj1.tableRowsHTML}</tbody>
+        </table>
+      </div>
+       <div class="results-card">
+        <h3>
+          10 Yıllık Detay
+        </h3>
+        <table class="projection-details-table">
+          <thead><tr>
+            <th>Yıl</th><th>Yıllık Prim</th><th>Yıllık İade</th><th>Yıl Sonu Birikim</th>
+          </tr></thead>
+          <tbody>
+            ${proj10.yearlyData.map(d => `
+              <tr>
+                <td>${d.year}. Yıl</td>
+                <td>${fmtTL(d.annualPremiumTl)}</td>
+                <td>${fmtTL(d.annualRebateTl)}</td>
+                <td>${fmtTL(d.endOfYearFundTl)}</td>
+              </tr>
+            `).join('')}
+            <tr class="total-row">
+              <td>Toplam</td>
+              <td>${fmtTL(proj10.totals.totalPremiumTl)}</td>
+              <td>${fmtTL(proj10.totals.totalRebateTl)}</td>
+              <td>${fmtTL(proj10.totals.accWithRebateTl)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="results-note">
+            <strong>Not:</strong> 10 yıllık projeksiyon, girdiğiniz yıllık artış varsayımlarına dayanmaktadır. Gerçekleşen değerler farklılık gösterebilir.
+        </div>
+      </div>
+    `;
+    resultsDiv.style.display = 'block';
+    renderChart(proj10.yearlyData);
+  }
+
+  // --- Event Listeners and Initial Setup ---
+  
+  const form = document.getElementById('calcForm');
+  const salaryInput = document.getElementById('monthlySalary');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const resetFormBtn = document.getElementById('resetFormBtn');
+  let calculationTimeout;
+
+  form.addEventListener('input', (e) => {
+    // Handle special formatting for salary input
+    if (e.target.id === 'monthlySalary') {
+      const value = e.target.value;
+      const formatted = formatNumber(value);
+      if (value !== formatted) {
+        e.target.value = formatted;
+      }
+    }
+    
+    // Debounce the calculation to improve performance and user experience
+    clearTimeout(calculationTimeout);
+    calculationTimeout = setTimeout(computeAndRender, 300);
+  });
+  
+  refreshBtn.addEventListener('click', () => {
+    // Clear manual rate to fetch the latest, then re-calculate
+    document.getElementById('usdTry').value = '';
+    updateRateAndShow(true);
+  });
+  
+  resetFormBtn.addEventListener('click', () => {
+      const formElements = form.elements;
+      formElements.monthlySalary.value = "100.000";
+      formElements.monthlyPremiumUsd.value = "100";
+      formElements.annualSalaryGrowth.value = "15";
+      formElements.annualPremiumGrowth.value = "5";
+      formElements.annualUsdGrowth.value = "15";
+      formElements.annualProfitRate.value = "6.24";
+      formElements.annualExpenseRate.value = "5";
+      formElements.annualTaxBracketGrowth.value = "25";
+      
+      // Manually trigger the calculation after resetting
+      computeAndRender();
+  });
+
+
+  // Initial load
+  salaryInput.value = formatNumber(salaryInput.value);
+  updateRateAndShow(true); // Fetch rate and run initial calculation
+});
+</script>
+</body>
+</html>

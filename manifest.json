@@ -1,0 +1,9 @@
+{
+  "name": "Poliçe Sorgu Robotu",
+  "short_name": "Poliçe Sorgu",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f7f9fc",
+  "theme_color": "#4B5563",
+  "description": "Vergi iadeli hayat sigortası için aylık ve 10 yıllık projeksiyon hesaplayıcı."
+}

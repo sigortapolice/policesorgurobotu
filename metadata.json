@@ -1,0 +1,5 @@
+{
+  "name": "Poliçe Sorgu Robotu",
+  "description": "Vergi iadeli hayat sigortası için aylık ve 10 yıllık projeksiyon hesaplayıcı. Kur bilgisi anlık olarak çekilir ve 10 yıllık dinamik projeksiyon sunar.",
+  "requestFramePermissions": []
+}
