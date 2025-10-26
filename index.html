@@ -212,7 +212,7 @@
   .results{
     display: none;
     animation: fadeIn 0.5s ease;
-    margin-top: 24px;
+    margin-top: 16px;
   }
   
   @media (min-width: 1024px) {
@@ -321,16 +321,6 @@
   tr.total-row td {
     color: var(--primary-text);
     font-size: 14px;
-  }
-
-  .projection-details-table {
-    table-layout: fixed;
-  }
-  .one-year-table th:first-child, .one-year-table td:first-child {
-    width: 15%;
-  }
-  .ten-year-table th:first-child, .ten-year-table td:first-child {
-    width: 20%;
   }
   
   .spinner {
@@ -564,9 +554,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPremiumUsd = monthlyPremiumUsd * 12;
     const totalRebateUsd = totalRebateTl / usdTry;
     const yearEndTl = fundUsd * usdTry;
+    const currentYear = new Date().getFullYear();
     
     tableRows += `<tr class="total-row">
-        <td>Toplam</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
+        <td>${currentYear} Toplam</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
         <td>${fmtUSD(totalPremiumUsd)}</td> <td>${fmtUSD(totalRebateUsd)}</td>
       </tr>`;
 
