@@ -56,7 +56,7 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 29px;
+    padding: 24px;
     box-sizing: border-box;
   }
   
@@ -81,18 +81,20 @@
     box-shadow: var(--shadow);
     padding: 0;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .card-main-content {
     background-color: var(--card);
-    padding: 29px;
+    padding: 24px;
   }
 
   .header-box {
-    margin: -29px -29px 24px -29px;
-    padding: 29px;
+    margin: -24px -24px 24px -24px;
+    padding: 24px;
     background-color: #1414b8;
+    border-top-left-radius: var(--radius-l);
+    border-top-right-radius: var(--radius-l);
   }
 
   h2{
@@ -200,7 +202,7 @@
     align-items: end;
   }
   .button {
-    background-color: var(--card);
+    background-color: var(--input-bg);
     color: var(--primary-text);
     border: 1px solid var(--border-color);
     padding: 11px 20px;
@@ -216,7 +218,7 @@
     gap: 8px;
   }
   .button:hover:not(:disabled) {
-    background-color: var(--input-bg);
+    background-color: var(--input-focus-bg);
   }
   .button:disabled {
       cursor: not-allowed;
@@ -416,15 +418,84 @@
     font-weight: 400;
   }
 
+  .button-group-wrapper {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      position: relative;
+  }
+  .button.button-icon {
+      padding: 0;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+  }
+  .button.button-icon svg {
+      width: 20px;
+      height: 20px;
+  }
+
+  .button.export-button {
+    background-color: var(--input-bg);
+    color: #197041;
+    position: relative;
+  }
+
+  .button.export-button:hover:not(:disabled) {
+    background-color: var(--input-focus-bg);
+  }
+  
+  .export-button::before, .export-button::after {
+    position: absolute;
+    bottom: 100%;
+    left: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    z-index: 10;
+    transform: translateY(5px);
+  }
+
+  .export-button::before {
+    content: attr(data-tooltip);
+    background-color: var(--bg);
+    color: var(--primary-text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 12px;
+    border-radius: var(--radius-m);
+    white-space: normal;
+    width: 140px;
+    text-align: center;
+    margin-bottom: 10px; /* Space between tooltip and arrow */
+    box-shadow: none;
+    right: 0;
+    border: 1px solid var(--border-color);
+  }
+  
+  .export-button::after {
+    content: '';
+    border-style: solid;
+    border-width: 6px 6px 0 6px;
+    border-color: var(--bg) transparent transparent transparent;
+    margin-bottom: 4px;
+    right: 13px; /* (38px/2) - (12px/2) = 13px */
+  }
+
+  .export-button:hover::before, .export-button:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   @media(max-width: 460px){ 
-    .main-wrapper { padding: 19px; }
-    .card-main-content { padding: 19px; }
+    .main-wrapper { padding: 16px; }
+    .card-main-content { padding: 16px; }
     h2 { font-size: 20px; }
     .sub { font-size: 12.5px; }
     th, td { font-size: 13.2px; padding: 8.8px 4.4px; }
     .header-box {
-        margin: -19px -19px 19px -19px;
-        padding: 19px;
+        margin: -16px -16px 16px -16px;
+        padding: 16px;
     }
   }
   
@@ -455,6 +526,7 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script type="importmap">
 {
@@ -530,7 +602,27 @@
                     <label for="annualTaxBracketGrowth">Vergi Dilimi Artışı (%)</label>
                     <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
                   </div>
-                  <button type="button" id="resetFormBtn" class="button">Sıfırla</button>
+                  <div class="button-group-wrapper">
+                    <button type="button" id="resetFormBtn" class="button">Sıfırla</button>
+                    <button type="button" id="exportBtn" class="button button-icon export-button" aria-label="Dışa Aktar" data-tooltip="Sonuçları Excel olarak indir">
+                      <?xml version="1.0" encoding="UTF-8"?>
+                      <svg id="katman_2" data-name="katman 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800.8">
+                        <defs>
+                          <style>
+                            .cls-1 {
+                              fill: currentColor;
+                            }
+                          </style>
+                        </defs>
+                        <g id="Capa_1" data-name="Capa 1">
+                          <g>
+                            <path class="cls-1" d="M774.19,92.81h-282.19v92h94v62h-94l1,61h92v62h-92v61h92v62h-92l-1,61h93v62h-93v92h282.19c14.2,0,25.81-12.02,25.81-26.75V119.56c0-14.73-11.61-26.75-25.81-26.75ZM739,615.81h-123v-62h123v62ZM739,492.81h-123v-62h123v62ZM739,369.81h-123v-62h123v62ZM739,246.81h-123v-62h123v62Z"/>
+                            <path class="cls-1" d="M0,88.98v622.87l462,88.95V0L0,88.98ZM291.99,556.81l-53.53-101.2c-2.02-3.77-4.11-10.71-6.29-20.8h-.83c-1.01,4.75-3.41,11.99-7.18,21.69l-53.71,100.31h-83.9l99.43-155.98-90.96-156.02h85.4l44.66,93.66c3.48,7.4,6.6,16.19,9.38,26.34h.74c1.76-6.1,5.03-15.17,9.8-27.23l49.64-92.77h78.06l-93.25,154.2,95.86,156.8-83.13,1h-.18Z"/>
+                          </g>
+                        </g>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </form>
@@ -548,6 +640,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // --- Calculator Page Functionality ---
   let projectionChartInstances = {};
+  let lastCalculationResults = null;
   Chart.defaults.font.size = 14;
   Chart.defaults.font.family = "'Inter', sans-serif";
   Chart.defaults.color = '#1f2937';
@@ -610,6 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalExpenseTl = 0;
     let cumulativeIncome = 0;
     let tableRows = "";
+    const monthlyDetails = [];
     
     let totalProfitUsd = 0;
     let totalExpenseUsd = 0;
@@ -638,6 +732,14 @@ document.addEventListener('DOMContentLoaded', () => {
         totalProfitUsd += profitThisMonthUsd;
         totalExpenseUsd += expenseThisMonthUsd;
         
+        monthlyDetails.push({
+            Ay: monthName,
+            'Brüt Maaş': monthlySalary,
+            'Vergi D.': taxRate * 100,
+            Prim: monthlyPremiumUsd,
+            İade: rebateUsd
+        });
+        
         tableRows += `<tr>
           <td>${monthName}</td> <td>${fmtTL(monthlySalary)}</td>
           <td>${(taxRate*100).toFixed(0)}%</td> <td>${fmtUSD(monthlyPremiumUsd)}</td>
@@ -651,6 +753,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const yearEndTl = fundUsd * usdTry;
     const currentYear = new Date().getFullYear();
     
+    const totalRow = {
+        Ay: 'Toplam',
+        'Brüt Maaş': totalSalary,
+        'Vergi D.': null,
+        Prim: totalPremiumUsd,
+        İade: totalRebateUsd
+    };
+    
     tableRows += `<tr class="total-row">
         <td>${currentYear}</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
         <td>${fmtUSD(totalPremiumUsd)}</td> <td>${fmtUSD(totalRebateUsd)}</td>
@@ -658,6 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     return {
         tableRowsHTML: tableRows,
+        monthlyDetails: [...monthlyDetails, totalRow],
         yearlyTl: totalPremiumTl,
         totalRebateTl: totalRebateTl,
         yearlyProfitTl: totalProfitTl,
@@ -946,6 +1057,8 @@ function compute10YearProjection(params) {
 
     const proj1 = compute1YearProjection(params);
     const proj10 = compute10YearProjection(params);
+    
+    lastCalculationResults = { proj1, proj10, params };
 
     resultsDiv.innerHTML = `
       <div class="results-card">
@@ -1058,14 +1171,115 @@ function compute10YearProjection(params) {
       </div>
     `;
     resultsDiv.style.display = 'grid';
-    renderChart('projectionChart', proj10.yearlyData, 'USD');
+    renderChart('projectionChart', proj10. yearlyData, 'USD');
     renderChart('projectionChartTl', proj10.yearlyData, 'TL');
   }
+  
+  function exportResultsToExcel() {
+    if (!lastCalculationResults) {
+        alert("Dışa aktarılacak veri yok. Lütfen önce hesaplama yapın.");
+        return;
+    }
+
+    const { proj1, proj10, params } = lastCalculationResults;
+    const dataForSheet = [];
+
+    // --- Section 1: Giriş Parametreleri ---
+    dataForSheet.push(["Giriş Parametreleri"]);
+    const paramsData = [
+        ["Brüt Maaş (₺)", params.monthlySalary],
+        ["Aylık Prim (USD)", params.monthlyPremiumUsd],
+        ["Yıllık Maaş Artışı (%)", params.annualSalaryGrowth],
+        ["Yıllık Prim Artışı (%)", params.annualPremiumGrowth],
+        ["Yıllık Kur Artışı (%)", params.annualUsdGrowth],
+        ["USD/TRY Kuru", params.usdTry],
+        ["Yıllık Kâr Payı (%)", params.annualProfitRate],
+        ["Yıllık Gider Payı (%)", params.annualExpenseRate],
+        ["Yıllık Vergi Dilimi Artışı (%)", params.annualTaxBracketGrowth],
+    ];
+    dataForSheet.push(["Parametre", "Değer"]);
+    paramsData.forEach(row => dataForSheet.push(row));
+    dataForSheet.push([]); // Spacer
+
+    // --- Section 2: 1 Yıllık Özet ---
+    dataForSheet.push(["1 Yıllık Projeksiyon Özeti"]);
+    const proj1SummaryData = [
+        ["Yıllık Prim Ödemesi", proj1.yearlyTl, proj1.yearlyPremiumUsd],
+        ["Yıllık Vergi İadesi", proj1.totalRebateTl, proj1.totalRebateUsd],
+        ["Yıllık Kâr Payı", proj1.yearlyProfitTl, proj1.yearlyProfitUsd],
+        ["Yıllık Gider Payı", proj1.yearlyExpenseTl, proj1.yearlyExpenseUsd],
+        ["Yıl Sonu Birikim", proj1.yearEndTl, proj1.yearEndUsd],
+    ];
+    dataForSheet.push(["Kalem", "TL", "USD"]);
+    proj1SummaryData.forEach(row => dataForSheet.push(row));
+    dataForSheet.push([]); // Spacer
+
+    // --- Section 3: 1 Yıllık Detay ---
+    dataForSheet.push(["1 Yıllık Projeksiyon Detay"]);
+    const proj1DetailsData = proj1.monthlyDetails.map(d => [
+        d.Ay,
+        d['Brüt Maaş'],
+        d['Vergi D.'],
+        d.Prim,
+        d.İade,
+    ]);
+    dataForSheet.push(['Ay', 'Brüt Maaş (₺)', 'Vergi Dilimi (%)', 'Prim (USD)', 'İade (USD)']);
+    proj1DetailsData.forEach(row => dataForSheet.push(row));
+    dataForSheet.push([]); // Spacer
+
+    // --- Section 4: 10 Yıllık Özet ---
+    dataForSheet.push(["10 Yıllık Projeksiyon Özeti"]);
+    const proj10SummaryData = [
+        ["Toplam Prim Ödemesi", proj10.totals.totalPremiumTl, proj10.totals.totalPremiumUsd],
+        ["Toplam Vergi İadesi", proj10.totals.totalRebateTl, proj10.totals.totalRebateUsd],
+        ["Toplam Kâr Payı", proj10.totals.totalProfitTl, proj10.totals.totalProfitUsd],
+        ["Toplam Gider Payı", proj10.totals.totalExpenseTl, proj10.totals.totalExpenseUsd],
+        ["10. Yıl Sonu Birikim", proj10.totals.accWithRebateTl, proj10.totals.accWithRebateUsd],
+    ];
+    dataForSheet.push(["Kalem", "TL", "USD"]);
+    proj10SummaryData.forEach(row => dataForSheet.push(row));
+    dataForSheet.push([]); // Spacer
+    
+    // --- Section 5: 10 Yıllık Detay ---
+    dataForSheet.push(["10 Yıllık Projeksiyon Detay"]);
+    const proj10DetailsData = proj10.yearlyData.map(d => [
+        `${d.year}. Yıl`,
+        d.annualPremiumUsd,
+        d.annualRebateUsd,
+        d.endOfYearFundUsd,
+    ]);
+    proj10DetailsData.push([
+        'Toplam',
+        proj10.totals.totalPremiumUsd,
+        proj10.totals.totalRebateUsd,
+        proj10.totals.accWithRebateUsd,
+    ]);
+    dataForSheet.push(['Yıl', 'Yıllık Prim (USD)', 'Yıllık İade (USD)', 'Yıl Sonu Birikim (USD)']);
+    proj10DetailsData.forEach(row => dataForSheet.push(row));
+
+    const ws = XLSX.utils.aoa_to_sheet(dataForSheet);
+
+    // Set column widths for better readability
+    ws['!cols'] = [
+        { wch: 30 }, // Column A
+        { wch: 20 }, // Column B
+        { wch: 20 }, // Column C
+        { wch: 25 }, // Column D
+        { wch: 20 }  // Column E
+    ];
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Poliçe Projeksiyonu");
+
+    XLSX.writeFile(wb, "Police_Projeksiyonu.xlsx");
+}
+
 
   // --- Event Listeners and Initial Setup for Calculator ---
   const form = document.getElementById('calcForm');
   const refreshBtn = document.getElementById('refreshBtn');
   const resetFormBtn = document.getElementById('resetFormBtn');
+  const exportBtn = document.getElementById('exportBtn');
   
   let calculationTimeout;
 
@@ -1105,6 +1319,10 @@ function compute10YearProjection(params) {
         
         computeAndRender();
     });
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportResultsToExcel);
   }
 
   // Initial calculation on page load
