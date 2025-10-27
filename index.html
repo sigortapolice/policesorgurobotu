@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-title" content="Poliçe Sorgu">
 
   <link rel="manifest" href="manifest.json">
-<meta charset="utf-t"/>
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Poliçe Sorgu Robotu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +25,7 @@
     --input-bg: #f3f4f6; /* gray-100 */
     --input-focus-bg: #e5e7eb; /* gray-200 */
     --shadow: 0 1px 2px 0 rgba(60,64,67,0.075), 0 2px 6px 2px rgba(60,64,67,0.0375);
-    --radius-m: 20px;
+    --radius-m: 40px;
     --radius-l: 20px;
     --success: #34a853;
     --warning: #fbbc05;
@@ -56,7 +56,7 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 20px;
     box-sizing: border-box;
   }
   
@@ -70,7 +70,7 @@
     .form-column {
       position: -webkit-sticky;
       position: sticky;
-      top: 24px;
+      top: 20px;
     }
   }
 
@@ -81,17 +81,17 @@
     box-shadow: var(--shadow);
     padding: 0;
     box-sizing: border-box;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .card-main-content {
     background-color: var(--card);
-    padding: 24px;
+    padding: 20px;
   }
 
   .header-box {
-    margin: -24px -24px 24px -24px;
-    padding: 24px;
+    margin: -20px -20px 20px -20px;
+    padding: 20px;
     background-color: #1414b8;
     border-top-left-radius: var(--radius-l);
     border-top-right-radius: var(--radius-l);
@@ -102,6 +102,7 @@
     font-size: 22px;
     color: var(--primary-text);
     font-weight: 400;
+    letter-spacing: -0.5px;
   }
   
   .header-box h2,
@@ -154,12 +155,13 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
+    margin: 0;
   }
   
   .form-section {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 20px;
   }
 
   .input-group {
@@ -193,12 +195,12 @@
     box-shadow: none;
   }
 
-  .two-col{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .two-col{ display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   
   .input-with-button {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 20px;
     align-items: end;
   }
   .button {
@@ -260,6 +262,7 @@
     border-radius: var(--radius-l);
     padding: 19px;
     box-shadow: var(--shadow);
+    min-width: 0;
   }
 
   .results-card:last-child {
@@ -314,7 +317,7 @@
     font-size: 12px;
     color: var(--muted-text);
     background-color: var(--bg);
-    border-radius: var(--radius-m);
+    border-radius: var(--radius-l);
     line-height: 1.6;
     font-style: italic;
   }
@@ -324,14 +327,14 @@
   }
   
   .note{
-    margin-top: 24px;
+    margin-top: 20px;
     font-size: 12px;
     color: var(--muted-text);
     text-align: center;
     background: var(--bg);
     padding: 12px;
-    border-radius: var(--radius-m);
-    font-style: italic;
+    border-radius: var(--radius-l);
+    border: 1px solid var(--border-color);
   }
 
   table {
@@ -487,12 +490,15 @@
     transform: translateY(0);
   }
 
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   @media(max-width: 460px){ 
     .main-wrapper { padding: 16px; }
     .card-main-content { padding: 16px; }
-    h2 { font-size: 20px; }
-    .sub { font-size: 12.5px; }
-    th, td { font-size: 13.2px; padding: 8.8px 4.4px; }
+    th, td { padding: 8.8px 4.4px; }
     .header-box {
         margin: -16px -16px 16px -16px;
         padding: 16px;
@@ -500,12 +506,6 @@
   }
   
   @media(max-width: 600px) {
-    body, .sub, .rate, .refresh, label, input[type=number], input[type=text], .button, h3, .summary-item, .summary-item .highlight, table, thead th, tr.total-row td {
-      font-size: 13.2px;
-    }
-    h2 { font-size: 22px; }
-    .results-note, .note { font-size: 12.1px; }
-    
     .summary-item {
         padding: 6.6px 0;
     }
@@ -516,7 +516,6 @@
     
     .projection-details-table th, .projection-details-table td {
         padding: 6.6px 3.3px;
-        font-size: 13.2px;
         white-space: nowrap;
     }
 
@@ -627,7 +626,6 @@
               </div>
             </form>
 
-            <div class="note">Kur kaynağı: exchangerate.host. Başarısız olursa fallback (41.95) kullanılır.</div>
           </div>
         </div>
       </div>
@@ -1065,21 +1063,23 @@ function compute10YearProjection(params) {
         <h3>
           1 Yıllık Projeksiyon Özeti
         </h3>
-        <div class="summary-list">
-          <div class="summary-item">
-            <div>Yıllık Prim Ödemesi</div><div class="highlight">${fmtTL(proj1.yearlyTl)}</div><div>${fmtUSD(proj1.yearlyPremiumUsd)}</div>
-          </div>
-          <div class="summary-item">
-            <div class="highlight-label">Yıllık Vergi İadesi</div><div class="highlight">${fmtTL(proj1.totalRebateTl)}</div><div>${fmtUSD(proj1.totalRebateUsd)}</div>
-          </div>
-          <div class="summary-item">
-            <div>Yıllık Kâr Payı</div><div class="highlight">${fmtTL(proj1.yearlyProfitTl)}</div><div>${fmtUSD(proj1.yearlyProfitUsd)}</div>
-          </div>
-          <div class="summary-item">
-            <div>Yıllık Gider Payı</div><div class="highlight">${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
-          </div>
-          <div class="summary-item">
-            <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
+        <div class="table-wrapper">
+          <div class="summary-list">
+            <div class="summary-item">
+              <div>Yıllık Prim Ödemesi</div><div class="highlight">${fmtTL(proj1.yearlyTl)}</div><div>${fmtUSD(proj1.yearlyPremiumUsd)}</div>
+            </div>
+            <div class="summary-item">
+              <div class="highlight-label">Yıllık Vergi İadesi</div><div class="highlight">${fmtTL(proj1.totalRebateTl)}</div><div>${fmtUSD(proj1.totalRebateUsd)}</div>
+            </div>
+            <div class="summary-item">
+              <div>Yıllık Kâr Payı</div><div class="highlight">${fmtTL(proj1.yearlyProfitTl)}</div><div>${fmtUSD(proj1.yearlyProfitUsd)}</div>
+            </div>
+            <div class="summary-item">
+              <div>Yıllık Gider Payı</div><div class="highlight">${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
+            </div>
+            <div class="summary-item">
+              <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1087,62 +1087,65 @@ function compute10YearProjection(params) {
         <h3>
           1 Yıllık Detay
         </h3>
-        <table class="projection-details-table one-year-table">
-            <thead><tr>
-                <th>Ay</th><th>Brüt Maaş</th><th>Vergi D.</th><th>Prim</th><th>İade</th>
-            </tr></thead>
-            <tbody>${proj1.tableRowsHTML}</tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="projection-details-table one-year-table">
+              <thead><tr>
+                  <th>Ay</th><th>Brüt Maaş</th><th>Vergi D.</th><th>Prim</th><th>İade</th>
+              </tr></thead>
+              <tbody>${proj1.tableRowsHTML}</tbody>
+          </table>
+        </div>
       </div>
       <div class="results-card">
         <h3>
           10 Yıllık Projeksiyon Özeti
         </h3>
-        <div class="summary-list">
-            <div class="summary-item">
-              <div>Prim Ödemesi</div><div class="highlight">${fmtTL(proj10.totals.totalPremiumTl)}</div><div>${fmtUSD(proj10.totals.totalPremiumUsd)}</div>
-            </div>
-            <div class="summary-item">
-              <div class="highlight-label">Vergi İadesi</div><div class="highlight">${fmtTL(proj10.totals.totalRebateTl)}</div><div>${fmtUSD(proj10.totals.totalRebateUsd)}</div>
-            </div>
-            <div class="summary-item">
-              <div>Kâr Payı</div><div class="highlight">${fmtTL(proj10.totals.totalProfitTl)}</div><div>${fmtUSD(proj10.totals.totalProfitUsd)}</div>
-            </div>
-            <div class="summary-item">
-              <div>Gider Payı</div><div class="highlight">${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
-            </div>
-            <div class="summary-item">
-              <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
-            </div>
+        <div class="table-wrapper">
+          <div class="summary-list">
+              <div class="summary-item">
+                <div>Prim Ödemesi</div><div class="highlight">${fmtTL(proj10.totals.totalPremiumTl)}</div><div>${fmtUSD(proj10.totals.totalPremiumUsd)}</div>
+              </div>
+              <div class="summary-item">
+                <div class="highlight-label">Vergi İadesi</div><div class="highlight">${fmtTL(proj10.totals.totalRebateTl)}</div><div>${fmtUSD(proj10.totals.totalRebateUsd)}</div>
+              </div>
+              <div class="summary-item">
+                <div>Kâr Payı</div><div class="highlight">${fmtTL(proj10.totals.totalProfitTl)}</div><div>${fmtUSD(proj10.totals.totalProfitUsd)}</div>
+              </div>
+              <div class="summary-item">
+                <div>Gider Payı</div><div class="highlight">${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
+              </div>
+              <div class="summary-item">
+                <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
+              </div>
+          </div>
         </div>
       </div>
        <div class="results-card">
         <h3>
           10 Yıllık Detay
         </h3>
-        <table class="projection-details-table ten-year-table">
-          <thead><tr>
-            <th>Yıl</th><th>Yıllık Prim ($)</th><th>Yıllık İade ($)</th><th>Birikim ($)</th>
-          </tr></thead>
-          <tbody>
-            ${proj10.yearlyData.map(d => `
-              <tr>
-                <td>${d.year}. Yıl</td>
-                <td>${fmtUSD(d.annualPremiumUsd)}</td>
-                <td>${fmtUSD(d.annualRebateUsd)}</td>
-                <td>${fmtUSD(d.endOfYearFundUsd)}</td>
+        <div class="table-wrapper">
+          <table class="projection-details-table ten-year-table">
+            <thead><tr>
+              <th>Yıl</th><th>Yıllık Prim ($)</th><th>Yıllık İade ($)</th><th>Birikim ($)</th>
+            </tr></thead>
+            <tbody>
+              ${proj10.yearlyData.map(d => `
+                <tr>
+                  <td>${d.year}. Yıl</td>
+                  <td>${fmtUSD(d.annualPremiumUsd)}</td>
+                  <td>${fmtUSD(d.annualRebateUsd)}</td>
+                  <td>${fmtUSD(d.endOfYearFundUsd)}</td>
+                </tr>
+              `).join('')}
+              <tr class="total-row">
+                <td>Toplam</td>
+                <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
+                <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
+                <td>${fmtUSD(proj10.totals.accWithRebateUsd)}</td>
               </tr>
-            `).join('')}
-            <tr class="total-row">
-              <td>Toplam</td>
-              <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
-              <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
-              <td>${fmtUSD(proj10.totals.accWithRebateUsd)}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="results-note">
-            <strong>Not:</strong> 10 yıllık projeksiyon, girdiğiniz yıllık artış varsayımlarına dayanmaktadır. Gerçekleşen değerler farklılık gösterebilir.
+            </tbody>
+          </table>
         </div>
       </div>
       <div class="results-card">
