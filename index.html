@@ -44,10 +44,32 @@
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-size: 16px;
     font-weight: 400;
     letter-spacing: -0.5px;
   }
+
+  /* --- UNIFIED FONT SIZING --- */
+  /* To ensure all text is consistent across devices, we explicitly set the font size for all text-containing elements. */
+
+  /* Default for Desktop */
+  body, h2, h3, p, li, button, input, label, th, td {
+    font-size: 16px;
+  }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    body, h2, h3, p, li, button, input, label, th, td {
+      font-size: 15px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    body, h2, h3, p, li, button, input, label, th, td {
+      font-size: 14px;
+    }
+  }
+  /* --- END UNIFIED FONT SIZING --- */
 
   #calculator-page {
       display: block;
@@ -102,7 +124,6 @@
     margin: 0 0 8px;
     color: var(--primary-text);
     font-weight: 400;
-    font-size: 16px;
   }
   
   .header-box h2,
@@ -142,7 +163,6 @@
     transition: transform .2s ease-in-out;
     border: none;
     background: none;
-    padding: 0;
     font-weight: 400;
   }
   
@@ -178,7 +198,6 @@
     border-radius: var(--radius-m);
     border: 1px solid var(--border-color);
     background: var(--input-bg);
-    font-size: 16px;
     box-sizing: border-box;
     color: var(--primary-text);
     transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -206,7 +225,6 @@
     padding: 11px 20px;
     border-radius: var(--radius-m);
     font-weight: 400;
-    font-size: 16px;
     cursor: pointer;
     transition: background-color 0.2s ease;
     box-sizing: border-box;
@@ -269,7 +287,6 @@
     font-weight: 400;
     margin: 0 0 12px;
     color: var(--primary-text);
-    font-size: 16px;
   }
   
   .summary-list {
@@ -334,6 +351,12 @@
     width: 100%;
     border-collapse: collapse;
   }
+  
+  .projection-details-table {
+    table-layout: fixed;
+    word-break: break-word;
+  }
+
   th, td {
     padding: 10px 8px;
     text-align: right;
@@ -479,17 +502,8 @@
   }
 
   .table-wrapper {
-    overflow-x: auto;
+    /* overflow-x: auto; */
     -webkit-overflow-scrolling: touch;
-  }
-
-  @media(max-width: 1024px) {
-    body {
-      font-size: 15px;
-    }
-    h2, h3, input[type=number], input[type=text], input[type=password], .button {
-      font-size: 15px;
-    }
   }
 
   @media(max-width: 460px){ 
@@ -503,23 +517,12 @@
   }
   
   @media(max-width: 600px) {
-    body {
-      font-size: 14px;
-    }
-    h2, h3, input[type=number], input[type=text], input[type=password], .button {
-      font-size: 14px;
-    }
     .summary-item {
         padding: 6.6px 0;
     }
     
-    .summary-item > div:not(:first-child) {
-      white-space: nowrap;
-    }
-    
     .projection-details-table th, .projection-details-table td {
         padding: 6.6px 3.3px;
-        white-space: nowrap;
     }
 
     .chart-container {
@@ -734,8 +737,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         monthlyDetails.push({
             Ay: monthName,
-            'Brüt Maaş': monthlySalary,
-            'Vergi D.': taxRate * 100,
+            'Maaş': monthlySalary,
+            'V.D.': taxRate * 100,
             Prim: monthlyPremiumUsd,
             İade: rebateUsd
         });
@@ -755,8 +758,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const totalRow = {
         Ay: 'Toplam',
-        'Brüt Maaş': totalSalary,
-        'Vergi D.': null,
+        'Maaş': totalSalary,
+        'V.D.': null,
         Prim: totalPremiumUsd,
         İade: totalRebateUsd
     };
@@ -1102,7 +1105,7 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <table class="projection-details-table one-year-table">
               <thead><tr>
-                  <th>Ay</th><th>Brüt Maaş</th><th>Vergi D.</th><th>Prim</th><th>İade</th>
+                  <th>Ay</th><th>Maaş</th><th>V.D.</th><th>Prim</th><th>İade</th>
               </tr></thead>
               <tbody>${proj1.tableRowsHTML}</tbody>
           </table>
@@ -1139,7 +1142,7 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <table class="projection-details-table ten-year-table">
             <thead><tr>
-              <th>Yıl</th><th>Yıllık Prim ($)</th><th>Yıllık İade ($)</th><th>Birikim ($)</th>
+              <th>Yıl</th><th>Prim ($)</th><th>İade ($)</th><th>Birikim ($)</th>
             </tr></thead>
             <tbody>
               ${proj10.yearlyData.map(d => `
@@ -1233,12 +1236,12 @@ function compute10YearProjection(params) {
     dataForSheet.push(["1 Yıllık Projeksiyon Detay"]);
     const proj1DetailsData = proj1.monthlyDetails.map(d => [
         d.Ay,
-        d['Brüt Maaş'],
-        d['Vergi D.'],
+        d['Maaş'],
+        d['V.D.'],
         d.Prim,
         d.İade,
     ]);
-    dataForSheet.push(['Ay', 'Brüt Maaş (₺)', 'Vergi Dilimi (%)', 'Prim (USD)', 'İade (USD)']);
+    dataForSheet.push(['Ay', 'Maaş (₺)', 'Vergi Dilimi (%)', 'Prim (USD)', 'İade (USD)']);
     proj1DetailsData.forEach(row => dataForSheet.push(row));
     dataForSheet.push([]); // Spacer
 
