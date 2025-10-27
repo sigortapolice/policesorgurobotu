@@ -48,73 +48,6 @@
     font-weight: 400;
   }
 
-  #landing-page {
-      display: grid;
-      place-content: center;
-      justify-items: center;
-      height: 100vh;
-      text-align: center;
-      padding: 24px;
-      box-sizing: border-box;
-      animation: fadeIn 0.5s ease;
-  }
-
-  .landing-title {
-      font-size: 33px;
-      font-weight: 400;
-      color: var(--primary-text);
-      margin-bottom: 16px;
-  }
-
-  .landing-subtitle {
-      font-size: 14px;
-      color: var(--muted-text);
-      max-width: 550px;
-      margin-bottom: 40px;
-      line-height: 1.6;
-  }
-
-  .landing-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      width: 100%;
-      max-width: 350px;
-  }
-
-  .landing-button {
-      padding: 16px 24px;
-      font-size: 14px;
-      font-weight: 400;
-      border-radius: var(--radius-m);
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      transition: background-color 0.2s ease;
-      background-color: var(--card);
-      color: var(--primary-text);
-  }
-
-  .landing-button:hover:not(:disabled) {
-      background-color: var(--input-bg);
-  }
-
-  .landing-button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-      background-color: var(--input-bg);
-      transform: none;
-  }
-
-  .landing-button.primary {
-      background-color: #1414b8;
-      color: #f9fafb;
-      border-color: #1414b8;
-  }
-
-  .landing-button.primary:hover {
-      background-color: #11119f;
-  }
-
   #calculator-page, #excel-page {
       display: none;
   }
@@ -178,6 +111,33 @@
     color: #ffffff;
   }
   
+  .header-with-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .header-with-nav h2 {
+    margin-bottom: 0;
+  }
+
+  .nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    padding: 6px 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: var(--radius-m);
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+  }
+
   .sub{
     color: var(--muted-text);
     font-size: 14px;
@@ -561,22 +521,16 @@
 </head>
 <body>
 
-  <div id="landing-page">
-    <h1 class="landing-title">Hesaplama Araçları</h1>
-    <p class="landing-subtitle">Poliçe projeksiyonlarınızı kolayca oluşturun veya görsellerinizdeki verileri anında Excel'e aktarın.</p>
-    <div class="landing-actions">
-      <button id="goToCalculatorBtn" class="landing-button primary">Poliçe Hesaplama Robotu</button>
-      <button id="goToExcelBtn" class="landing-button">Görselden Excel Oluştur</button>
-    </div>
-  </div>
-
   <div id="calculator-page">
     <div class="main-wrapper">
       <div class="form-column">
         <div class="card" role="region" aria-label="Sigorta Poliçesi Simülatörü">
           <div class="card-main-content">
             <div class="header-box">
-              <h2>Poliçe Sorgu Robotu</h2>
+              <div class="header-with-nav">
+                <h2>Poliçe Sorgu Robotu</h2>
+                <a href="#excel" class="nav-link">Görselden Excel'e</a>
+              </div>
               <div class="sub">Brüt maaş ve prim bilgilerinizi girerek 1 yıllık ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</div>
             </div>
 
@@ -653,7 +607,10 @@
         <div class="card" role="region" aria-label="Görselden Excel Oluşturucu">
           <div class="card-main-content">
             <div class="header-box">
-              <h2>Görselden Excel Oluştur</h2>
+               <div class="header-with-nav">
+                <h2>Görselden Excel Oluştur</h2>
+                <a href="#calculator" class="nav-link">Poliçe Hesaplama</a>
+              </div>
               <div class="sub">Yüklediğiniz görseldeki tablo verilerini analiz ederek sizin için bir Excel dosyası oluşturur.</div>
             </div>
             
@@ -695,47 +652,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const isHostedKeyAvailable = HOSTED_API_KEY && HOSTED_API_KEY !== '%%API_KEY%%';
 
   // --- Page Navigation ---
-  const landingPage = document.getElementById('landing-page');
   const calculatorPage = document.getElementById('calculator-page');
   const excelPage = document.getElementById('excel-page');
-  
-  const goToCalculatorBtn = document.getElementById('goToCalculatorBtn');
-  const goToExcelBtn = document.getElementById('goToExcelBtn');
+  const salaryInput = document.getElementById('monthlySalary');
 
   function updateView() {
     const hash = window.location.hash;
     
-    landingPage.style.display = 'none';
     calculatorPage.style.display = 'none';
     excelPage.style.display = 'none';
 
-    if (hash === '#calculator') {
-      calculatorPage.style.display = 'block';
-      if (document.getElementById('monthlySalary')) {
-        document.getElementById('monthlySalary').value = formatNumber(document.getElementById('monthlySalary').value);
-        updateRateAndShow(true);
-      }
-    } else if (hash === '#excel') {
+    if (hash === '#excel') {
       excelPage.style.display = 'block';
       const excelResults = document.getElementById('excel-results');
       excelResults.style.display = 'block';
       const excelOutputWrapper = document.getElementById('excel-output-card-wrapper');
-      excelOutputWrapper.innerHTML = `
-          <div class="results-card">
-            <h3>Başlamaya Hazır</h3>
-            <p class="sub" style="color: var(--muted-text);">Lütfen soldaki alana bir görsel yükleyin. Yüklediğiniz görselin önizlemesi burada görünecektir.</p>
-          </div>
-      `;
-    } else {
-      landingPage.style.display = 'grid';
+      // Preserve excel page state if something is already there.
+      if (!excelOutputWrapper.innerHTML.trim()) {
+          excelOutputWrapper.innerHTML = `
+              <div class="results-card">
+                <h3>Başlamaya Hazır</h3>
+                <p class="sub" style="color: var(--muted-text);">Lütfen soldaki alana bir görsel yükleyin. Yüklediğiniz görselin önizlemesi burada görünecektir.</p>
+              </div>
+          `;
+      }
+    } else { // Default to calculator page
+      calculatorPage.style.display = 'block';
+      if (salaryInput) {
+        salaryInput.value = formatNumber(salaryInput.value);
+        updateRateAndShow(true); // Always fetch rate and calculate
+      }
     }
   }
 
-  goToCalculatorBtn.addEventListener('click', () => { window.location.hash = 'calculator'; });
-  goToExcelBtn.addEventListener('click', () => { window.location.hash = 'excel'; });
-
   window.addEventListener('hashchange', updateView);
-  updateView();
+  updateView(); // Initial call to set the view
   
   // --- API Key Management for Excel Page ---
   const apiKeyCard = document.getElementById('apiKeyCard');
@@ -1500,7 +1451,6 @@ function compute10YearProjection(params) {
   // --- Event Listeners and Initial Setup for Calculator ---
   
   const form = document.getElementById('calcForm');
-  const salaryInput = document.getElementById('monthlySalary');
   const refreshBtn = document.getElementById('refreshBtn');
   const resetFormBtn = document.getElementById('resetFormBtn');
   
@@ -1543,12 +1493,7 @@ function compute10YearProjection(params) {
         computeAndRender();
     });
   }
-  
-  // Initial load for calculator page
-  if (calculatorPage.style.display !== 'none' && salaryInput) {
-    salaryInput.value = formatNumber(salaryInput.value);
-    updateRateAndShow(true);
-  }
+
 });
 </script>
 </body>
