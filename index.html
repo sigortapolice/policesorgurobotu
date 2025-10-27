@@ -48,8 +48,8 @@
     font-weight: 400;
   }
 
-  #calculator-page, #excel-page {
-      display: none;
+  #calculator-page {
+      display: block;
   }
   
   .main-wrapper {
@@ -64,7 +64,7 @@
     .main-wrapper {
       display: grid;
       grid-template-columns: 450px 1fr;
-      gap: 24px;
+      gap: 20px;
       align-items: flex-start;
     }
     .form-column {
@@ -88,10 +88,6 @@
     background-color: var(--card);
     padding: 29px;
   }
-  
-  #goBackBtn, #goBackBtnFromExcel {
-    margin-bottom: 16px;
-  }
 
   .header-box {
     margin: -29px -29px 24px -29px;
@@ -111,33 +107,6 @@
     color: #ffffff;
   }
   
-  .header-with-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .header-with-nav h2 {
-    margin-bottom: 0;
-  }
-
-  .nav-link {
-    color: #fff;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 400;
-    padding: 6px 12px;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: var(--radius-m);
-    transition: background-color 0.2s ease;
-    white-space: nowrap;
-  }
-
-  .nav-link:hover {
-    background-color: rgba(255,255,255,0.1);
-  }
-
   .sub{
     color: var(--muted-text);
     font-size: 14px;
@@ -269,7 +238,8 @@
   .results{
     display: none;
     animation: fadeIn 0.5s ease;
-    margin-top: 16px;
+    margin-top: 20px;
+    gap: 20px;
   }
   
   @media (min-width: 1024px) {
@@ -446,28 +416,6 @@
     font-weight: 400;
   }
 
-  .upload-area {
-    border: 2px dashed var(--border-color);
-    border-radius: var(--radius-l);
-    padding: 20px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 8px;
-    min-height: 150px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-  }
-  .upload-area:hover {
-      background-color: var(--bg);
-  }
-  .upload-area.drag-over {
-      border-color: #1414b8;
-      background-color: #eef2ff; /* indigo-50 */
-  }
-
   @media(max-width: 460px){ 
     .main-wrapper { padding: 19px; }
     .card-main-content { padding: 19px; }
@@ -507,14 +455,12 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
 <script type="importmap">
 {
   "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://esm.sh/@google/genai"
+    "react": "https://aistudiocdn.com/react@^19.2.0"
   }
 }
 </script>
@@ -527,10 +473,7 @@
         <div class="card" role="region" aria-label="Sigorta Poliçesi Simülatörü">
           <div class="card-main-content">
             <div class="header-box">
-              <div class="header-with-nav">
-                <h2>Poliçe Sorgu Robotu</h2>
-                <a href="#excel" class="nav-link">Görselden Excel'e</a>
-              </div>
+              <h2>Poliçe Sorgu Robotu</h2>
               <div class="sub">Brüt maaş ve prim bilgilerinizi girerek 1 yıllık ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</div>
             </div>
 
@@ -601,336 +544,8 @@
     </div>
   </div>
 
-  <div id="excel-page">
-    <div class="main-wrapper">
-      <div class="form-column">
-        <div class="card" role="region" aria-label="Görselden Excel Oluşturucu">
-          <div class="card-main-content">
-            <div class="header-box">
-               <div class="header-with-nav">
-                <h2>Görselden Excel Oluştur</h2>
-                <a href="#calculator" class="nav-link">Poliçe Hesaplama</a>
-              </div>
-              <div class="sub">Yüklediğiniz görseldeki tablo verilerini analiz ederek sizin için bir Excel dosyası oluşturur.</div>
-            </div>
-            
-            <div class="upload-area" id="uploadArea">
-              <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/tiff" style="display: none;" />
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color: var(--border-color);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-              <p style="font-size: 16px; color: var(--primary-text); margin: 0; font-weight: 400;">Görseli Sürükleyin veya dosya seçin</p>
-              <p style="font-size: 12px; color: var(--muted-text); margin: 0;">JPG, PNG, WEBP, TIFF desteklenir</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="excel-results" class="results" aria-live="polite">
-        <div id="apiKeyCard" class="results-card">
-            <h3>API Anahtarı</h3>
-            <div class="form-section" style="gap: 8px;">
-                <p class="sub" style="margin: 0; line-height: 1.6;">Bu aracın çalışması için bir Google Gemini API anahtarı gereklidir. Anahtarınız tarayıcınızda yerel olarak saklanır ve harici sunuculara gönderilmez.</p>
-                <div class="input-group">
-                    <label for="apiKeyInput">Gemini API Anahtarı</label>
-                    <input type="password" id="apiKeyInput" style="margin-top: 4px;" placeholder="API anahtarınızı buraya yapıştırın">
-                </div>
-                <button id="saveApiKeyBtn" class="button">Kaydet</button>
-                <p id="apiKeyStatus" style="font-size: 12px; color: var(--muted-text); margin: 0; min-height: 18px;"></p>
-            </div>
-        </div>
-        <div id="excel-output-card-wrapper" style="margin-top: 16px;">
-            <!-- Dynamic content will go here -->
-        </div>
-      </div>
-    </div>
-  </div>
-
 <script type="module">
 document.addEventListener('DOMContentLoaded', () => {
-  // This is a placeholder for the Vercel environment variable.
-  // Vercel (or another hosting provider) should replace "%%API_KEY%%" with the actual API key during deployment.
-  // If it's not replaced, the fallback local storage input will be used.
-  const HOSTED_API_KEY = "%%API_KEY%%";
-  const isHostedKeyAvailable = HOSTED_API_KEY && HOSTED_API_KEY !== '%%API_KEY%%';
-
-  // --- Page Navigation ---
-  const calculatorPage = document.getElementById('calculator-page');
-  const excelPage = document.getElementById('excel-page');
-  const salaryInput = document.getElementById('monthlySalary');
-
-  function updateView() {
-    const hash = window.location.hash;
-    
-    calculatorPage.style.display = 'none';
-    excelPage.style.display = 'none';
-
-    if (hash === '#excel') {
-      excelPage.style.display = 'block';
-      const excelResults = document.getElementById('excel-results');
-      excelResults.style.display = 'block';
-      const excelOutputWrapper = document.getElementById('excel-output-card-wrapper');
-      // Preserve excel page state if something is already there.
-      if (!excelOutputWrapper.innerHTML.trim()) {
-          excelOutputWrapper.innerHTML = `
-              <div class="results-card">
-                <h3>Başlamaya Hazır</h3>
-                <p class="sub" style="color: var(--muted-text);">Lütfen soldaki alana bir görsel yükleyin. Yüklediğiniz görselin önizlemesi burada görünecektir.</p>
-              </div>
-          `;
-      }
-    } else { // Default to calculator page
-      calculatorPage.style.display = 'block';
-      if (salaryInput) {
-        salaryInput.value = formatNumber(salaryInput.value);
-        updateRateAndShow(true); // Always fetch rate and calculate
-      }
-    }
-  }
-
-  window.addEventListener('hashchange', updateView);
-  updateView(); // Initial call to set the view
-  
-  // --- API Key Management for Excel Page ---
-  const apiKeyCard = document.getElementById('apiKeyCard');
-  if (isHostedKeyAvailable) {
-    if (apiKeyCard) apiKeyCard.style.display = 'none';
-  } else {
-    // Only set up local storage management if there's no hosted key
-    const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const apiKeyStatus = document.getElementById('apiKeyStatus');
-
-    if (saveApiKeyBtn && apiKeyInput && apiKeyStatus) {
-      const savedApiKey = localStorage.getItem('geminiApiKey');
-      if (savedApiKey) {
-          apiKeyInput.value = savedApiKey;
-          apiKeyStatus.textContent = 'Kaydedilmiş API anahtarı yüklendi.';
-          apiKeyStatus.style.color = 'var(--success)';
-      }
-
-      saveApiKeyBtn.addEventListener('click', () => {
-        const key = apiKeyInput.value.trim();
-        if (key) {
-          localStorage.setItem('geminiApiKey', key);
-          apiKeyStatus.textContent = 'API anahtarı kaydedildi!';
-          apiKeyStatus.style.color = 'var(--success)';
-          setTimeout(() => { 
-              apiKeyStatus.textContent = 'Kaydedilmiş API anahtarı yüklendi.';
-          }, 3000);
-        } else {
-          localStorage.removeItem('geminiApiKey');
-          apiKeyStatus.textContent = 'Lütfen geçerli bir anahtar girin.';
-          apiKeyStatus.style.color = 'var(--warning)';
-        }
-      });
-    }
-  }
-  
-  // --- Excel Page Functionality ---
-  const uploadArea = document.getElementById('uploadArea');
-  const fileInput = document.getElementById('fileInput');
-  const excelOutputWrapper = document.getElementById('excel-output-card-wrapper');
-  let latestTableData = [];
-
-  function handleFiles(files) {
-    const file = files[0];
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/tiff'];
-    
-    if (file && allowedTypes.includes(file.type)) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageSrc = e.target.result;
-        excelOutputWrapper.innerHTML = `
-          <div class="results-card">
-            <h3>Yüklenen Görsel Önizlemesi</h3>
-            <div style="max-height: 30vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-m); margin-bottom: 16px;">
-              <img id="previewImage" src="${imageSrc}" alt="Yüklenen görsel önizlemesi" style="width: 100%; display: block; vertical-align: top;"/>
-            </div>
-            <button id="generateExcelBtn" class="button primary" style="width: 100%;">
-                Excel'e Dönüştür
-            </button>
-          </div>
-        `;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      showError('Geçersiz dosya türü. Lütfen desteklenen bir görsel dosyası (JPG, PNG, WEBP, TIFF) yükleyin.');
-      fileInput.value = ''; // Reset file input
-    }
-  }
-
-  if (uploadArea) {
-    uploadArea.addEventListener('click', () => fileInput.click());
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadArea.classList.add('drag-over');
-    });
-    uploadArea.addEventListener('dragleave', () => {
-      uploadArea.classList.remove('drag-over');
-    });
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadArea.classList.remove('drag-over');
-      const files = e.dataTransfer.files;
-      if (files.length) {
-        fileInput.files = files;
-        handleFiles(files);
-      }
-    });
-  }
-
-  if (fileInput) {
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files.length) {
-        handleFiles(fileInput.files);
-      }
-    });
-  }
-  
-  function renderExcelResults(tableData) {
-      latestTableData = tableData;
-      const headers = tableData[0] || [];
-      const rows = tableData.slice(1);
-
-      const tableHtml = `
-          <table class="projection-details-table">
-            <thead>
-              <tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>
-            </thead>
-            <tbody>
-              ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
-            </tbody>
-          </table>
-      `;
-
-      excelOutputWrapper.innerHTML = `
-          <div class="results-card">
-            <h3>Çıkarılan Excel Verileri</h3>
-            <p class="sub" style="margin-bottom: 16px; color: var(--muted-text);">Bu, görselden çıkarılan verilerin bir önizlemesidir. Aşağıdaki buton ile verileri .xlsx formatında indirebilirsiniz.</p>
-            <button id="downloadExcelBtn" class="button" style="width: 100%; margin-bottom: 16px;">
-                Excel'i İndir (.xlsx)
-            </button>
-            <div style="overflow-x: auto;">${tableHtml}</div>
-          </div>
-      `;
-  }
-
-  function showError(message) {
-      excelOutputWrapper.innerHTML = `
-          <div class="results-card">
-            <h3>Hata</h3>
-            <p style="color: var(--muted-text);">${message}</p>
-          </div>
-      `;
-  }
-
-  function escapeHtml(unsafe) {
-      if (typeof unsafe !== 'string') {
-        return unsafe;
-      }
-      return unsafe
-           .replace(/&/g, "&amp;")
-           .replace(/</g, "&lt;")
-           .replace(/>/g, "&gt;")
-           .replace(/"/g, "&quot;")
-           .replace(/'/g, "&#039;");
-   }
-
-   function downloadAsXLSX() {
-        if (latestTableData.length === 0) {
-            alert("İndirilecek veri bulunmuyor.");
-            return;
-        }
-        
-        const ws = XLSX.utils.aoa_to_sheet(latestTableData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Çıkarılan Veriler");
-        XLSX.writeFile(wb, "tablo_verileri.xlsx");
-    }
-
-   document.body.addEventListener('click', async (e) => {
-      if (e.target && e.target.id === 'downloadExcelBtn') {
-          downloadAsXLSX();
-      }
-
-      if (e.target && e.target.id === 'generateExcelBtn') {
-        const apiKey = isHostedKeyAvailable ? HOSTED_API_KEY : localStorage.getItem('geminiApiKey');
-        
-        if (!apiKey) {
-            showError("Lütfen önce Gemini API anahtarınızı yukarıdaki alana girip kaydedin.");
-            document.getElementById('apiKeyInput')?.focus();
-            return;
-        }
-
-        const generateBtn = e.target;
-        const previewImg = document.getElementById('previewImage');
-
-        if (!previewImg || !previewImg.src || !fileInput.files[0]) {
-            showError("Lütfen önce bir resim dosyası seçin.");
-            return;
-        }
-
-        generateBtn.disabled = true;
-        generateBtn.innerHTML = '<span class="spinner"></span> Dönüştürülüyor...';
-
-        try {
-            const { GoogleGenAI, Type } = await import("@google/genai");
-
-            const base64Data = previewImg.src.split(',')[1];
-            const mimeType = fileInput.files[0].type;
-
-            const ai = new GoogleGenAI({ apiKey: apiKey });
-            
-            const response = await ai.models.generateContent({
-              model: 'gemini-2.5-flash',
-              contents: {
-                parts: [
-                  { inlineData: { mimeType, data: base64Data } },
-                  { text: 'Analyze the table in the provided image. Extract all data, including headers, and return it. Preserve the original order of rows and columns.' }
-                ]
-              },
-              config: {
-                 responseMimeType: "application/json",
-                 responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                      tableData: {
-                        type: Type.ARRAY,
-                        description: 'The extracted table data, where each inner array represents a row.',
-                        items: {
-                          type: Type.ARRAY,
-                          items: {
-                            type: Type.STRING
-                          }
-                        }
-                      }
-                    }
-                 },
-              },
-              systemInstruction: 'You are an expert data entry assistant specializing in accurately extracting tabular data from images.'
-            });
-
-            const jsonText = response.text.trim();
-            const resultData = JSON.parse(jsonText);
-            
-            if (resultData.tableData && resultData.tableData.length > 0) {
-              renderExcelResults(resultData.tableData);
-            } else {
-              showError("Görselde okunabilir bir tablo bulunamadı veya veri çıkarılamadı.");
-            }
-
-        } catch (error) {
-            console.error("API Hatası:", error);
-            showError("Veri çıkarılırken bir hata oluştu. Lütfen görseli ve API anahtarınızı kontrol edip tekrar deneyin.");
-        } finally {
-            const finalGenerateBtn = document.getElementById('generateExcelBtn');
-            if (finalGenerateBtn) {
-              finalGenerateBtn.disabled = false;
-              finalGenerateBtn.innerHTML = "Excel'e Dönüştür";
-            }
-        }
-      }
-   });
-
-
   // --- Calculator Page Functionality ---
   let projectionChartInstances = {};
   Chart.defaults.font.size = 14;
@@ -1322,17 +937,16 @@ function compute10YearProjection(params) {
   
   function computeAndRender() {
     const params = getParamsFromForm();
+    const resultsDiv = document.getElementById('results');
     if (!params.usdTry || !params.monthlySalary || !params.monthlyPremiumUsd) {
-        const resultsDiv = document.getElementById('results');
         resultsDiv.innerHTML = `<div class="results-card"><p>Lütfen tüm gerekli alanları (maaş, prim, USD kuru) doldurarak tekrar deneyin.</p></div>`;
-        resultsDiv.style.display = 'block';
+        resultsDiv.style.display = 'grid';
         return;
     }
 
     const proj1 = compute1YearProjection(params);
     const proj10 = compute10YearProjection(params);
 
-    const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = `
       <div class="results-card">
         <h3>
@@ -1443,13 +1057,12 @@ function compute10YearProjection(params) {
         </div>
       </div>
     `;
-    resultsDiv.style.display = 'block';
+    resultsDiv.style.display = 'grid';
     renderChart('projectionChart', proj10.yearlyData, 'USD');
     renderChart('projectionChartTl', proj10.yearlyData, 'TL');
   }
 
   // --- Event Listeners and Initial Setup for Calculator ---
-  
   const form = document.getElementById('calcForm');
   const refreshBtn = document.getElementById('refreshBtn');
   const resetFormBtn = document.getElementById('resetFormBtn');
@@ -1494,6 +1107,12 @@ function compute10YearProjection(params) {
     });
   }
 
+  // Initial calculation on page load
+  const salaryInput = document.getElementById('monthlySalary');
+  if (salaryInput) {
+    salaryInput.value = formatNumber(salaryInput.value);
+    updateRateAndShow(true);
+  }
 });
 </script>
 </body>
