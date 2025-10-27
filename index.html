@@ -307,10 +307,11 @@
     padding-bottom: 0;
     border-bottom: none;
   }
-  .summary-item > div:first-child { color: var(--muted-text); }
+  .summary-item > div:first-child { color: var(--muted-text); white-space: nowrap; }
   .summary-item > div:not(:first-child) { 
     font-weight: 400; 
     text-align: right; 
+    white-space: nowrap;
   }
   .summary-item > div:nth-child(2) {
     color: var(--primary-text);
@@ -352,15 +353,11 @@
     border-collapse: collapse;
   }
   
-  .projection-details-table {
-    table-layout: fixed;
-    word-break: break-word;
-  }
-
   th, td {
     padding: 10px 8px;
     text-align: right;
     border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
   }
   thead th {
     font-weight: 400;
@@ -502,7 +499,7 @@
   }
 
   .table-wrapper {
-    /* overflow-x: auto; */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
