@@ -645,6 +645,16 @@ document.addEventListener('DOMContentLoaded', () => {
   Chart.defaults.font.family = "'Inter', sans-serif";
   Chart.defaults.color = '#1f2937';
 
+  const letterSpacingPlugin = {
+    id: 'letterSpacingPlugin',
+    beforeDraw: (chart) => {
+      chart.ctx.letterSpacing = '-0.5px';
+    },
+    afterDraw: (chart) => {
+      chart.ctx.letterSpacing = '0px';
+    },
+  };
+
   const TAX_BRACKETS = [
     { upTo: 158000, rate: 0.15 },
     { upTo: 330000, rate: 0.20 },
@@ -912,10 +922,10 @@ function compute10YearProjection(params) {
     if(autoCompute) computeAndRender();
   }
 
-  function getDynamicFontSize() {
-    if (window.innerWidth <= 600) return 14;
-    if (window.innerWidth <= 1024) return 15;
-    return 16;
+  function getDynamicChartFontSize() {
+    if (window.innerWidth <= 600) return 11;
+    if (window.innerWidth <= 1024) return 12;
+    return 13;
   }
 
   function renderChart(canvasId, data, currency) {
@@ -929,9 +939,9 @@ function compute10YearProjection(params) {
     
     let premiumData, gainData, gainLabel, premiumLabel, yTicksFormatter, tooltipFormatter;
 
-    const dynamicFontSize = getDynamicFontSize();
-    const tooltipFontSize = dynamicFontSize;
-    const tickAndLegendFontSize = dynamicFontSize;
+    const chartFontSize = getDynamicChartFontSize();
+    const fontFamily = "'Inter', sans-serif";
+    const fontWeight = '400';
 
     if (currency === 'USD') {
         premiumData = data.map(d => d.totalPremiumUsd);
@@ -959,6 +969,7 @@ function compute10YearProjection(params) {
 
     projectionChartInstances[canvasId] = new Chart(ctx, {
       type: 'line',
+      plugins: [letterSpacingPlugin],
       data: {
         labels: labels,
         datasets: [{
@@ -988,7 +999,9 @@ function compute10YearProjection(params) {
           x: {
             ticks: {
               font: {
-                size: tickAndLegendFontSize
+                size: chartFontSize,
+                family: fontFamily,
+                weight: fontWeight
               }
             }
           },
@@ -997,7 +1010,9 @@ function compute10YearProjection(params) {
             ticks: {
               callback: yTicksFormatter,
               font: {
-                size: tickAndLegendFontSize
+                size: chartFontSize,
+                family: fontFamily,
+                weight: fontWeight
               },
               align: 'start'
             }
@@ -1011,7 +1026,9 @@ function compute10YearProjection(params) {
               pointStyle: 'circle',
               padding: 12,
               font: {
-                size: tickAndLegendFontSize
+                size: chartFontSize,
+                family: fontFamily,
+                weight: fontWeight
               }
             }
           },
@@ -1019,8 +1036,8 @@ function compute10YearProjection(params) {
             backgroundColor: '#f3f4f6',
             titleColor: '#1f2937',
             bodyColor: '#1f2937',
-            titleFont: { family: "'Inter', sans-serif", weight: '400', size: tooltipFontSize },
-            bodyFont: { family: "'Inter', sans-serif", size: tooltipFontSize },
+            titleFont: { family: fontFamily, weight: fontWeight, size: chartFontSize },
+            bodyFont: { family: fontFamily, weight: fontWeight, size: chartFontSize },
             padding: 12,
             displayColors: false,
             bodySpacing: 4,
