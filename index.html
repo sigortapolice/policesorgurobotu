@@ -153,7 +153,7 @@
     color: var(--muted-text);
     margin-bottom: 0;
     line-height: 1.5;
-    font-weight: 200;
+    font-weight: 400;
   }
   
   .header-box h2,
@@ -338,7 +338,7 @@
     margin: 0 0 12px;
     color: var(--primary-text);
   }
-  
+
   .summary-list {
     display: grid;
     grid-template-columns: 1fr auto auto;
@@ -352,6 +352,7 @@
     padding: 10px 0;
     border-bottom: 1px solid var(--border-color);
     align-items: baseline;
+    font-weight: 400;
   }
   .summary-list > .summary-item:last-child {
     padding-bottom: 0;
@@ -359,13 +360,11 @@
   }
   .summary-item > div:first-child { color: var(--muted-text); white-space: nowrap; }
   .summary-item > div:not(:first-child) { 
-    font-weight: 400; 
     text-align: right; 
     white-space: nowrap;
   }
   .summary-item > div:nth-child(2) {
     color: var(--primary-text);
-    font-weight: 400;
   }
   
   .summary-item .highlight,
@@ -408,6 +407,7 @@
     text-align: right;
     border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
+    font-weight: 400;
   }
   thead th {
     font-weight: 400;
@@ -461,6 +461,7 @@
   .methodology-text {
     color: var(--muted-text);
     line-height: 1.6;
+    font-weight: 400;
   }
   .methodology-text p {
     margin-top: 0;
@@ -818,10 +819,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPremiumUsd = monthlyPremiumUsd * 12;
     const totalRebateUsd = totalRebateTl / usdTry;
     const yearEndTl = fundUsd * usdTry;
-    const simulationYear = 2025;
     
     const totalRow = {
-        Ay: `${simulationYear} Toplam`,
+        Ay: `Top.`,
         'Maaş': totalSalary,
         'V.D.': null,
         Prim: totalPremiumUsd,
@@ -829,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     tableRows += `<tr class="total-row">
-        <td>${simulationYear} Toplam</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
+        <td>Top.</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
         <td>${fmtUSD(totalPremiumUsd)}</td> <td>${fmtUSD(totalRebateUsd)}</td>
       </tr>`;
 
@@ -1225,8 +1225,12 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <table class="projection-details-table ten-year-table">
             <thead><tr>
-              <th>Yıl</th><th>Prim ($)</th><th>İade ($)</th><th>Kâr Payı ($)</th>
-              <th>Gider ($)</th><th>Yıl Sonu ($)</th>
+              <th>Yıl</th>
+              <th>Prim ($)</th>
+              <th>İade ($)</th>
+              <th>Kâr<br>Payı ($)</th>
+              <th>Gider ($)</th>
+              <th>Yıl Sonu<br>($)</th>
             </tr></thead>
             <tbody>
               ${proj10.yearlyData.map(d => `
@@ -1240,7 +1244,7 @@ function compute10YearProjection(params) {
                 </tr>
               `).join('')}
               <tr class="total-row">
-                 <td>10 Yıl Toplam</td>
+                 <td>Top.</td>
                  <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
                  <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
                  <td>${fmtUSD(proj10.totals.totalProfitUsd)}</td>
@@ -1316,7 +1320,7 @@ function compute10YearProjection(params) {
     const oneYearHeaders = ["Ay", "Maaş (₺)", "Vergi Dilimi (%)", "Prim ($)", "İade ($)"];
     const oneYearData = proj1.monthlyDetails.map(d => [
         d.Ay,
-        d['Maaş'] ? (d.Ay.includes('Toplam') ? fmtTL(d['Maaş']) : fmtTL(d['Maaş'])) : '-',
+        d['Maaş'] ? (d.Ay.includes('Toplam') || d.Ay.includes('Top.')) ? fmtTL(d['Maaş']) : fmtTL(d['Maaş']) : '-',
         d['V.D.'] ? `${d['V.D.'].toFixed(0)}%` : '-',
         d.Prim ? fmtUSD(d.Prim) : '-',
         d.İade ? fmtUSD(d.İade) : '-'
@@ -1335,7 +1339,7 @@ function compute10YearProjection(params) {
       fmtUSD(d.endOfYearFundUsd)
     ]);
     const tenYearTotals = [
-      "10 Yıl Toplam",
+      "Top.",
       fmtUSD(proj10.totals.totalPremiumUsd),
       fmtUSD(proj10.totals.totalRebateUsd),
       fmtUSD(proj10.totals.totalProfitUsd),
