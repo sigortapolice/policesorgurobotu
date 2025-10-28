@@ -626,7 +626,7 @@
                   </div>
                   <div class="input-group">
                     <label for="annualPremiumGrowth">Yıllık prim artışı %</label>
-                    <input id="annualPremiumGrowth" type="number" value="5" min="0" step="0.01"/>
+                    <input id="annualPremiumGrowth" type="number" value="0" min="0" step="0.01"/>
                   </div>
                 </div>
                 <div class="two-col">
@@ -646,7 +646,7 @@
                   </div>
                    <div class="input-group">
                     <label for="annualProfitRateGrowth">Yıllık kâr payı artışı %</label>
-                    <input id="annualProfitRateGrowth" type="number" value="5" min="0" step="0.01"/>
+                    <input id="annualProfitRateGrowth" type="number" value="0" min="0" step="0.01"/>
                   </div>
                 </div>
                 <div class="two-col" style="align-items: end;">
@@ -655,8 +655,8 @@
                       <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
                   </div>
                   <div class="input-group">
-                    <label for="annualTaxBracketGrowth">Yıllık vergi dilimi artışı %</label>
-                    <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
+                    <label for="annualTaxBracketGrowth">Vergi matrahı artışı Yıl/%</label>
+                    <input id="annualTaxBracketGrowth" type="number" value="15" min="0" step="0.01"/>
                   </div>
                 </div>
                 <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: -10px;">
@@ -764,6 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const avgDaysInMonth = 365.2425 / 12;
 
     let fundUsd = 0;
+    let policyAmount = 0; // Poliçe tutarı (vergi iadesi hariç)
     let totalPremiumTl = 0;
     let totalRebateTl = 0;
     let totalProfitTl = 0;
@@ -793,6 +794,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rebateUsd = rebateTl / usdTry;
         
         fundUsd += profitThisMonthUsd + monthlyPremiumUsd + rebateUsd - expenseThisMonthUsd;
+        policyAmount += profitThisMonthUsd + monthlyPremiumUsd - expenseThisMonthUsd;
 
         totalPremiumTl += monthlyPremiumTl;
         totalRebateTl += rebateTl;
@@ -807,7 +809,9 @@ document.addEventListener('DOMContentLoaded', () => {
             'Vergi Dilimi': taxRate * 100,
             'Vergi İadesi': rebateUsd,
             'Kâr Payı': profitThisMonthUsd,
-            'Gider Payı': expenseThisMonthUsd
+            'Gider Payı': expenseThisMonthUsd,
+            'Poliçe Tutarı': policyAmount,
+            'Toplam Birikim': fundUsd
         });
         
         tableRows += `<tr>
@@ -817,6 +821,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${fmtUSD(rebateUsd)}</td>
           <td>${fmtUSD(profitThisMonthUsd)}</td>
           <td>${fmtUSD(expenseThisMonthUsd)}</td>
+          <td>${fmtUSD(policyAmount)}</td>
+          <td>${fmtUSD(fundUsd)}</td>
         </tr>`;
     }
 
@@ -830,7 +836,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'Vergi Dilimi': null,
         'Vergi İadesi': totalRebateUsd,
         'Kâr Payı': totalProfitUsd,
-        'Gider Payı': totalExpenseUsd
+        'Gider Payı': totalExpenseUsd,
+        'Poliçe Tutarı': policyAmount,
+        'Toplam Birikim': fundUsd
     };
     
     tableRows += `<tr class="total-row">
@@ -840,6 +848,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${fmtUSD(totalRebateUsd)}</td>
         <td>${fmtUSD(totalProfitUsd)}</td>
         <td>${fmtUSD(totalExpenseUsd)}</td>
+        <td>${fmtUSD(policyAmount)}</td>
+        <td>${fmtUSD(fundUsd)}</td>
       </tr>`;
 
     return {
@@ -876,6 +886,7 @@ function compute10YearProjection(params) {
     let cumulativePremiumTl = 0;
     let cumulativeRebateTl = 0;
     let cumulativeFundUsd = 0;
+    let cumulativePolicyAmountUsd = 0;
     let cumulativeProfitTl = 0;
     let cumulativeExpenseTl = 0;
 
@@ -926,6 +937,7 @@ function compute10YearProjection(params) {
             const rebateUsdForMonth = rebateTlForMonth / yearUsdRate;
 
             cumulativeFundUsd += profitThisMonthUsd + yearMonthlyPremiumUsd + rebateUsdForMonth - expenseThisMonthUsd;
+            cumulativePolicyAmountUsd += profitThisMonthUsd + yearMonthlyPremiumUsd - expenseThisMonthUsd;
 
             annualPremiumTlForYear += monthlyPremiumTl;
             rebateAnnualTl += rebateTlForMonth;
@@ -970,17 +982,21 @@ function compute10YearProjection(params) {
 
     const finalYearUsdRate = usdTryBase * Math.pow(1 + usdGrowth, years - 1);
     const accWithRebateTl = cumulativeFundUsd * finalYearUsdRate;
+    const totalPolicyAmountTl = cumulativePolicyAmountUsd * finalYearUsdRate;
+
     const totals = {
         totalPremiumTl: cumulativePremiumTl,
         totalRebateTl: cumulativeRebateTl,
         totalProfitTl: cumulativeProfitTl,
         totalExpenseTl: cumulativeExpenseTl,
         accWithRebateTl: accWithRebateTl,
+        totalPolicyAmountTl: totalPolicyAmountTl,
         totalPremiumUsd: cumulativePremiumUsd,
         totalRebateUsd: cumulativeRebateUsd,
         totalProfitUsd: cumulativeProfitUsd,
         totalExpenseUsd: cumulativeExpenseUsd,
         accWithRebateUsd: cumulativeFundUsd,
+        totalPolicyAmountUsd: cumulativePolicyAmountUsd,
     };
 
     return { totals, yearlyData };
@@ -1197,7 +1213,7 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <table class="projection-details-table one-year-table">
               <thead><tr>
-                  <th>Ay</th><th>Ödenen<br>Prim</th><th>Vergi<br>Dilimi</th><th>Vergi<br>İadesi</th><th>Kâr<br>Payı</th><th>Gider<br>Payı</th>
+                  <th>Ay</th><th>Ödenen<br>Prim</th><th>Vergi<br>Dilimi</th><th>Vergi<br>İadesi</th><th>Kâr<br>Payı</th><th>Gider<br>Payı</th><th>Poliçe<br>Tutarı</th><th>Toplam<br>Birikim</th>
               </tr></thead>
               <tbody>${proj1.tableRowsHTML}</tbody>
           </table>
@@ -1220,6 +1236,9 @@ function compute10YearProjection(params) {
               </div>
               <div class="summary-item">
                 <div>Gider Kesintisi</div><div class="highlight">${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
+              </div>
+              <div class="summary-item">
+                <div>Poliçe Tutarı</div><div class="highlight">${fmtTL(proj10.totals.totalPolicyAmountTl)}</div><div>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</div>
               </div>
               <div class="summary-item">
                 <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
@@ -1286,7 +1305,7 @@ function compute10YearProjection(params) {
           <ul>
             <li><strong>Başlangıç Yılı:</strong> Tüm hesaplamalar <strong>2025</strong> yılı baz alınarak başlar ve ilk yıl için 2025 gelir vergisi dilimleri kullanılır.</li>
             <li><strong>Vergi İadesi:</strong> Vergi iadesi, aylık brüt maaşınızın <strong>%15'ini aşmayacak</strong> şekilde ödediğiniz prim tutarı üzerinden, o an içinde bulunduğunuz gelir vergisi dilimi oranına göre hesaplanır.</li>
-            <li><strong>Dinamik Projeksiyon:</strong> 10 yıllık projeksiyonda maaş, prim, kur ve vergi dilimleri, girdiğiniz yıllık artış oranlarına göre her yıl bileşik olarak artırılır. Bu, daha gerçekçi bir senaryo sunar.</li>
+            <li><strong>Dinamik Projeksiyon:</strong> 10 yıllık projeksiyonda maaş, prim, kur ve vergi dilimlerinin matrahları (üst limitleri), girdiğiniz yıllık artış oranlarına göre her yıl bileşik olarak artırılır. Bu, daha gerçekçi bir senaryo sunar.</li>
             <li><strong>Kâr Payı:</strong> Kâr payı, günlük bileşik getiri varsayımıyla hesaplanır ve fonunuza eklenir.</li>
           </ul>
         </div>
@@ -1320,20 +1339,22 @@ function compute10YearProjection(params) {
       ["Yıllık Kâr Payı %", params.annualProfitRate],
       ["Yıllık Kâr Payı Artışı %", params.annualProfitRateGrowth],
       ["Gider Kesintisi %", params.annualExpenseRate],
-      ["Yıllık Vergi Dilimi Artışı %", params.annualTaxBracketGrowth]
+      ["Vergi Matrahı Artışı Yıl/%", params.annualTaxBracketGrowth]
     ];
     const ws_params = XLSX.utils.aoa_to_sheet(paramsData);
     XLSX.utils.book_append_sheet(wb, ws_params, "Giriş Parametreleri");
 
     // Sheet 2: 1 Year Projection
-    const oneYearHeaders = ["Ay", "Ödenen Prim ($)", "Vergi Dilimi (%)", "Vergi İadesi ($)", "Kâr Payı ($)", "Gider Payı ($)"];
+    const oneYearHeaders = ["Ay", "Ödenen Prim ($)", "Vergi Dilimi (%)", "Vergi İadesi ($)", "Kâr Payı ($)", "Gider Payı ($)", "Poliçe Tutarı ($)", "Toplam Birikim ($)"];
     const oneYearData = proj1.monthlyDetails.map(d => [
         d.Ay,
         d['Ödenen Prim'] ? fmtUSD(d['Ödenen Prim']) : '-',
         d['Vergi Dilimi'] ? `${d['Vergi Dilimi'].toFixed(0)}%` : '-',
         d['Vergi İadesi'] ? fmtUSD(d['Vergi İadesi']) : '-',
         d['Kâr Payı'] ? fmtUSD(d['Kâr Payı']) : '-',
-        d['Gider Payı'] ? fmtUSD(d['Gider Payı']) : '-'
+        d['Gider Payı'] ? fmtUSD(d['Gider Payı']) : '-',
+        d['Poliçe Tutarı'] ? fmtUSD(d['Poliçe Tutarı']) : '-',
+        d['Toplam Birikim'] ? fmtUSD(d['Toplam Birikim']) : '-'
     ]);
     const ws_1_year = XLSX.utils.aoa_to_sheet([oneYearHeaders, ...oneYearData]);
     XLSX.utils.book_append_sheet(wb, ws_1_year, "1 Yıllık Projeksiyon");
