@@ -803,35 +803,43 @@ document.addEventListener('DOMContentLoaded', () => {
         
         monthlyDetails.push({
             Ay: monthName,
-            'Maaş': monthlySalary,
-            'V.D.': taxRate * 100,
-            Prim: monthlyPremiumUsd,
-            İade: rebateUsd
+            'Ödenen Prim': monthlyPremiumUsd,
+            'Vergi Dilimi': taxRate * 100,
+            'Vergi İadesi': rebateUsd,
+            'Kâr Payı': profitThisMonthUsd,
+            'Gider Payı': expenseThisMonthUsd
         });
         
         tableRows += `<tr>
-          <td>${monthName}</td> <td>${fmtTL(monthlySalary)}</td>
-          <td>${(taxRate*100).toFixed(0)}%</td> <td>${fmtUSD(monthlyPremiumUsd)}</td>
+          <td>${monthName}</td>
+          <td>${fmtUSD(monthlyPremiumUsd)}</td>
+          <td>${(taxRate*100).toFixed(0)}%</td>
           <td>${fmtUSD(rebateUsd)}</td>
+          <td>${fmtUSD(profitThisMonthUsd)}</td>
+          <td>${fmtUSD(expenseThisMonthUsd)}</td>
         </tr>`;
     }
 
-    const totalSalary = monthlySalary * 12;
     const totalPremiumUsd = monthlyPremiumUsd * 12;
     const totalRebateUsd = totalRebateTl / usdTry;
     const yearEndTl = fundUsd * usdTry;
     
     const totalRow = {
         Ay: `Top.`,
-        'Maaş': totalSalary,
-        'V.D.': null,
-        Prim: totalPremiumUsd,
-        İade: totalRebateUsd
+        'Ödenen Prim': totalPremiumUsd,
+        'Vergi Dilimi': null,
+        'Vergi İadesi': totalRebateUsd,
+        'Kâr Payı': totalProfitUsd,
+        'Gider Payı': totalExpenseUsd
     };
     
     tableRows += `<tr class="total-row">
-        <td>Top.</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
-        <td>${fmtUSD(totalPremiumUsd)}</td> <td>${fmtUSD(totalRebateUsd)}</td>
+        <td>Top.</td>
+        <td>${fmtUSD(totalPremiumUsd)}</td>
+        <td>-</td>
+        <td>${fmtUSD(totalRebateUsd)}</td>
+        <td>${fmtUSD(totalProfitUsd)}</td>
+        <td>${fmtUSD(totalExpenseUsd)}</td>
       </tr>`;
 
     return {
@@ -1189,7 +1197,7 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <table class="projection-details-table one-year-table">
               <thead><tr>
-                  <th>Ay</th><th>Brüt<br>Maaş</th><th>Vergi<br>Dilimi</th><th>Ödenen<br>Prim</th><th>Vergi<br>İadesi</th>
+                  <th>Ay</th><th>Ödenen<br>Prim</th><th>Vergi<br>Dilimi</th><th>Vergi<br>İadesi</th><th>Kâr<br>Payı</th><th>Gider<br>Payı</th>
               </tr></thead>
               <tbody>${proj1.tableRowsHTML}</tbody>
           </table>
@@ -1318,13 +1326,14 @@ function compute10YearProjection(params) {
     XLSX.utils.book_append_sheet(wb, ws_params, "Giriş Parametreleri");
 
     // Sheet 2: 1 Year Projection
-    const oneYearHeaders = ["Ay", "Maaş (₺)", "Vergi Dilimi (%)", "Prim ($)", "İade ($)"];
+    const oneYearHeaders = ["Ay", "Ödenen Prim ($)", "Vergi Dilimi (%)", "Vergi İadesi ($)", "Kâr Payı ($)", "Gider Payı ($)"];
     const oneYearData = proj1.monthlyDetails.map(d => [
         d.Ay,
-        d['Maaş'] ? (d.Ay.includes('Toplam') || d.Ay.includes('Top.')) ? fmtTL(d['Maaş']) : fmtTL(d['Maaş']) : '-',
-        d['V.D.'] ? `${d['V.D.'].toFixed(0)}%` : '-',
-        d.Prim ? fmtUSD(d.Prim) : '-',
-        d.İade ? fmtUSD(d.İade) : '-'
+        d['Ödenen Prim'] ? fmtUSD(d['Ödenen Prim']) : '-',
+        d['Vergi Dilimi'] ? `${d['Vergi Dilimi'].toFixed(0)}%` : '-',
+        d['Vergi İadesi'] ? fmtUSD(d['Vergi İadesi']) : '-',
+        d['Kâr Payı'] ? fmtUSD(d['Kâr Payı']) : '-',
+        d['Gider Payı'] ? fmtUSD(d['Gider Payı']) : '-'
     ]);
     const ws_1_year = XLSX.utils.aoa_to_sheet([oneYearHeaders, ...oneYearData]);
     XLSX.utils.book_append_sheet(wb, ws_1_year, "1 Yıllık Projeksiyon");
