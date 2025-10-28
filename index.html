@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #f3f4f6; /* gray-100 */
+    --bg: #ebedee;
     --card: #ffffff;
     --muted-text: #1f2937; /* gray-800 */
     --primary-text: #1f2937; /* gray-800 */
@@ -22,7 +22,7 @@
     --primary-hover: #111827; /* gray-900 */
     --primary-light: #e5e7eb; /* gray-200 */
     --border-color: #d1d5db; /* gray-300 */
-    --input-bg: #f3f4f6; /* gray-100 */
+    --input-bg: #ebedee;
     --input-focus-bg: #e5e7eb; /* gray-200 */
     --shadow: 0 1px 2px 0 rgba(60,64,67,0.075), 0 2px 6px 2px rgba(60,64,67,0.0375);
     --radius-m: 40px;
@@ -40,7 +40,7 @@
   body{
     margin:0;
     font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-    background: var(--bg);
+    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
     color: var(--primary-text);
     min-height: 100vh;
     box-sizing: border-box;
@@ -135,7 +135,7 @@
   .header-box {
     margin: -20px -20px 20px -20px;
     padding: 20px;
-    background-color: #1414b8;
+    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
     border-top-left-radius: var(--radius-l);
     border-top-right-radius: var(--radius-l);
   }
@@ -148,7 +148,7 @@
   
   .header-box h2,
   .header-box .sub {
-    color: #ffffff;
+    color: var(--primary-text);
   }
   
   .sub{
@@ -179,7 +179,7 @@
   
   .refresh {
     cursor: pointer;
-    color: var(--gray-400);
+    color: var(--primary-text);
     border: none;
     background: none;
     padding: 0;
@@ -287,12 +287,12 @@
       opacity: 0.7;
   }
   .button.primary {
-    background-color: #1414b8;
+    background-color: var(--primary);
     color: #f9fafb;
-    border-color: #1414b8;
+    border-color: var(--primary);
   }
   .button.primary:hover:not(:disabled) {
-      background-color: #11119f;
+      background-color: var(--primary-hover);
   }
   .button.primary .spinner {
       border-color: #fff;
@@ -653,7 +653,7 @@
                     <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
                   </div>
                 </div>
-                <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-top: 10px;">
+                <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: -10px;">
                   <div class="rate" id="rateBox">
                     <div class="rate-text" id="rateText"></div>
                     <button class="refresh" id="refreshBtn" title="Kur yenile" aria-label="Kur yenile">
@@ -1029,11 +1029,11 @@ function compute10YearProjection(params) {
         datasets: [{
           label: gainLabel,
           data: gainData,
-          borderColor: '#1414b8',
-          backgroundColor: 'rgba(20, 20, 184, 0.1)',
+          borderColor: '#1f2937',
+          backgroundColor: 'rgba(31, 41, 55, 0.1)',
           fill: true,
           tension: 0.4,
-          pointBackgroundColor: '#1414b8',
+          pointBackgroundColor: '#1f2937',
           pointRadius: 8
         },{
           label: premiumLabel,
@@ -1087,7 +1087,7 @@ function compute10YearProjection(params) {
             }
           },
           tooltip: {
-            backgroundColor: '#f3f4f6',
+            backgroundColor: '#ebedee',
             titleColor: '#1f2937',
             bodyColor: '#1f2937',
             titleFont: { family: fontFamily, weight: fontWeight, size: chartFontSize },
