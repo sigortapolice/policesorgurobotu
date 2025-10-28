@@ -476,8 +476,8 @@
   }
 
   .button-group-wrapper {
-      display: grid;
-      grid-template-columns: 1fr auto;
+      display: flex;
+      justify-content: flex-end;
       gap: 10px;
       position: relative;
   }
@@ -616,7 +616,7 @@
               <div class="form-section">
                 <div class="two-col">
                   <div class="input-group">
-                    <label for="monthlySalary">Brüt Maaş</label>
+                    <label for="monthlySalary">Aylık brüt maaş</label>
                     <input id="monthlySalary" type="text" value="100.000" inputmode="numeric"/>
                   </div>
                   <div class="input-group">
@@ -629,40 +629,41 @@
               <div class="form-section">
                 <div class="two-col">
                   <div class="input-group">
-                    <label for="annualSalaryGrowth">Maaş Artışı (%)</label>
+                    <label for="annualSalaryGrowth">Yıllık maaş artışı %</label>
                     <input id="annualSalaryGrowth" type="number" value="15" min="0" step="0.01"/>
                   </div>
                   <div class="input-group">
-                    <label for="annualPremiumGrowth">Prim Artışı (%)</label>
+                    <label for="annualPremiumGrowth">Yıllık prim artışı %</label>
                     <input id="annualPremiumGrowth" type="number" value="5" min="0" step="0.01"/>
                   </div>
                 </div>
                 <div class="two-col">
                   <div class="input-group">
-                    <label for="annualUsdGrowth">Kur artışı (%)</label>
+                    <label for="annualUsdGrowth">Yıllık kur artışı %</label>
                     <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
                   </div>
                   <div class="input-group">
-                    <label for="usdTry">USD/TRY</label>
+                    <label for="usdTry">USD/TRY kuru</label>
                     <input id="usdTry" type="number" step="0.01" placeholder="Otomatik çekilecek"/>
                   </div>
                 </div>
-                <div class="two-col" style="grid-template-columns: 1fr 1fr; align-items: end;">
+                <div class="two-col">
                   <div class="input-group">
-                    <label for="annualProfitRate">Kâr Payı (%)</label>
+                    <label for="annualProfitRate">Yıllık kâr payı</label>
                     <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
                   </div>
                   <div class="input-group">
-                      <label for="annualExpenseRate">Gider Payı (%)</label>
+                      <label for="annualExpenseRate">Yıllık gider payı %</label>
                       <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
                   </div>
+                </div>
+                <div class="two-col" style="align-items: end;">
                   <div class="input-group">
-                    <label for="annualTaxBracketGrowth">Vergi Dilimi Artışı (%)</label>
+                    <label for="annualTaxBracketGrowth">Yıllık vergi dilimi artışı</label>
                     <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
                   </div>
                   <div class="button-group-wrapper">
                     <button type="button" id="resetFormBtn" class="button">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 3px;"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path></svg>
                       Sıfırla
                     </button>
                     <button type="button" id="exportBtn" class="button button-icon export-button" aria-label="Dışa Aktar" data-tooltip="Sonuçları Excel olarak indir">
