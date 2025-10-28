@@ -139,7 +139,7 @@
     border-top-right-radius: var(--radius-l);
     position: relative;
     overflow: hidden;
-    background-color: var(--gray-400);
+    background-color: #2d3239;
   }
 
   h2{
@@ -152,6 +152,7 @@
     color: var(--muted-text);
     margin-bottom: 0;
     line-height: 1.5;
+    font-weight: 200;
   }
   
   .header-box h2,
@@ -755,7 +756,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } = params;
     
     const annualProfitRate = profitRatePct / 100;
-    const monthlyProfitRate = annualProfitRate / 12;
+    const dailyProfitRate = annualProfitRate / 365;
+    const avgDaysInMonth = 365.2425 / 12;
 
     let fundUsd = 0;
     let totalPremiumTl = 0;
@@ -772,7 +774,9 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < 12; i++) {
         const monthName = months[i];
         
-        const profitThisMonthUsd = fundUsd * monthlyProfitRate;
+        const fundBeforeProfit = fundUsd;
+        const fundAfterDailyCompounding = fundBeforeProfit * Math.pow(1 + dailyProfitRate, avgDaysInMonth);
+        const profitThisMonthUsd = fundAfterDailyCompounding - fundBeforeProfit;
         const expenseThisMonthUsd = monthlyPremiumUsd * (expenseRatePct / 100);
 
         const monthlyPremiumTl = monthlyPremiumUsd * usdTry;
@@ -873,7 +877,8 @@ function compute10YearProjection(params) {
     for (let y = 1; y <= years; y++) {
         const yearProfitRatePct = profitRatePct * Math.pow(1 + profitRateGrowthPct / 100, y - 1);
         const annualProfitRate = yearProfitRatePct / 100;
-        const monthlyProfitRate = annualProfitRate / 12;
+        const dailyProfitRate = annualProfitRate / 365;
+        const avgDaysInMonth = 365.2425 / 12;
 
         const yearMonthlySalary = monthlySalary * Math.pow(1 + salaryGrowth, y - 1);
         const yearUsdRate = usdTryBase * Math.pow(1 + usdGrowth, y - 1);
@@ -889,11 +894,15 @@ function compute10YearProjection(params) {
         let annualPremiumTlForYear = 0;
         let annualProfitTlForYear = 0;
         let annualExpenseTlForYear = 0;
+        let annualProfitUsdForYear = 0;
+        let annualExpenseUsdForYear = 0;
 
         let rebateAnnualUsd = 0;
 
         for (let m = 1; m <= 12; m++) {
-            const profitThisMonthUsd = cumulativeFundUsd * monthlyProfitRate;
+            const fundBeforeProfit = cumulativeFundUsd;
+            const fundAfterDailyCompounding = fundBeforeProfit * Math.pow(1 + dailyProfitRate, avgDaysInMonth);
+            const profitThisMonthUsd = fundAfterDailyCompounding - fundBeforeProfit;
             const expenseThisMonthUsd = yearMonthlyPremiumUsd * (expenseRatePct / 100);
 
             const monthlyPremiumTl = yearMonthlyPremiumUsd * yearUsdRate;
@@ -912,6 +921,8 @@ function compute10YearProjection(params) {
             rebateAnnualUsd += rebateUsdForMonth;
             annualProfitTlForYear += profitThisMonthUsd * yearUsdRate;
             annualExpenseTlForYear += expenseThisMonthUsd * yearUsdRate;
+            annualProfitUsdForYear += profitThisMonthUsd;
+            annualExpenseUsdForYear += expenseThisMonthUsd;
 
             cumulativePremiumUsd += yearMonthlyPremiumUsd;
             cumulativeRebateUsd += rebateUsdForMonth;
@@ -936,6 +947,8 @@ function compute10YearProjection(params) {
             endOfYearFundTl: endOfYearFundTl,
             annualPremiumUsd: annualPremiumUsdForYear,
             annualRebateUsd: rebateAnnualUsd,
+            annualProfitUsd: annualProfitUsdForYear,
+            annualExpenseUsd: annualExpenseUsdForYear,
             endOfYearFundUsd: cumulativeFundUsd,
             totalPremiumUsd: cumulativePremiumUsdForChart,
             accWithRebateUsd: cumulativeFundUsd,
@@ -1158,7 +1171,7 @@ function compute10YearProjection(params) {
               <div>Yıllık Kâr Payı</div><div class="highlight">${fmtTL(proj1.yearlyProfitTl)}</div><div>${fmtUSD(proj1.yearlyProfitUsd)}</div>
             </div>
             <div class="summary-item">
-              <div>Yıllık Gider Kesintisi</div><div class="highlight">${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
+              <div>Gider kesintisi</div><div class="highlight">${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
             </div>
             <div class="summary-item">
               <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
@@ -1210,7 +1223,7 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <table class="projection-details-table ten-year-table">
             <thead><tr>
-              <th>Yıl</th><th>Prim ($)</th><th>İade ($)</th><th>Birikim ($)</th>
+              <th>Yıl</th><th>Prim ($)</th><th>İade ($)</th><th>Kâr Payı ($)</th><th>Gider ($)</th><th>Birikim ($)</th>
             </tr></thead>
             <tbody>
               ${proj10.yearlyData.map(d => `
@@ -1218,6 +1231,8 @@ function compute10YearProjection(params) {
                   <td>${d.year}. Yıl</td>
                   <td>${fmtUSD(d.annualPremiumUsd)}</td>
                   <td>${fmtUSD(d.annualRebateUsd)}</td>
+                  <td>${fmtUSD(d.annualProfitUsd)}</td>
+                  <td>${fmtUSD(d.annualExpenseUsd)}</td>
                   <td>${fmtUSD(d.endOfYearFundUsd)}</td>
                 </tr>
               `).join('')}
@@ -1225,6 +1240,8 @@ function compute10YearProjection(params) {
                 <td>Toplam</td>
                 <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
                 <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
+                <td>${fmtUSD(proj10.totals.totalProfitUsd)}</td>
+                <td>${fmtUSD(proj10.totals.totalExpenseUsd)}</td>
                 <td>${fmtUSD(proj10.totals.accWithRebateUsd)}</td>
               </tr>
             </tbody>
@@ -1249,7 +1266,13 @@ function compute10YearProjection(params) {
             <ul>
                 <li><strong>Vergi İadesi:</strong> Aylık ödenen primin, brüt maaşın %15'ini aşmayacak kısmı için hesaplanır. İade tutarı, o ay içinde bulunulan gelir vergisi dilimi oranına göre belirlenir.</li>
                 <li><strong>Gelir Vergisi Dilimi:</strong> Yıl içindeki kümülatif brüt maaşınıza göre dinamik olarak hesaplanır. Gelecek yıllar için vergi dilimi matrahları, girdiğiniz "Yıllık vergi dilimi artışı %" oranında bileşik olarak artırılır. Örneğin, 2024 yılı için 158.000 TL olan ilk dilim sınırı, %25'lik bir artış varsayımıyla <strong>2025 yılı için 158.000 ₺ * 1.25 = 197.500 ₺</strong> olarak hesaplanır. Bu hesaplama her yıl tüm dilimler için tekrarlanır.</li>
-                <li><strong>Kâr Payı:</strong> Yıllık kâr payı, gelecek yıllar için girdiğiniz "Yıllık kâr payı artışı %" oranında bileşik olarak artırılarak projeksiyona dahil edilir.</li>
+                <li><strong>Kâr Payı (Günlük Bileşik Getiri):</strong> Simülasyon, kâr payını finansal ürünlerde yaygın olan <strong>günlük bileşik getiri</strong> prensibine göre hesaplar. Bu model, poliçenin reel dünya performansını en doğru şekilde yansıtmayı hedefler.
+                    <ul style="margin-top: 8px; margin-bottom: 8px; list-style-type: disc; padding-left: 20px;">
+                        <li><strong>Günlük Bileşik Getiri Uygulaması:</strong> Sistemin temel hesaplama mantığı, poliçede kalınan her gün için birikiminizin üzerine kâr eklenmesi prensibine dayanır. Forma girdiğiniz yıllık kâr payı oranı 365'e bölünerek günlük oran bulunur. Ardından, birikiminiz bu günlük oranla her gün bileşik olarak büyür. Simülasyon, bu günlük büyümenin sonuçlarını tabloda aylık periyotlar halinde gösterir, ancak hesaplamanın özü günlüktür.</li>
+                        <li><strong>Yıldan Yıla Artış:</strong> 10 yıllık projeksiyonda, her yeni yıl için kâr payı oranı, girdiğiniz "Yıllık kâr payı artışı %" varsayımına göre bileşik olarak artırılır. Bu yeni ve artırılmış yıllık oran, o yılın günlük hesaplamaları için baz alınır.</li>
+                    </ul>
+                    Özetle, sistem hem günlük bileşik getiri uygular hem de bu getirinin dayandığı ana oranı yıllık varsayımlarınıza göre dinamik olarak artırır.
+                </li>
                 <li><strong>Birikim Hesabı (USD):</strong> USD cinsinden olan birikim fonunuz, her ay ödediğiniz <strong>USD prim tutarı</strong>, TL olarak hesaplanıp o anki kurdan <strong>USD'ye çevrilen vergi iadesi</strong> ve mevcut birikiminiz üzerinden hesaplanan <strong>kâr payının</strong> eklenmesiyle büyür. Aynı şekilde, ödediğiniz prim üzerinden hesaplanan <strong>gider kesintisi</strong> bu toplamdan düşülür.</li>
                 <li><strong>10 Yıllık Projeksiyon ve Varsayımlar:</strong> Maaş, prim ve vergi dilimleri için girdiğiniz yıllık artış oranları varsayımlarına dayanır. Benzer şekilde, <strong>gelecek yıllardaki USD/TRY kuru</strong> da mevcut kur üzerine girdiğiniz yıllık "Kur Artışı (%)" oranının bileşik olarak eklenmesiyle tahmin edilir. Bu sebeple sonuçlar, gelecekteki piyasa koşullarına göre farklılık gösterebilecek birer tahmindir.</li>
                 <li><strong>Anlık Döviz Kuru:</strong> Simülasyonun başlangıç yılı için güncel USD/TRY kuru anlık olarak harici bir servis üzerinden çekilir. Servise ulaşılamaması durumunda sistemde tanımlı bir kur değeri kullanılır.</li>
@@ -1334,15 +1357,19 @@ function compute10YearProjection(params) {
         `${d.year}. Yıl`,
         d.annualPremiumUsd,
         d.annualRebateUsd,
+        d.annualProfitUsd,
+        d.annualExpenseUsd,
         d.endOfYearFundUsd,
     ]);
     proj10DetailsData.push([
         'Toplam',
         proj10.totals.totalPremiumUsd,
         proj10.totals.totalRebateUsd,
+        proj10.totals.totalProfitUsd,
+        proj10.totals.totalExpenseUsd,
         proj10.totals.accWithRebateUsd,
     ]);
-    dataForSheet.push(['Yıl', 'Yıllık Prim (USD)', 'Yıllık İade (USD)', 'Yıl Sonu Birikim (USD)']);
+    dataForSheet.push(['Yıl', 'Yıllık Prim (USD)', 'Yıllık İade (USD)', 'Yıllık Kâr Payı (USD)', 'Yıllık Gider (USD)', 'Yıl Sonu Birikim (USD)']);
     proj10DetailsData.forEach(row => dataForSheet.push(row));
 
     const ws = XLSX.utils.aoa_to_sheet(dataForSheet);
@@ -1353,7 +1380,8 @@ function compute10YearProjection(params) {
         { wch: 20 }, // Column B
         { wch: 20 }, // Column C
         { wch: 25 }, // Column D
-        { wch: 20 }  // Column E
+        { wch: 20 }, // Column E
+        { wch: 25 }  // Column F
     ];
     
     const wb = XLSX.utils.book_new();
