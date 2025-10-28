@@ -411,7 +411,7 @@
   thead th {
     font-weight: 400;
     color: var(--muted-text);
-    border-bottom-width: 2px;
+    border-bottom-width: 1px;
     vertical-align: top;
   }
   tr:last-child td { border-bottom: 0; }
@@ -731,6 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Calculator Page Functionality ---
   let projectionChartInstances = {};
   let lastCalculationResults = null;
+  let isResetting = false;
   Chart.defaults.font.family = "'Inter', sans-serif";
   Chart.defaults.color = '#1f2937';
 
@@ -1204,6 +1205,7 @@ function compute10YearProjection(params) {
   }
   
   function computeAndRender() {
+    if (isResetting) return;
     const params = getParamsFromForm();
     const resultsDiv = document.getElementById('results');
     if (!params.usdTry || !params.monthlySalary || !params.monthlyPremiumUsd) {
@@ -1429,6 +1431,7 @@ function compute10YearProjection(params) {
 
   
   function resetForm() {
+      isResetting = true;
       document.getElementById('calcForm').reset();
       const resultsDiv = document.getElementById('results');
       resultsDiv.style.display = 'none';
@@ -1437,7 +1440,9 @@ function compute10YearProjection(params) {
       projectionChartInstances = {};
       lastCalculationResults = null;
       document.getElementById('usdTry').value = '';
-      updateRateAndShow(false);
+      updateRateAndShow(false).finally(() => {
+          setTimeout(() => { isResetting = false; }, 50);
+      });
   }
 
   // Event Listeners
