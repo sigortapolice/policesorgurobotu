@@ -8,7 +8,7 @@
   <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Poliçe Sorgu Robotu</title>
+<title>Poliçe Bilanço Simülasyonu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
@@ -135,10 +135,11 @@
   .header-box {
     margin: -20px -20px 20px -20px;
     padding: 20px;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898;
-    background-blend-mode: multiply,multiply;
     border-top-left-radius: var(--radius-l);
     border-top-right-radius: var(--radius-l);
+    position: relative;
+    overflow: hidden;
+    background-color: var(--gray-400);
   }
 
   h2{
@@ -147,17 +148,17 @@
     font-weight: 400;
   }
   
-  .header-box h2,
-  .header-box .sub {
-    color: #f9fafb;
-  }
-  
   .sub{
     color: var(--muted-text);
     margin-bottom: 0;
     line-height: 1.5;
   }
   
+  .header-box h2,
+  .header-box .sub {
+    color: #fff;
+  }
+
   .rate{
     background: var(--input-bg);
     border-radius: var(--radius-m);
@@ -166,7 +167,7 @@
     justify-content: space-between;
     align-items: center;
     font-weight: 400;
-    color: var(--gray-400);
+    color: var(--primary-text);
     height: 38px;
     box-sizing: border-box;
     border: 1px solid var(--border-color);
@@ -595,7 +596,7 @@
         <div class="card" role="region" aria-label="Sigorta Poliçesi Simülatörü">
           <div class="card-main-content">
             <div class="header-box">
-              <h2>Poliçe Sorgu Robotu</h2>
+              <h2>Poliçe Bilanço Simülasyonu</h2>
               <div class="sub">Brüt maaş ve prim bilgilerinizi girerek 1 yıllık ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</div>
             </div>
 
@@ -646,7 +647,7 @@
                 </div>
                 <div class="two-col" style="align-items: end;">
                   <div class="input-group">
-                      <label for="annualExpenseRate">Yıllık gider payı %</label>
+                      <label for="annualExpenseRate">Gider kesintisi %</label>
                       <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
                   </div>
                   <div class="input-group">
@@ -753,8 +754,6 @@ document.addEventListener('DOMContentLoaded', () => {
         expenseRatePct, profitRatePct
     } = params;
     
-    const annualExpenseRate = expenseRatePct / 100;
-    const monthlyExpenseRate = annualExpenseRate / 12;
     const annualProfitRate = profitRatePct / 100;
     const monthlyProfitRate = annualProfitRate / 12;
 
@@ -774,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const monthName = months[i];
         
         const profitThisMonthUsd = fundUsd * monthlyProfitRate;
-        const expenseThisMonthUsd = fundUsd * monthlyExpenseRate;
+        const expenseThisMonthUsd = monthlyPremiumUsd * (expenseRatePct / 100);
 
         const monthlyPremiumTl = monthlyPremiumUsd * usdTry;
 
@@ -853,8 +852,6 @@ function compute10YearProjection(params) {
         profitRateGrowthPct
     } = params;
 
-    const annualExpenseRate = expenseRatePct / 100;
-    const monthlyExpenseRate = annualExpenseRate / 12;
     const premiumGrowth = premiumGrowthPct / 100;
     const salaryGrowth = salaryGrowthPct / 100;
     const usdGrowth = usdGrowthPct / 100;
@@ -897,7 +894,7 @@ function compute10YearProjection(params) {
 
         for (let m = 1; m <= 12; m++) {
             const profitThisMonthUsd = cumulativeFundUsd * monthlyProfitRate;
-            const expenseThisMonthUsd = cumulativeFundUsd * monthlyExpenseRate;
+            const expenseThisMonthUsd = yearMonthlyPremiumUsd * (expenseRatePct / 100);
 
             const monthlyPremiumTl = yearMonthlyPremiumUsd * yearUsdRate;
 
@@ -1161,7 +1158,7 @@ function compute10YearProjection(params) {
               <div>Yıllık Kâr Payı</div><div class="highlight">${fmtTL(proj1.yearlyProfitTl)}</div><div>${fmtUSD(proj1.yearlyProfitUsd)}</div>
             </div>
             <div class="summary-item">
-              <div>Yıllık Gider Payı</div><div class="highlight">${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
+              <div>Yıllık Gider Kesintisi</div><div class="highlight">${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
             </div>
             <div class="summary-item">
               <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
@@ -1198,7 +1195,7 @@ function compute10YearProjection(params) {
                 <div>Kâr Payı</div><div class="highlight">${fmtTL(proj10.totals.totalProfitTl)}</div><div>${fmtUSD(proj10.totals.totalProfitUsd)}</div>
               </div>
               <div class="summary-item">
-                <div>Gider Payı</div><div class="highlight">${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
+                <div>Gider Kesintisi</div><div class="highlight">${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
               </div>
               <div class="summary-item">
                 <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
@@ -1253,7 +1250,7 @@ function compute10YearProjection(params) {
                 <li><strong>Vergi İadesi:</strong> Aylık ödenen primin, brüt maaşın %15'ini aşmayacak kısmı için hesaplanır. İade tutarı, o ay içinde bulunulan gelir vergisi dilimi oranına göre belirlenir.</li>
                 <li><strong>Gelir Vergisi Dilimi:</strong> Yıl içindeki kümülatif brüt maaşınıza göre dinamik olarak hesaplanır. Gelecek yıllar için vergi dilimi matrahları, girdiğiniz "Yıllık vergi dilimi artışı %" oranında bileşik olarak artırılır. Örneğin, 2024 yılı için 158.000 TL olan ilk dilim sınırı, %25'lik bir artış varsayımıyla <strong>2025 yılı için 158.000 ₺ * 1.25 = 197.500 ₺</strong> olarak hesaplanır. Bu hesaplama her yıl tüm dilimler için tekrarlanır.</li>
                 <li><strong>Kâr Payı:</strong> Yıllık kâr payı, gelecek yıllar için girdiğiniz "Yıllık kâr payı artışı %" oranında bileşik olarak artırılarak projeksiyona dahil edilir.</li>
-                <li><strong>Birikim Hesabı (USD):</strong> USD cinsinden olan birikim fonunuz, her ay ödediğiniz <strong>USD prim tutarı</strong>, TL olarak hesaplanıp o anki kurdan <strong>USD'ye çevrilen vergi iadesi</strong> ve mevcut birikiminiz üzerinden hesaplanan <strong>kâr payının</strong> eklenmesiyle büyür. Aynı şekilde, mevcut birikiminiz üzerinden hesaplanan <strong>gider payı</strong> bu toplamdan düşülür.</li>
+                <li><strong>Birikim Hesabı (USD):</strong> USD cinsinden olan birikim fonunuz, her ay ödediğiniz <strong>USD prim tutarı</strong>, TL olarak hesaplanıp o anki kurdan <strong>USD'ye çevrilen vergi iadesi</strong> ve mevcut birikiminiz üzerinden hesaplanan <strong>kâr payının</strong> eklenmesiyle büyür. Aynı şekilde, ödediğiniz prim üzerinden hesaplanan <strong>gider kesintisi</strong> bu toplamdan düşülür.</li>
                 <li><strong>10 Yıllık Projeksiyon ve Varsayımlar:</strong> Maaş, prim ve vergi dilimleri için girdiğiniz yıllık artış oranları varsayımlarına dayanır. Benzer şekilde, <strong>gelecek yıllardaki USD/TRY kuru</strong> da mevcut kur üzerine girdiğiniz yıllık "Kur Artışı (%)" oranının bileşik olarak eklenmesiyle tahmin edilir. Bu sebeple sonuçlar, gelecekteki piyasa koşullarına göre farklılık gösterebilecek birer tahmindir.</li>
                 <li><strong>Anlık Döviz Kuru:</strong> Simülasyonun başlangıç yılı için güncel USD/TRY kuru anlık olarak harici bir servis üzerinden çekilir. Servise ulaşılamaması durumunda sistemde tanımlı bir kur değeri kullanılır.</li>
             </ul>
@@ -1285,7 +1282,7 @@ function compute10YearProjection(params) {
         ["USD/TRY Kuru", params.usdTry],
         ["Yıllık Kâr Payı (%)", params.annualProfitRate],
         ["Yıllık Kâr Payı Artışı (%)", params.annualProfitRateGrowth],
-        ["Yıllık Gider Payı (%)", params.annualExpenseRate],
+        ["Gider Kesintisi (%)", params.annualExpenseRate],
         ["Yıllık Vergi Dilimi Artışı (%)", params.annualTaxBracketGrowth],
     ];
     dataForSheet.push(["Parametre", "Değer"]);
@@ -1298,7 +1295,7 @@ function compute10YearProjection(params) {
         ["Yıllık Prim Ödemesi", proj1.yearlyTl, proj1.yearlyPremiumUsd],
         ["Yıllık Vergi İadesi", proj1.totalRebateTl, proj1.totalRebateUsd],
         ["Yıllık Kâr Payı", proj1.yearlyProfitTl, proj1.yearlyProfitUsd],
-        ["Yıllık Gider Payı", proj1.yearlyExpenseTl, proj1.yearlyExpenseUsd],
+        ["Yıllık Gider Kesintisi", proj1.yearlyExpenseTl, proj1.yearlyExpenseUsd],
         ["Yıl Sonu Birikim", proj1.yearEndTl, proj1.yearEndUsd],
     ];
     dataForSheet.push(["Kalem", "TL", "USD"]);
@@ -1324,7 +1321,7 @@ function compute10YearProjection(params) {
         ["Toplam Prim Ödemesi", proj10.totals.totalPremiumTl, proj10.totals.totalPremiumUsd],
         ["Toplam Vergi İadesi", proj10.totals.totalRebateTl, proj10.totals.totalRebateUsd],
         ["Toplam Kâr Payı", proj10.totals.totalProfitTl, proj10.totals.totalProfitUsd],
-        ["Toplam Gider Payı", proj10.totals.totalExpenseTl, proj10.totals.totalExpenseUsd],
+        ["Toplam Gider Kesintisi", proj10.totals.totalExpenseTl, proj10.totals.totalExpenseUsd],
         ["10. Yıl Sonu Birikim", proj10.totals.accWithRebateTl, proj10.totals.accWithRebateUsd],
     ];
     dataForSheet.push(["Kalem", "TL", "USD"]);
