@@ -811,7 +811,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'Kâr Payı': profitThisMonthUsd,
             'Gider Payı': expenseThisMonthUsd,
             'Poliçe Tutarı': policyAmount,
-            'Toplam Birikim': fundUsd
+            'Ver. İad. Dahil': fundUsd
         });
         
         tableRows += `<tr>
@@ -838,7 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Kâr Payı': totalProfitUsd,
         'Gider Payı': totalExpenseUsd,
         'Poliçe Tutarı': policyAmount,
-        'Toplam Birikim': fundUsd
+        'Ver. İad. Dahil': fundUsd
     };
     
     tableRows += `<tr class="total-row">
@@ -973,6 +973,7 @@ function compute10YearProjection(params) {
             annualProfitUsd: annualProfitUsdForYear,
             annualExpenseUsd: annualExpenseUsdForYear,
             endOfYearFundUsd: cumulativeFundUsd,
+            endOfYearPolicyAmountUsd: cumulativePolicyAmountUsd,
             totalPremiumUsd: cumulativePremiumUsdForChart,
             accWithRebateUsd: cumulativeFundUsd,
             totalPremiumTl: cumulativePremiumTl,
@@ -1213,7 +1214,7 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <table class="projection-details-table one-year-table">
               <thead><tr>
-                  <th>Ay</th><th>Ödenen<br>Prim</th><th>Vergi<br>Dilimi</th><th>Vergi<br>İadesi</th><th>Kâr<br>Payı</th><th>Gider<br>Payı</th><th>Poliçe<br>Tutarı</th><th>Toplam<br>Birikim</th>
+                  <th>Ay</th><th>Ödenen<br>Prim</th><th>Vergi<br>Dilimi</th><th>Vergi<br>İadesi</th><th>Kâr<br>Payı</th><th>Gider<br>Payı</th><th>Poliçe<br>Tutarı</th><th>Ver. İad.<br>Dahil</th>
               </tr></thead>
               <tbody>${proj1.tableRowsHTML}</tbody>
           </table>
@@ -1258,7 +1259,8 @@ function compute10YearProjection(params) {
               <th>İade</th>
               <th>Kâr<br>Payı</th>
               <th>Gider</th>
-              <th>Yıl<br>Sonu</th>
+              <th>Poliçe<br>Tutarı</th>
+              <th>Ver. İad.<br>Dahil</th>
             </tr></thead>
             <tbody>
               ${proj10.yearlyData.map(d => `
@@ -1268,6 +1270,7 @@ function compute10YearProjection(params) {
                   <td>${fmtUSD(d.annualRebateUsd)}</td>
                   <td>${fmtUSD(d.annualProfitUsd)}</td>
                   <td>${fmtUSD(d.annualExpenseUsd)}</td>
+                  <td>${fmtUSD(d.endOfYearPolicyAmountUsd)}</td>
                   <td>${fmtUSD(d.endOfYearFundUsd)}</td>
                 </tr>
               `).join('')}
@@ -1277,6 +1280,7 @@ function compute10YearProjection(params) {
                  <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
                  <td>${fmtUSD(proj10.totals.totalProfitUsd)}</td>
                  <td>${fmtUSD(proj10.totals.totalExpenseUsd)}</td>
+                 <td>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</td>
                  <td>${fmtUSD(proj10.totals.accWithRebateUsd)}</td>
               </tr>
             </tbody>
@@ -1345,7 +1349,7 @@ function compute10YearProjection(params) {
     XLSX.utils.book_append_sheet(wb, ws_params, "Giriş Parametreleri");
 
     // Sheet 2: 1 Year Projection
-    const oneYearHeaders = ["Ay", "Ödenen Prim ($)", "Vergi Dilimi (%)", "Vergi İadesi ($)", "Kâr Payı ($)", "Gider Payı ($)", "Poliçe Tutarı ($)", "Toplam Birikim ($)"];
+    const oneYearHeaders = ["Ay", "Ödenen Prim ($)", "Vergi Dilimi (%)", "Vergi İadesi ($)", "Kâr Payı ($)", "Gider Payı ($)", "Poliçe Tutarı ($)", "Ver. İad. Dahil ($)"];
     const oneYearData = proj1.monthlyDetails.map(d => [
         d.Ay,
         d['Ödenen Prim'] ? fmtUSD(d['Ödenen Prim']) : '-',
@@ -1354,19 +1358,20 @@ function compute10YearProjection(params) {
         d['Kâr Payı'] ? fmtUSD(d['Kâr Payı']) : '-',
         d['Gider Payı'] ? fmtUSD(d['Gider Payı']) : '-',
         d['Poliçe Tutarı'] ? fmtUSD(d['Poliçe Tutarı']) : '-',
-        d['Toplam Birikim'] ? fmtUSD(d['Toplam Birikim']) : '-'
+        d['Ver. İad. Dahil'] ? fmtUSD(d['Ver. İad. Dahil']) : '-'
     ]);
     const ws_1_year = XLSX.utils.aoa_to_sheet([oneYearHeaders, ...oneYearData]);
     XLSX.utils.book_append_sheet(wb, ws_1_year, "1 Yıllık Projeksiyon");
     
     // Sheet 3: 10 Year Projection
-    const tenYearHeaders = ["Yıl", "Yıllık Prim ($)", "Yıllık İade ($)", "Yıllık Kâr Payı ($)", "Yıllık Gider ($)", "Yıl Sonu Birikim ($)"];
+    const tenYearHeaders = ["Yıl", "Yıllık Prim ($)", "Yıllık İade ($)", "Yıllık Kâr Payı ($)", "Yıllık Gider ($)", "Poliçe Tutarı ($)", "Ver. İad. Dahil ($)"];
     const tenYearData = proj10.yearlyData.map(d => [
       `${d.year}. Yıl`,
       fmtUSD(d.annualPremiumUsd),
       fmtUSD(d.annualRebateUsd),
       fmtUSD(d.annualProfitUsd),
       fmtUSD(d.annualExpenseUsd),
+      fmtUSD(d.endOfYearPolicyAmountUsd),
       fmtUSD(d.endOfYearFundUsd)
     ]);
     const tenYearTotals = [
@@ -1375,6 +1380,7 @@ function compute10YearProjection(params) {
       fmtUSD(proj10.totals.totalRebateUsd),
       fmtUSD(proj10.totals.totalProfitUsd),
       fmtUSD(proj10.totals.totalExpenseUsd),
+      fmtUSD(proj10.totals.totalPolicyAmountUsd),
       fmtUSD(proj10.totals.accWithRebateUsd)
     ];
     const ws_10_year = XLSX.utils.aoa_to_sheet([tenYearHeaders, ...tenYearData, tenYearTotals]);
