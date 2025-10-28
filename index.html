@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-title" content="Poliçe Sorgu">
 
   <link rel="manifest" href="manifest.json">
-<meta charset="utf-t"/>
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Poliçe Sorgu Robotu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +30,7 @@
     --success: #34a853;
     --warning: #fbbc05;
     --excel-green: #187040;
+    --gray-400: #9ca3af; /* gray-400 */
   }
   
   html {
@@ -164,9 +165,10 @@
     justify-content: space-between;
     align-items: center;
     font-weight: 400;
-    color: var(--primary-text);
+    color: var(--gray-400);
     height: 38px;
     box-sizing: border-box;
+    border: 1px solid var(--border-color);
   }
 
   .rate-text {
@@ -177,7 +179,7 @@
   
   .refresh {
     cursor: pointer;
-    color: var(--primary);
+    color: var(--gray-400);
     border: none;
     background: none;
     padding: 0;
@@ -438,7 +440,7 @@
   }
   
   #rateText .spinner {
-     border: 2px solid var(--primary);
+     border: 2px solid var(--gray-400);
      border-bottom-color: transparent;
   }
   
@@ -583,14 +585,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0"
-  }
-}
-</script>
 </head>
 <body>
 
@@ -659,7 +653,7 @@
                     <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
                   </div>
                 </div>
-                <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-top: -10px;">
+                <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-top: 10px;">
                   <div class="rate" id="rateBox">
                     <div class="rate-text" id="rateText"></div>
                     <button class="refresh" id="refreshBtn" title="Kur yenile" aria-label="Kur yenile">
