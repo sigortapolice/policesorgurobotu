@@ -165,7 +165,6 @@
     align-items: center;
     font-weight: 400;
     color: var(--primary-text);
-    margin-bottom: 20px;
     height: 38px;
     box-sizing: border-box;
   }
@@ -605,13 +604,6 @@
               <div class="sub">Brüt maaş ve prim bilgilerinizi girerek 1 yıllık ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</div>
             </div>
 
-            <div class="rate" id="rateBox">
-              <div class="rate-text" id="rateText"></div>
-              <button class="refresh" id="refreshBtn" title="Kur yenile" aria-label="Kur yenile">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-              </button>
-            </div>
-            
             <form id="calcForm" class="form-grid">
               <div class="form-section">
                 <div class="two-col">
@@ -639,28 +631,40 @@
                 </div>
                 <div class="two-col">
                   <div class="input-group">
-                    <label for="annualUsdGrowth">Yıllık kur artışı %</label>
-                    <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
-                  </div>
-                  <div class="input-group">
                     <label for="usdTry">USD/TRY kuru</label>
                     <input id="usdTry" type="number" step="0.01" placeholder="Otomatik çekilecek"/>
+                  </div>
+                  <div class="input-group">
+                    <label for="annualUsdGrowth">Yıllık kur artışı %</label>
+                    <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
                   </div>
                 </div>
                 <div class="two-col">
                   <div class="input-group">
-                    <label for="annualProfitRate">Yıllık kâr payı</label>
+                    <label for="annualProfitRate">Yıllık kâr payı %</label>
                     <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
                   </div>
-                  <div class="input-group">
-                      <label for="annualExpenseRate">Yıllık gider payı %</label>
-                      <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
+                   <div class="input-group">
+                    <label for="annualProfitRateGrowth">Yıllık kâr payı artışı %</label>
+                    <input id="annualProfitRateGrowth" type="number" value="5" min="0" step="0.01"/>
                   </div>
                 </div>
                 <div class="two-col" style="align-items: end;">
                   <div class="input-group">
-                    <label for="annualTaxBracketGrowth">Yıllık vergi dilimi artışı</label>
+                      <label for="annualExpenseRate">Yıllık gider payı %</label>
+                      <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
+                  </div>
+                  <div class="input-group">
+                    <label for="annualTaxBracketGrowth">Yıllık vergi dilimi artışı %</label>
                     <input id="annualTaxBracketGrowth" type="number" value="25" min="0" step="0.01"/>
+                  </div>
+                </div>
+                <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-top: -10px;">
+                  <div class="rate" id="rateBox">
+                    <div class="rate-text" id="rateText"></div>
+                    <button class="refresh" id="refreshBtn" title="Kur yenile" aria-label="Kur yenile">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    </button>
                   </div>
                   <div class="button-group-wrapper">
                     <button type="button" id="resetFormBtn" class="button">
@@ -850,7 +854,8 @@ function compute10YearProjection(params) {
     let {
         monthlySalary, monthlyPremiumUsd, usdTryBase,
         expenseRatePct, profitRatePct, premiumGrowthPct,
-        salaryGrowthPct, usdGrowthPct, taxBracketGrowthPct
+        salaryGrowthPct, usdGrowthPct, taxBracketGrowthPct,
+        profitRateGrowthPct
     } = params;
 
     const annualExpenseRate = expenseRatePct / 100;
@@ -858,8 +863,6 @@ function compute10YearProjection(params) {
     const premiumGrowth = premiumGrowthPct / 100;
     const salaryGrowth = salaryGrowthPct / 100;
     const usdGrowth = usdGrowthPct / 100;
-    const annualProfitRate = profitRatePct / 100;
-    const monthlyProfitRate = annualProfitRate / 12;
     const taxBracketGrowth = taxBracketGrowthPct / 100;
 
     const yearlyData = [];
@@ -876,6 +879,10 @@ function compute10YearProjection(params) {
     let cumulativePremiumUsdForChart = 0;
 
     for (let y = 1; y <= years; y++) {
+        const yearProfitRatePct = profitRatePct * Math.pow(1 + profitRateGrowthPct / 100, y - 1);
+        const annualProfitRate = yearProfitRatePct / 100;
+        const monthlyProfitRate = annualProfitRate / 12;
+
         const yearMonthlySalary = monthlySalary * Math.pow(1 + salaryGrowth, y - 1);
         const yearUsdRate = usdTryBase * Math.pow(1 + usdGrowth, y - 1);
         const yearMonthlyPremiumUsd = monthlyPremiumUsd * Math.pow(1 + premiumGrowth, y - 1);
@@ -1116,6 +1123,8 @@ function compute10YearProjection(params) {
       usdTryBase: parseFloat(document.getElementById('usdTry').value) || 0,
       annualProfitRate: parseFloat(document.getElementById('annualProfitRate').value) || 0,
       profitRatePct: parseFloat(document.getElementById('annualProfitRate').value) || 0,
+      annualProfitRateGrowth: parseFloat(document.getElementById('annualProfitRateGrowth').value) || 0,
+      profitRateGrowthPct: parseFloat(document.getElementById('annualProfitRateGrowth').value) || 0,
       annualExpenseRate: parseFloat(document.getElementById('annualExpenseRate').value) || 0,
       expenseRatePct: parseFloat(document.getElementById('annualExpenseRate').value) || 0,
       annualTaxBracketGrowth: parseFloat(document.getElementById('annualTaxBracketGrowth').value) || 0,
@@ -1247,7 +1256,8 @@ function compute10YearProjection(params) {
         <div class="methodology-text">
             <ul>
                 <li><strong>Vergi İadesi:</strong> Aylık ödenen primin, brüt maaşın %15'ini aşmayacak kısmı için hesaplanır. İade tutarı, o ay içinde bulunulan gelir vergisi dilimi oranına göre belirlenir.</li>
-                <li><strong>Gelir Vergisi Dilimi:</strong> Yıl içindeki kümülatif brüt maaşınıza göre dinamik olarak hesaplanır. Gelecek yıllar için vergi dilimi matrahları, girdiğiniz "Vergi Dilimi Artışı" oranında bileşik olarak artırılır. Örneğin, 2024 yılı için 158.000 TL olan ilk dilim sınırı, %25'lik bir artış varsayımıyla <strong>2025 yılı için 158.000 ₺ * 1.25 = 197.500 ₺</strong> olarak hesaplanır. Bu hesaplama her yıl tüm dilimler için tekrarlanır.</li>
+                <li><strong>Gelir Vergisi Dilimi:</strong> Yıl içindeki kümülatif brüt maaşınıza göre dinamik olarak hesaplanır. Gelecek yıllar için vergi dilimi matrahları, girdiğiniz "Yıllık vergi dilimi artışı %" oranında bileşik olarak artırılır. Örneğin, 2024 yılı için 158.000 TL olan ilk dilim sınırı, %25'lik bir artış varsayımıyla <strong>2025 yılı için 158.000 ₺ * 1.25 = 197.500 ₺</strong> olarak hesaplanır. Bu hesaplama her yıl tüm dilimler için tekrarlanır.</li>
+                <li><strong>Kâr Payı:</strong> Yıllık kâr payı, gelecek yıllar için girdiğiniz "Yıllık kâr payı artışı %" oranında bileşik olarak artırılarak projeksiyona dahil edilir.</li>
                 <li><strong>Birikim Hesabı (USD):</strong> USD cinsinden olan birikim fonunuz, her ay ödediğiniz <strong>USD prim tutarı</strong>, TL olarak hesaplanıp o anki kurdan <strong>USD'ye çevrilen vergi iadesi</strong> ve mevcut birikiminiz üzerinden hesaplanan <strong>kâr payının</strong> eklenmesiyle büyür. Aynı şekilde, mevcut birikiminiz üzerinden hesaplanan <strong>gider payı</strong> bu toplamdan düşülür.</li>
                 <li><strong>10 Yıllık Projeksiyon ve Varsayımlar:</strong> Maaş, prim ve vergi dilimleri için girdiğiniz yıllık artış oranları varsayımlarına dayanır. Benzer şekilde, <strong>gelecek yıllardaki USD/TRY kuru</strong> da mevcut kur üzerine girdiğiniz yıllık "Kur Artışı (%)" oranının bileşik olarak eklenmesiyle tahmin edilir. Bu sebeple sonuçlar, gelecekteki piyasa koşullarına göre farklılık gösterebilecek birer tahmindir.</li>
                 <li><strong>Anlık Döviz Kuru:</strong> Simülasyonun başlangıç yılı için güncel USD/TRY kuru anlık olarak harici bir servis üzerinden çekilir. Servise ulaşılamaması durumunda sistemde tanımlı bir kur değeri kullanılır.</li>
@@ -1279,6 +1289,7 @@ function compute10YearProjection(params) {
         ["Yıllık Kur Artışı (%)", params.annualUsdGrowth],
         ["USD/TRY Kuru", params.usdTry],
         ["Yıllık Kâr Payı (%)", params.annualProfitRate],
+        ["Yıllık Kâr Payı Artışı (%)", params.annualProfitRateGrowth],
         ["Yıllık Gider Payı (%)", params.annualExpenseRate],
         ["Yıllık Vergi Dilimi Artışı (%)", params.annualTaxBracketGrowth],
     ];
@@ -1399,6 +1410,7 @@ function compute10YearProjection(params) {
         formElements.annualPremiumGrowth.value = "5";
         formElements.annualUsdGrowth.value = "15";
         formElements.annualProfitRate.value = "6.24";
+        formElements.annualProfitRateGrowth.value = "5";
         formElements.annualExpenseRate.value = "5";
         formElements.annualTaxBracketGrowth.value = "25";
         
