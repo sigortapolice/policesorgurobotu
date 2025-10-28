@@ -244,6 +244,16 @@
     box-shadow: none;
   }
 
+  /* Hide number input arrows */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   .two-col{ display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   
   .input-with-button {
