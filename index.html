@@ -48,6 +48,7 @@
     -moz-osx-font-smoothing: grayscale;
     font-weight: 400;
     letter-spacing: -0.5px;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* --- UNIFIED FONT SIZING --- */
@@ -709,10 +710,11 @@ document.addEventListener('DOMContentLoaded', () => {
     },
   };
 
+  // Gelir vergisi dilimleri
   const TAX_BRACKETS = [
     { upTo: 158000, rate: 0.15 },
     { upTo: 330000, rate: 0.20 },
-    { upTo: 800000, rate: 0.27 },
+    { upTo: 1200000, rate: 0.27 },
     { upTo: 4300000, rate: 0.35 },
     { upTo: Infinity, rate: 0.40 }
   ];
@@ -816,10 +818,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPremiumUsd = monthlyPremiumUsd * 12;
     const totalRebateUsd = totalRebateTl / usdTry;
     const yearEndTl = fundUsd * usdTry;
-    const currentYear = new Date().getFullYear();
+    const simulationYear = 2025;
     
     const totalRow = {
-        Ay: 'Toplam',
+        Ay: `${simulationYear} Toplam`,
         'Maaş': totalSalary,
         'V.D.': null,
         Prim: totalPremiumUsd,
@@ -827,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     tableRows += `<tr class="total-row">
-        <td>${currentYear}</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
+        <td>${simulationYear} Toplam</td> <td>${fmtTL(totalSalary)}</td> <td>-</td>
         <td>${fmtUSD(totalPremiumUsd)}</td> <td>${fmtUSD(totalRebateUsd)}</td>
       </tr>`;
 
@@ -1223,7 +1225,8 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <table class="projection-details-table ten-year-table">
             <thead><tr>
-              <th>Yıl</th><th>Prim ($)</th><th>İade ($)</th><th>Kâr Payı ($)</th><th>Gider ($)</th><th>Birikim ($)</th>
+              <th>Yıl</th><th>Prim ($)</th><th>İade ($)</th><th>Kâr Payı ($)</th>
+              <th>Gider ($)</th><th>Yıl Sonu ($)</th>
             </tr></thead>
             <tbody>
               ${proj10.yearlyData.map(d => `
@@ -1237,217 +1240,165 @@ function compute10YearProjection(params) {
                 </tr>
               `).join('')}
               <tr class="total-row">
-                <td>Toplam</td>
-                <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
-                <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
-                <td>${fmtUSD(proj10.totals.totalProfitUsd)}</td>
-                <td>${fmtUSD(proj10.totals.totalExpenseUsd)}</td>
-                <td>${fmtUSD(proj10.totals.accWithRebateUsd)}</td>
+                 <td>10 Yıl Toplam</td>
+                 <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
+                 <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
+                 <td>${fmtUSD(proj10.totals.totalProfitUsd)}</td>
+                 <td>${fmtUSD(proj10.totals.totalExpenseUsd)}</td>
+                 <td>${fmtUSD(proj10.totals.accWithRebateUsd)}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+
       <div class="results-card">
-        <h3>
-          10 Yıllık Projeksiyon Grafiği (USD)
-        </h3>
-        <div class="chart-container"><canvas id="projectionChart"></canvas></div>
-      </div>
-       <div class="results-card">
-        <h3>
-          10 Yıllık Projeksiyon Grafiği (TL)
-        </h3>
-        <div class="chart-container"><canvas id="projectionChartTl"></canvas></div>
+        <h3>10 Yıllık Birikim Projeksiyonu ($)</h3>
+        <div class="chart-container">
+            <canvas id="projectionChartUsd"></canvas>
+        </div>
       </div>
       <div class="results-card">
-        <h3>Hesaplama Metodolojisi</h3>
+        <h3>10 Yıllık Birikim Projeksiyonu (₺)</h3>
+        <div class="chart-container">
+            <canvas id="projectionChartTl"></canvas>
+        </div>
+      </div>
+      <div class="results-card">
+        <h3>
+          Hesaplama Metodolojisi
+        </h3>
         <div class="methodology-text">
-            <ul>
-                <li><strong>Vergi İadesi:</strong> Aylık ödenen primin, brüt maaşın %15'ini aşmayacak kısmı için hesaplanır. İade tutarı, o ay içinde bulunulan gelir vergisi dilimi oranına göre belirlenir.</li>
-                <li><strong>Gelir Vergisi Dilimi:</strong> Yıl içindeki kümülatif brüt maaşınıza göre dinamik olarak hesaplanır. Gelecek yıllar için vergi dilimi matrahları, girdiğiniz "Yıllık vergi dilimi artışı %" oranında bileşik olarak artırılır. Örneğin, 2024 yılı için 158.000 TL olan ilk dilim sınırı, %25'lik bir artış varsayımıyla <strong>2025 yılı için 158.000 ₺ * 1.25 = 197.500 ₺</strong> olarak hesaplanır. Bu hesaplama her yıl tüm dilimler için tekrarlanır.</li>
-                <li><strong>Kâr Payı (Günlük Bileşik Getiri):</strong> Simülasyon, kâr payını finansal ürünlerde yaygın olan <strong>günlük bileşik getiri</strong> prensibine göre hesaplar. Bu model, poliçenin reel dünya performansını en doğru şekilde yansıtmayı hedefler.
-                    <ul style="margin-top: 8px; margin-bottom: 8px; list-style-type: disc; padding-left: 20px;">
-                        <li><strong>Günlük Bileşik Getiri Uygulaması:</strong> Sistemin temel hesaplama mantığı, poliçede kalınan her gün için birikiminizin üzerine kâr eklenmesi prensibine dayanır. Forma girdiğiniz yıllık kâr payı oranı 365'e bölünerek günlük oran bulunur. Ardından, birikiminiz bu günlük oranla her gün bileşik olarak büyür. Simülasyon, bu günlük büyümenin sonuçlarını tabloda aylık periyotlar halinde gösterir, ancak hesaplamanın özü günlüktür.</li>
-                        <li><strong>Yıldan Yıla Artış:</strong> 10 yıllık projeksiyonda, her yeni yıl için kâr payı oranı, girdiğiniz "Yıllık kâr payı artışı %" varsayımına göre bileşik olarak artırılır. Bu yeni ve artırılmış yıllık oran, o yılın günlük hesaplamaları için baz alınır.</li>
-                    </ul>
-                    Özetle, sistem hem günlük bileşik getiri uygular hem de bu getirinin dayandığı ana oranı yıllık varsayımlarınıza göre dinamik olarak artırır.
-                </li>
-                <li><strong>Birikim Hesabı (USD):</strong> USD cinsinden olan birikim fonunuz, her ay ödediğiniz <strong>USD prim tutarı</strong>, TL olarak hesaplanıp o anki kurdan <strong>USD'ye çevrilen vergi iadesi</strong> ve mevcut birikiminiz üzerinden hesaplanan <strong>kâr payının</strong> eklenmesiyle büyür. Aynı şekilde, ödediğiniz prim üzerinden hesaplanan <strong>gider kesintisi</strong> bu toplamdan düşülür.</li>
-                <li><strong>10 Yıllık Projeksiyon ve Varsayımlar:</strong> Maaş, prim ve vergi dilimleri için girdiğiniz yıllık artış oranları varsayımlarına dayanır. Benzer şekilde, <strong>gelecek yıllardaki USD/TRY kuru</strong> da mevcut kur üzerine girdiğiniz yıllık "Kur Artışı (%)" oranının bileşik olarak eklenmesiyle tahmin edilir. Bu sebeple sonuçlar, gelecekteki piyasa koşullarına göre farklılık gösterebilecek birer tahmindir.</li>
-                <li><strong>Anlık Döviz Kuru:</strong> Simülasyonun başlangıç yılı için güncel USD/TRY kuru anlık olarak harici bir servis üzerinden çekilir. Servise ulaşılamaması durumunda sistemde tanımlı bir kur değeri kullanılır.</li>
-            </ul>
+          <p>Bu simülasyon, girdiğiniz verilere dayanarak potansiyel birikim ve vergi iadesi projeksiyonu sunar. Temel varsayımlar şunlardır:</p>
+          <ul>
+            <li><strong>Başlangıç Yılı:</strong> Tüm hesaplamalar <strong>2025</strong> yılı baz alınarak başlar ve ilk yıl için 2025 gelir vergisi dilimleri kullanılır.</li>
+            <li><strong>Vergi İadesi:</strong> Vergi iadesi, aylık brüt maaşınızın <strong>%15'ini aşmayacak</strong> şekilde ödediğiniz prim tutarı üzerinden, o an içinde bulunduğunuz gelir vergisi dilimi oranına göre hesaplanır.</li>
+            <li><strong>Dinamik Projeksiyon:</strong> 10 yıllık projeksiyonda maaş, prim, kur ve vergi dilimleri, girdiğiniz yıllık artış oranlarına göre her yıl bileşik olarak artırılır. Bu, daha gerçekçi bir senaryo sunar.</li>
+            <li><strong>Kâr Payı:</strong> Kâr payı, günlük bileşik getiri varsayımıyla hesaplanır ve fonunuza eklenir.</li>
+          </ul>
         </div>
       </div>
     `;
+
     resultsDiv.style.display = 'grid';
-    renderChart('projectionChart', proj10. yearlyData, 'USD');
+    renderChart('projectionChartUsd', proj10.yearlyData, 'USD');
     renderChart('projectionChartTl', proj10.yearlyData, 'TL');
   }
   
-  function exportResultsToExcel() {
+  function exportToExcel() {
     if (!lastCalculationResults) {
-        alert("Dışa aktarılacak veri yok. Lütfen önce hesaplama yapın.");
-        return;
+      alert("Lütfen önce bir hesaplama yapın.");
+      return;
     }
 
     const { proj1, proj10, params } = lastCalculationResults;
-    const dataForSheet = [];
 
-    // --- Section 1: Giriş Parametreleri ---
-    dataForSheet.push(["Giriş Parametreleri"]);
-    const paramsData = [
-        ["Brüt Maaş (₺)", params.monthlySalary],
-        ["Aylık Prim (USD)", params.monthlyPremiumUsd],
-        ["Yıllık Maaş Artışı (%)", params.annualSalaryGrowth],
-        ["Yıllık Prim Artışı (%)", params.annualPremiumGrowth],
-        ["Yıllık Kur Artışı (%)", params.annualUsdGrowth],
-        ["USD/TRY Kuru", params.usdTry],
-        ["Yıllık Kâr Payı (%)", params.annualProfitRate],
-        ["Yıllık Kâr Payı Artışı (%)", params.annualProfitRateGrowth],
-        ["Gider Kesintisi (%)", params.annualExpenseRate],
-        ["Yıllık Vergi Dilimi Artışı (%)", params.annualTaxBracketGrowth],
-    ];
-    dataForSheet.push(["Parametre", "Değer"]);
-    paramsData.forEach(row => dataForSheet.push(row));
-    dataForSheet.push([]); // Spacer
-
-    // --- Section 2: 1 Yıllık Özet ---
-    dataForSheet.push(["1 Yıllık Projeksiyon Özeti"]);
-    const proj1SummaryData = [
-        ["Yıllık Prim Ödemesi", proj1.yearlyTl, proj1.yearlyPremiumUsd],
-        ["Yıllık Vergi İadesi", proj1.totalRebateTl, proj1.totalRebateUsd],
-        ["Yıllık Kâr Payı", proj1.yearlyProfitTl, proj1.yearlyProfitUsd],
-        ["Yıllık Gider Kesintisi", proj1.yearlyExpenseTl, proj1.yearlyExpenseUsd],
-        ["Yıl Sonu Birikim", proj1.yearEndTl, proj1.yearEndUsd],
-    ];
-    dataForSheet.push(["Kalem", "TL", "USD"]);
-    proj1SummaryData.forEach(row => dataForSheet.push(row));
-    dataForSheet.push([]); // Spacer
-
-    // --- Section 3: 1 Yıllık Detay ---
-    dataForSheet.push(["1 Yıllık Projeksiyon Detay"]);
-    const proj1DetailsData = proj1.monthlyDetails.map(d => [
-        d.Ay,
-        d['Maaş'],
-        d['V.D.'],
-        d.Prim,
-        d.İade,
-    ]);
-    dataForSheet.push(['Ay', 'Maaş (₺)', 'Vergi Dilimi (%)', 'Prim (USD)', 'İade (USD)']);
-    proj1DetailsData.forEach(row => dataForSheet.push(row));
-    dataForSheet.push([]); // Spacer
-
-    // --- Section 4: 10 Yıllık Özet ---
-    dataForSheet.push(["10 Yıllık Projeksiyon Özeti"]);
-    const proj10SummaryData = [
-        ["Toplam Prim Ödemesi", proj10.totals.totalPremiumTl, proj10.totals.totalPremiumUsd],
-        ["Toplam Vergi İadesi", proj10.totals.totalRebateTl, proj10.totals.totalRebateUsd],
-        ["Toplam Kâr Payı", proj10.totals.totalProfitTl, proj10.totals.totalProfitUsd],
-        ["Toplam Gider Kesintisi", proj10.totals.totalExpenseTl, proj10.totals.totalExpenseUsd],
-        ["10. Yıl Sonu Birikim", proj10.totals.accWithRebateTl, proj10.totals.accWithRebateUsd],
-    ];
-    dataForSheet.push(["Kalem", "TL", "USD"]);
-    proj10SummaryData.forEach(row => dataForSheet.push(row));
-    dataForSheet.push([]); // Spacer
-    
-    // --- Section 5: 10 Yıllık Detay ---
-    dataForSheet.push(["10 Yıllık Projeksiyon Detay"]);
-    const proj10DetailsData = proj10.yearlyData.map(d => [
-        `${d.year}. Yıl`,
-        d.annualPremiumUsd,
-        d.annualRebateUsd,
-        d.annualProfitUsd,
-        d.annualExpenseUsd,
-        d.endOfYearFundUsd,
-    ]);
-    proj10DetailsData.push([
-        'Toplam',
-        proj10.totals.totalPremiumUsd,
-        proj10.totals.totalRebateUsd,
-        proj10.totals.totalProfitUsd,
-        proj10.totals.totalExpenseUsd,
-        proj10.totals.accWithRebateUsd,
-    ]);
-    dataForSheet.push(['Yıl', 'Yıllık Prim (USD)', 'Yıllık İade (USD)', 'Yıllık Kâr Payı (USD)', 'Yıllık Gider (USD)', 'Yıl Sonu Birikim (USD)']);
-    proj10DetailsData.forEach(row => dataForSheet.push(row));
-
-    const ws = XLSX.utils.aoa_to_sheet(dataForSheet);
-
-    // Set column widths for better readability
-    ws['!cols'] = [
-        { wch: 30 }, // Column A
-        { wch: 20 }, // Column B
-        { wch: 20 }, // Column C
-        { wch: 25 }, // Column D
-        { wch: 20 }, // Column E
-        { wch: 25 }  // Column F
-    ];
-    
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Poliçe Projeksiyonu");
 
-    XLSX.writeFile(wb, "Police_Projeksiyonu.xlsx");
+    // Sheet 1: Parameters
+    const paramsData = [
+      ["Parametre", "Değer"],
+      ["Aylık Brüt Maaş", fmtTL(params.monthlySalary)],
+      ["Aylık Prim (USD)", fmtUSD(params.monthlyPremiumUsd)],
+      ["Başlangıç USD/TRY Kuru", params.usdTry],
+      ["Yıllık Maaş Artışı %", params.annualSalaryGrowth],
+      ["Yıllık Prim Artışı %", params.annualPremiumGrowth],
+      ["Yıllık Kur Artışı %", params.annualUsdGrowth],
+      ["Yıllık Kâr Payı %", params.annualProfitRate],
+      ["Yıllık Kâr Payı Artışı %", params.annualProfitRateGrowth],
+      ["Gider Kesintisi %", params.annualExpenseRate],
+      ["Yıllık Vergi Dilimi Artışı %", params.annualTaxBracketGrowth]
+    ];
+    const ws_params = XLSX.utils.aoa_to_sheet(paramsData);
+    XLSX.utils.book_append_sheet(wb, ws_params, "Giriş Parametreleri");
+
+    // Sheet 2: 1 Year Projection
+    const oneYearHeaders = ["Ay", "Maaş (₺)", "Vergi Dilimi (%)", "Prim ($)", "İade ($)"];
+    const oneYearData = proj1.monthlyDetails.map(d => [
+        d.Ay,
+        d['Maaş'] ? (d.Ay.includes('Toplam') ? fmtTL(d['Maaş']) : fmtTL(d['Maaş'])) : '-',
+        d['V.D.'] ? `${d['V.D.'].toFixed(0)}%` : '-',
+        d.Prim ? fmtUSD(d.Prim) : '-',
+        d.İade ? fmtUSD(d.İade) : '-'
+    ]);
+    const ws_1_year = XLSX.utils.aoa_to_sheet([oneYearHeaders, ...oneYearData]);
+    XLSX.utils.book_append_sheet(wb, ws_1_year, "1 Yıllık Projeksiyon");
+    
+    // Sheet 3: 10 Year Projection
+    const tenYearHeaders = ["Yıl", "Yıllık Prim ($)", "Yıllık İade ($)", "Yıllık Kâr Payı ($)", "Yıllık Gider ($)", "Yıl Sonu Birikim ($)"];
+    const tenYearData = proj10.yearlyData.map(d => [
+      `${d.year}. Yıl`,
+      fmtUSD(d.annualPremiumUsd),
+      fmtUSD(d.annualRebateUsd),
+      fmtUSD(d.annualProfitUsd),
+      fmtUSD(d.annualExpenseUsd),
+      fmtUSD(d.endOfYearFundUsd)
+    ]);
+    const tenYearTotals = [
+      "10 Yıl Toplam",
+      fmtUSD(proj10.totals.totalPremiumUsd),
+      fmtUSD(proj10.totals.totalRebateUsd),
+      fmtUSD(proj10.totals.totalProfitUsd),
+      fmtUSD(proj10.totals.totalExpenseUsd),
+      fmtUSD(proj10.totals.accWithRebateUsd)
+    ];
+    const ws_10_year = XLSX.utils.aoa_to_sheet([tenYearHeaders, ...tenYearData, tenYearTotals]);
+    XLSX.utils.book_append_sheet(wb, ws_10_year, "10 Yıllık Projeksiyon");
+
+    XLSX.writeFile(wb, "Police_Bilanco_Simulasyonu.xlsx");
 }
 
-
-  // --- Event Listeners and Initial Setup for Calculator ---
-  const form = document.getElementById('calcForm');
-  const refreshBtn = document.getElementById('refreshBtn');
-  const resetFormBtn = document.getElementById('resetFormBtn');
-  const exportBtn = document.getElementById('exportBtn');
   
-  let calculationTimeout;
-
-  if (form) {
-    form.addEventListener('input', (e) => {
-      if (e.target.id === 'monthlySalary') {
-        const value = e.target.value;
-        const formatted = formatNumber(value);
-        if (value !== formatted) {
-          e.target.value = formatted;
-        }
-      }
-      
-      clearTimeout(calculationTimeout);
-      calculationTimeout = setTimeout(computeAndRender, 300);
-    });
-  }
-  
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
+  function resetForm() {
+      document.getElementById('calcForm').reset();
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.style.display = 'none';
+      resultsDiv.innerHTML = '';
+      Object.values(projectionChartInstances).forEach(chart => chart.destroy());
+      projectionChartInstances = {};
+      lastCalculationResults = null;
       document.getElementById('usdTry').value = '';
-      updateRateAndShow(true);
-    });
+      updateRateAndShow(false);
   }
+
+  // Event Listeners
+  document.getElementById('calcForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    computeAndRender();
+  });
+
+  const inputs = document.querySelectorAll('#calcForm input');
+  inputs.forEach(input => {
+    input.addEventListener('input', computeAndRender);
+
+    if (input.type === 'text' && (input.id === 'monthlySalary' || input.id === 'monthlyPremiumUsd')) {
+      input.addEventListener('keyup', (e) => {
+        const formattedValue = formatNumber(e.target.value);
+        if (e.target.value !== formattedValue) {
+          e.target.value = formattedValue;
+        }
+      });
+    }
+  });
+
+  document.getElementById('refreshBtn').addEventListener('click', () => updateRateAndShow(true));
+  document.getElementById('resetFormBtn').addEventListener('click', resetForm);
+  document.getElementById('exportBtn').addEventListener('click', exportToExcel);
   
-  if (resetFormBtn) {
-    resetFormBtn.addEventListener('click', () => {
-        const formElements = form.elements;
-        formElements.monthlySalary.value = "100.000";
-        formElements.monthlyPremiumUsd.value = "100";
-        formElements.annualSalaryGrowth.value = "15";
-        formElements.annualPremiumGrowth.value = "5";
-        formElements.annualUsdGrowth.value = "15";
-        formElements.annualProfitRate.value = "6.24";
-        formElements.annualProfitRateGrowth.value = "5";
-        formElements.annualExpenseRate.value = "5";
-        formElements.annualTaxBracketGrowth.value = "25";
-        
-        computeAndRender();
-    });
-  }
+  // Initial Rate Fetch on load
+  updateRateAndShow(true);
 
-  if (exportBtn) {
-    exportBtn.addEventListener('click', exportResultsToExcel);
-  }
-
-  // Initial calculation on page load
-  const salaryInput = document.getElementById('monthlySalary');
-  if (salaryInput) {
-    salaryInput.value = formatNumber(salaryInput.value);
-    updateRateAndShow(true);
-  }
+  // Resize listener for charts
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (lastCalculationResults) {
+        renderChart('projectionChartUsd', lastCalculationResults.proj10.yearlyData, 'USD');
+        renderChart('projectionChartTl', lastCalculationResults.proj10.yearlyData, 'TL');
+      }
+    }, 250);
+  });
 });
 </script>
 </body>
