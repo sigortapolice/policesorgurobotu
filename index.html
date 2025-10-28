@@ -364,10 +364,9 @@
     white-space: nowrap;
   }
   .summary-item > div:nth-child(2) {
-    color: var(--primary-text);
+    color: var(--gray-400);
   }
   
-  .summary-item .highlight,
   .summary-item .highlight-label {
     font-weight: 400;
     color: var(--primary-text);
@@ -436,6 +435,11 @@
     padding-right: 0;
   }
 
+  .projection-details-table th:not(:last-child),
+  .projection-details-table td:not(:last-child) {
+    border-right: 1px solid var(--border-color);
+  }
+
   .projection-details-table th:first-child,
   .projection-details-table td:first-child {
     position: -webkit-sticky;
@@ -443,7 +447,6 @@
     left: 0;
     z-index: 1;
     background-color: var(--card);
-    border-right: 1px solid var(--border-color);
   }
 
   .projection-details-table tbody tr:hover td:first-child {
@@ -858,6 +861,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPremiumUsd = monthlyPremiumUsd * 12;
     const totalRebateUsd = totalRebateTl / usdTry;
     const yearEndTl = fundUsd * usdTry;
+    const yearEndPolicyAmountTl = policyAmount * usdTry;
     
     const totalRow = {
         Ay: `Top.`,
@@ -889,11 +893,13 @@ document.addEventListener('DOMContentLoaded', () => {
         yearlyProfitTl: totalProfitTl,
         yearlyExpenseTl: totalExpenseTl,
         yearEndTl: yearEndTl,
+        yearEndPolicyAmountTl: yearEndPolicyAmountTl,
         yearlyPremiumUsd: totalPremiumUsd,
         totalRebateUsd: totalRebateUsd,
         yearlyProfitUsd: totalProfitUsd,
         yearlyExpenseUsd: totalExpenseUsd,
         yearEndUsd: fundUsd,
+        yearEndPolicyAmountUsd: policyAmount,
     };
 }
 
@@ -1219,19 +1225,22 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <div class="summary-list">
             <div class="summary-item">
-              <div>Yıllık Prim Ödemesi</div><div class="highlight">${fmtTL(proj1.yearlyTl)}</div><div>${fmtUSD(proj1.yearlyPremiumUsd)}</div>
+              <div>Yıl boyunca ödenen prim</div><div>${fmtTL(proj1.yearlyTl)}</div><div>${fmtUSD(proj1.yearlyPremiumUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">Yıllık Vergi İadesi</div><div class="highlight">${fmtTL(proj1.totalRebateTl)}</div><div>${fmtUSD(proj1.totalRebateUsd)}</div>
+              <div class="highlight-label">Yılda alınan vergi iadesi</div><div>${fmtTL(proj1.totalRebateTl)}</div><div>${fmtUSD(proj1.totalRebateUsd)}</div>
             </div>
             <div class="summary-item">
-              <div>Yıllık Kâr Payı</div><div class="highlight">${fmtTL(proj1.yearlyProfitTl)}</div><div>${fmtUSD(proj1.yearlyProfitUsd)}</div>
+              <div>Poliçeye eklenen kar payı</div><div>${fmtTL(proj1.yearlyProfitTl)}</div><div>${fmtUSD(proj1.yearlyProfitUsd)}</div>
             </div>
             <div class="summary-item">
-              <div>Gider kesintisi</div><div class="highlight">${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
+              <div>Ödenen gider payı</div><div>${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
+              <div>Poliçe Tutarı (vergi iadesi hariç)</div><div>${fmtTL(proj1.yearEndPolicyAmountTl)}</div><div>${fmtUSD(proj1.yearEndPolicyAmountUsd)}</div>
+            </div>
+            <div class="summary-item">
+              <div class="highlight-label">Vergi iadesi dahil poliçe tutarı</div><div>${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
             </div>
           </div>
         </div>
@@ -1256,22 +1265,22 @@ function compute10YearProjection(params) {
         <div class="table-wrapper">
           <div class="summary-list">
               <div class="summary-item">
-                <div>Prim Ödemesi</div><div class="highlight">${fmtTL(proj10.totals.totalPremiumTl)}</div><div>${fmtUSD(proj10.totals.totalPremiumUsd)}</div>
+                <div>Prim Ödemesi</div><div>${fmtTL(proj10.totals.totalPremiumTl)}</div><div>${fmtUSD(proj10.totals.totalPremiumUsd)}</div>
               </div>
               <div class="summary-item">
-                <div class="highlight-label">Vergi İadesi</div><div class="highlight">${fmtTL(proj10.totals.totalRebateTl)}</div><div>${fmtUSD(proj10.totals.totalRebateUsd)}</div>
+                <div class="highlight-label">Vergi İadesi</div><div>${fmtTL(proj10.totals.totalRebateTl)}</div><div>${fmtUSD(proj10.totals.totalRebateUsd)}</div>
               </div>
               <div class="summary-item">
-                <div>Kâr Payı</div><div class="highlight">${fmtTL(proj10.totals.totalProfitTl)}</div><div>${fmtUSD(proj10.totals.totalProfitUsd)}</div>
+                <div>Kâr Payı</div><div>${fmtTL(proj10.totals.totalProfitTl)}</div><div>${fmtUSD(proj10.totals.totalProfitUsd)}</div>
               </div>
               <div class="summary-item">
-                <div>Gider Kesintisi</div><div class="highlight">${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
+                <div>Gider Kesintisi</div><div>${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
               </div>
               <div class="summary-item">
-                <div>Poliçe Tutarı</div><div class="highlight">${fmtTL(proj10.totals.totalPolicyAmountTl)}</div><div>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</div>
+                <div>Poliçe Tutarı</div><div>${fmtTL(proj10.totals.totalPolicyAmountTl)}</div><div>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</div>
               </div>
               <div class="summary-item">
-                <div class="highlight-label">10. Yıl Sonu Birikim</div><div class="highlight">${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
+                <div class="highlight-label">10. Yıl Sonu Birikim</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
               </div>
           </div>
         </div>
@@ -1284,10 +1293,10 @@ function compute10YearProjection(params) {
           <table class="projection-details-table ten-year-table">
             <thead><tr>
               <th>Yıl</th>
-              <th>Prim</th>
-              <th>İade</th>
+              <th>Ödenen<br>Prim</th>
+              <th>Vergi<br>İadesi</th>
               <th>Kâr<br>Payı</th>
-              <th>Gider</th>
+              <th>Gider<br>Payı</th>
               <th>Poliçe<br>Tutarı</th>
               <th>Ver. İad.<br>Dahil</th>
             </tr></thead>
@@ -1393,7 +1402,7 @@ function compute10YearProjection(params) {
     XLSX.utils.book_append_sheet(wb, ws_1_year, "1 Yıllık Projeksiyon");
     
     // Sheet 3: 10 Year Projection
-    const tenYearHeaders = ["Yıl", "Yıllık Prim ($)", "Yıllık İade ($)", "Yıllık Kâr Payı ($)", "Yıllık Gider ($)", "Poliçe Tutarı ($)", "Ver. İad. Dahil ($)"];
+    const tenYearHeaders = ["Yıl", "Yıllık Ödenen Prim ($)", "Yıllık Vergi İadesi ($)", "Yıllık Kâr Payı ($)", "Yıllık Gider Payı ($)", "Poliçe Tutarı ($)", "Ver. İad. Dahil ($)"];
     const tenYearData = proj10.yearlyData.map(d => [
       `${d.year}. Yıl`,
       fmtUSD(d.annualPremiumUsd),
