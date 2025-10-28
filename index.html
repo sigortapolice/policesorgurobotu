@@ -135,7 +135,8 @@
   .header-box {
     margin: -20px -20px 20px -20px;
     padding: 20px;
-    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898;
+    background-blend-mode: multiply,multiply;
     border-top-left-radius: var(--radius-l);
     border-top-right-radius: var(--radius-l);
   }
@@ -148,7 +149,7 @@
   
   .header-box h2,
   .header-box .sub {
-    color: var(--primary-text);
+    color: #f9fafb;
   }
   
   .sub{
