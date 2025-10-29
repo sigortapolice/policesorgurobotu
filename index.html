@@ -1235,6 +1235,9 @@ function compute10YearProjection(params) {
               <div>Ödenen gider payı</div><div>${fmtTL(proj1.yearlyExpenseTl)}</div><div>${fmtUSD(proj1.yearlyExpenseUsd)}</div>
             </div>
             <div class="summary-item">
+              <div class="highlight-label">Poliçe tutarı</div><div>${fmtTL(proj1.yearEndPolicyAmountTl)}</div><div>${fmtUSD(proj1.yearEndPolicyAmountUsd)}</div>
+            </div>
+            <div class="summary-item">
               <div class="highlight-label">Vergi iadesi dahil toplam kazanım</div><div>${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
             </div>
           </div>
@@ -1257,6 +1260,9 @@ function compute10YearProjection(params) {
             </div>
             <div class="summary-item">
               <div>Ödenen gider payı</div><div>${fmtTL(proj10.totals.totalExpenseTl)}</div><div>${fmtUSD(proj10.totals.totalExpenseUsd)}</div>
+            </div>
+            <div class="summary-item">
+              <div class="highlight-label">Poliçe tutarı</div><div>${fmtTL(proj10.totals.totalPolicyAmountTl)}</div><div>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</div>
             </div>
             <div class="summary-item">
               <div class="highlight-label">Vergi iadesi dahil toplam kazanım</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
