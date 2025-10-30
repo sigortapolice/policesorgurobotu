@@ -1,12 +1,12 @@
-const CACHE_NAME = 'police-asistani-v7';
+const CACHE_NAME = 'police-asistani-v8';
 const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192x192.png',
-  './icon-512x512.png',
-  './favicon-32x32.png',
-  './favicon-16x16.png',
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon-192x192.png',
+  '/icon-512x512.png',
+  '/favicon-32x32.png',
+  '/favicon-16x16.png',
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js'
 ];
@@ -42,6 +42,11 @@ self.addEventListener('activate', event => {
 
 // Fetch event: serve from cache or network
 self.addEventListener('fetch', event => {
+  // We only want to cache GET requests.
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -49,8 +54,33 @@ self.addEventListener('fetch', event => {
         if (response) {
           return response;
         }
-        // Not in cache - fetch from network
-        return fetch(event.request);
+        
+        // Not in cache - fetch from network, but don't cache API calls
+        if (event.request.url.includes('api.exchangerate.host')) {
+            return fetch(event.request);
+        }
+
+        return fetch(event.request).then(
+          (response) => {
+            // Check if we received a valid response
+            if(!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+
+            // IMPORTANT: Clone the response. A response is a stream
+            // and because we want the browser to consume the response
+            // as well as the cache consuming the response, we need
+            // to clone it so we have two streams.
+            var responseToCache = response.clone();
+
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          }
+        );
       })
   );
 });
