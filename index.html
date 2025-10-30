@@ -77,7 +77,7 @@
     body, h2, h3, p, li, button, input, label, th, td {
       font-size: 14px;
     }
-    .calculation-context-note {
+    .calculation-context-note, .has-tooltip::before {
       font-size: 13px !important;
     }
   }
@@ -91,7 +91,7 @@
     body, h2, h3, p, li, button, input, label, th, td {
       font-size: 13px;
     }
-    .calculation-context-note {
+    .calculation-context-note, .has-tooltip::before {
       font-size: 12px !important;
     }
   }
@@ -250,6 +250,19 @@
     font-weight: 400;
   }
   
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    transition: background-color 0.2s ease;
+  }
+  .input-wrapper:focus-within, .input-wrapper:hover {
+      background-color: var(--input-focus-bg);
+  }
+
   input[type=number], input[type=text], input[type=password] {
     width: 100%;
     padding: var(--form-v-padding) 14px;
@@ -261,6 +274,23 @@
     color: var(--primary-text);
     transition: border-color 0.2s ease, background-color 0.2s ease;
   }
+  
+  /* Reset styles for inputs within the wrapper */
+  .input-wrapper input {
+    flex-grow: 1;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: var(--form-v-padding) 14px;
+    margin: 0;
+    outline: none;
+  }
+
+  .input-group > input[type=number]:hover,
+  .input-group > input[type=text]:hover,
+  .input-group > input[type=password]:hover {
+    background-color: var(--input-focus-bg);
+  }
 
   input:focus {
     outline: none;
@@ -268,6 +298,13 @@
     background-color: var(--input-focus-bg);
     box-shadow: none;
   }
+  
+  /* Override general focus style for wrapped inputs */
+  .input-wrapper input:focus {
+      background-color: transparent;
+      box-shadow: none;
+  }
+
 
   /* Hide number input arrows */
   input[type=number] {
@@ -600,48 +637,83 @@
   .button.export-button:hover:not(:disabled) svg .cls-1 {
     fill: var(--input-bg);
   }
+  
+  .info-tooltip {
+    background: none;
+    border: none;
+    padding: var(--form-v-padding);
+    border-radius: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+  }
+  
+  .info-tooltip:hover {
+    color: var(--excel-green);
+  }
 
-  .export-button::before, .export-button::after {
+  .info-tooltip svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+  
+  .has-tooltip {
+    position: relative;
+  }
+
+  .has-tooltip::before, .has-tooltip::after {
     position: absolute;
     bottom: 100%;
-    left: auto;
+    left: 0;
+    right: 0;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
     z-index: 10;
-    transform: translateY(5px);
+    transform-origin: bottom center;
   }
 
-  .export-button::before {
+  .has-tooltip::before {
     content: attr(data-tooltip);
-    background-color: rgba(52, 168, 83, 0.1);
-    color: var(--excel-green);
+    background-color: rgba(235, 237, 238, 0.65);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: var(--primary-text);
     font-family: 'Inter', sans-serif;
     font-style: italic;
     font-weight: 400;
-    padding: 12px;
-    border-radius: var(--radius-m);
+    padding: 8px 12px;
+    border-radius: 12px;
     white-space: normal;
-    width: 180px;
-    text-align: center;
+    width: auto;
+    box-sizing: border-box;
+    text-align: left;
     margin-bottom: 10px;
     box-shadow: none;
-    right: 0;
+    transform: translateY(5px);
   }
   
-  .export-button::after {
+  .has-tooltip::after {
     content: '';
     border-style: solid;
     border-width: 6px 6px 0 6px;
-    border-color: rgba(52, 168, 83, 0.1) transparent transparent transparent;
+    border-color: rgba(235, 237, 238, 0.65) transparent transparent transparent;
     margin-bottom: 4px;
+    left: auto;
     right: 13px;
+    transform: translateY(5px);
   }
 
-  .export-button:hover::before, .export-button:hover::after {
+  .has-tooltip:hover::before, .has-tooltip:hover::after {
     opacity: 1;
     transform: translateY(0);
   }
+  
 
   .table-wrapper {
     overflow-x: auto;
@@ -751,7 +823,7 @@
       padding: 4px;
     }
 
-    .button.button-icon svg, #installBtn svg, .refresh svg {
+    .button.button-icon svg, #installBtn svg, .refresh svg, .info-tooltip svg {
         width: 16px;
         height: 16px;
     }
@@ -793,11 +865,21 @@
                 <div class="two-col">
                   <div class="input-group">
                     <label for="annualSalaryGrowth">Yıllık maaş artışı %</label>
-                    <input id="annualSalaryGrowth" type="number" value="15" min="0" step="0.01"/>
+                    <div class="input-wrapper">
+                      <input id="annualSalaryGrowth" type="number" value="15" min="0" step="0.01"/>
+                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Gelecek yıllardaki brüt maaşınızın yıllık yüzde kaç artacağını belirtir.">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                      </button>
+                    </div>
                   </div>
                   <div class="input-group">
                     <label for="annualPremiumGrowth">Yıllık prim artışı %</label>
-                    <input id="annualPremiumGrowth" type="number" value="0" min="0" step="0.01"/>
+                    <div class="input-wrapper">
+                      <input id="annualPremiumGrowth" type="number" value="0" min="0" step="0.01"/>
+                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="USD cinsinden ödediğiniz aylık prim tutarının yıllık yüzde kaç artacağını belirtir.">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div class="two-col">
@@ -807,27 +889,52 @@
                   </div>
                   <div class="input-group">
                     <label for="annualUsdGrowth">Yıllık kur artışı %</label>
-                    <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
+                    <div class="input-wrapper">
+                      <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
+                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="USD/TRY kurunun gelecek yıllarda yıllık ortalama yüzde kaç artacağını öngördüğünüzü belirtir.">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div class="two-col">
                   <div class="input-group">
                     <label for="annualProfitRate">Yıllık kâr payı %</label>
-                    <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
+                    <div class="input-wrapper">
+                      <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
+                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Poliçenize yıllık olarak eklenecek tahmini kâr payı oranıdır.">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                      </button>
+                    </div>
                   </div>
                    <div class="input-group">
                     <label for="annualProfitRateGrowth">Yıllık kâr payı artışı %</label>
-                    <input id="annualProfitRateGrowth" type="number" value="0" min="0" step="0.01"/>
+                    <div class="input-wrapper">
+                      <input id="annualProfitRateGrowth" type="number" value="0" min="0" step="0.01"/>
+                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Yıllık kâr payı oranının gelecek yıllarda yüzde kaç artacağını belirtir.">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div class="two-col" style="align-items: end;">
                   <div class="input-group">
                       <label for="annualExpenseRate">Gider kesintisi %</label>
-                      <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
+                      <div class="input-wrapper">
+                        <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Ödediğiniz primlerden yıllık olarak kesilecek olan yönetim gideri oranıdır.">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
                   </div>
                   <div class="input-group">
                     <label for="annualTaxBracketGrowth">Vergi matrahı artışı Yıl/%</label>
-                    <input id="annualTaxBracketGrowth" type="number" value="15" min="0" step="0.01"/>
+                    <div class="input-wrapper">
+                      <input id="annualTaxBracketGrowth" type="number" value="15" min="0" step="0.01"/>
+                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Gelir vergisi dilimi tavanlarının her yıl yüzde kaç artacağını öngördüğünüzü belirtir.">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div class="action-row">
@@ -841,7 +948,7 @@
                     <button type="button" id="resetFormBtn" class="button">
                       Sıfırla
                     </button>
-                    <button type="button" id="exportBtn" class="button button-icon export-button" aria-label="Dışa Aktar" data-tooltip="Sonuçları Excel olarak indir">
+                    <button type="button" id="exportBtn" class="button button-icon export-button has-tooltip" aria-label="Dışa Aktar" data-tooltip="Sonuçları Excel olarak indir">
                       
                       <svg id="katman_2" data-name="katman 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800.8">
                         <g id="Capa_1" data-name="Capa 1">
