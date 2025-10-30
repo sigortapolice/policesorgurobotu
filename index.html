@@ -187,7 +187,7 @@
   .rate{
     background: rgba(52, 168, 83, 0.1);
     border-radius: var(--radius-m);
-    padding: 0 12px;
+    padding: 0 0 0 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -437,6 +437,11 @@
   
   .calculation-context-wrapper .calculation-context-note {
     margin: 0;
+  }
+  
+  .calculation-context-note.growth-rate-note {
+    background-color: #edf0ff;
+    color: #5a78ed;
   }
   
   .note{
@@ -1300,8 +1305,8 @@ function compute10YearProjection(params) {
           <div class="calculation-context-note">
             Başlangıç: ${formatNumber(params.monthlySalary)}₺ maaş, ${params.monthlyPremiumUsd}$ prim
           </div>
-          <div class="calculation-context-note">
-            Hesaplamada yıllık artış oranları kullanılır
+          <div class="calculation-context-note growth-rate-note">
+            Hesaplamada girdiğiniz yıllık artış oranları kullanılır
           </div>
         </div>
         <div class="table-wrapper">
