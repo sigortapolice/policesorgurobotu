@@ -1409,45 +1409,47 @@ function compute10YearProjection(params) {
             </div>
           </div>
         </div>
-      </div>
-       <div class="results-card">
-        <h3>
-          10 Yıllık Detay
-        </h3>
-        <div class="table-wrapper">
-          <table class="projection-details-table ten-year-table">
-            <thead><tr>
-              <th>Yıl</th>
-              <th>Ödenen<br>Prim</th>
-              <th>Vergi<br>İadesi</th>
-              <th>Kâr<br>Payı</th>
-              <th>Gider<br>Payı</th>
-              <th>Poliçe<br>Tutarı</th>
-            </tr></thead>
-            <tbody>
-              ${proj10.yearlyData.map(d => `
-                <tr>
-                  <td>${d.year}. Yıl</td>
-                  <td>${fmtUSD(d.annualPremiumUsd)}</td>
-                  <td>${fmtUSD(d.annualRebateUsd)}</td>
-                  <td>${fmtUSD(d.annualProfitUsd)}</td>
-                  <td>${fmtUSD(d.annualExpenseUsd)}</td>
-                  <td>${fmtUSD(d.endOfYearPolicyAmountUsd)}</td>
-                </tr>
-              `).join('')}
-              <tr class="total-row">
-                 <td>Top.</td>
-                 <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
-                 <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
-                 <td>${fmtUSD(proj10.totals.totalProfitUsd)}</td>
-                 <td>${fmtUSD(proj10.totals.totalExpenseUsd)}</td>
-                 <td>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="collapsible-section">
+            <div class="collapsible-header">
+                <div class="collapsible-header-title">10 Yıllık Detay</div>
+                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </div>
+            <div class="collapsible-content">
+                <div class="table-wrapper">
+                  <table class="projection-details-table ten-year-table">
+                    <thead><tr>
+                      <th>Yıl</th>
+                      <th>Ödenen<br>Prim</th>
+                      <th>Vergi<br>İadesi</th>
+                      <th>Kâr<br>Payı</th>
+                      <th>Gider<br>Payı</th>
+                      <th>Poliçe<br>Tutarı</th>
+                    </tr></thead>
+                    <tbody>
+                      ${proj10.yearlyData.map(d => `
+                        <tr>
+                          <td>${d.year}. Yıl</td>
+                          <td>${fmtUSD(d.annualPremiumUsd)}</td>
+                          <td>${fmtUSD(d.annualRebateUsd)}</td>
+                          <td>${fmtUSD(d.annualProfitUsd)}</td>
+                          <td>${fmtUSD(d.annualExpenseUsd)}</td>
+                          <td>${fmtUSD(d.endOfYearPolicyAmountUsd)}</td>
+                        </tr>
+                      `).join('')}
+                      <tr class="total-row">
+                         <td>Top.</td>
+                         <td>${fmtUSD(proj10.totals.totalPremiumUsd)}</td>
+                         <td>${fmtUSD(proj10.totals.totalRebateUsd)}</td>
+                         <td>${fmtUSD(proj10.totals.totalProfitUsd)}</td>
+                         <td>${fmtUSD(proj10.totals.totalExpenseUsd)}</td>
+                         <td>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
         </div>
       </div>
-
       <div class="results-card">
         <h3>10 Yıllık Birikim Projeksiyonu ($)</h3>
         <div class="chart-container">
