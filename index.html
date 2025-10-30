@@ -42,6 +42,8 @@
     --warning: #fbbc05;
     --excel-green: #187040;
     --gray-400: #9ca3af; /* gray-400 */
+    --form-v-padding: 10px;
+    --form-v-gap: 10px;
   }
   
   html {
@@ -82,6 +84,10 @@
 
   /* Mobile */
   @media (max-width: 600px) {
+    :root {
+      --form-v-padding: 8px;
+      --form-v-gap: 8px;
+    }
     body, h2, h3, p, li, button, input, label, th, td {
       font-size: 13px;
     }
@@ -179,17 +185,17 @@
   }
 
   .rate{
-    background: var(--input-bg);
-    border-radius: var(--radius-m);
-    padding: 0 3px 0 16px;
+    background: rgba(52, 168, 83, 0.1);
+    border-radius: 12px;
+    padding: var(--form-v-padding) 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 400;
-    color: var(--primary-text);
-    height: 38px;
+    color: var(--excel-green);
     box-sizing: border-box;
-    border: 1px solid var(--border-color);
+    border: none;
+    font-style: italic;
   }
 
   .rate-text {
@@ -200,13 +206,11 @@
   
   .refresh {
     cursor: pointer;
-    color: var(--primary-text);
+    color: var(--excel-green);
     border: none;
     background: none;
-    padding: 0;
+    padding: 1px;
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -214,7 +218,7 @@
   }
 
   .refresh:hover {
-    background-color: var(--input-focus-bg);
+    background-color: rgba(52, 168, 83, 0.2);
     transform: rotate(90deg);
   }
 
@@ -226,14 +230,14 @@
   .form-grid{
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: var(--form-v-gap);
     margin: 0;
   }
   
   .form-section {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: var(--form-v-gap);
   }
 
   .input-group {
@@ -248,7 +252,7 @@
   
   input[type=number], input[type=text], input[type=password] {
     width: 100%;
-    padding: 0 14px;
+    padding: var(--form-v-padding) 14px;
     margin-top: 0;
     border-radius: var(--radius-m);
     border: 1px solid var(--border-color);
@@ -256,7 +260,6 @@
     box-sizing: border-box;
     color: var(--primary-text);
     transition: border-color 0.2s ease, background-color 0.2s ease;
-    height: 38px;
   }
 
   input:focus {
@@ -288,7 +291,7 @@
     background-color: var(--input-bg);
     color: var(--primary-text);
     border: 1px solid var(--border-color);
-    padding: 0 20px;
+    padding: var(--form-v-padding) 20px;
     border-radius: var(--radius-m);
     font-weight: 400;
     cursor: pointer;
@@ -298,7 +301,6 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    height: 38px;
   }
   .button:hover:not(:disabled) {
     background-color: var(--input-focus-bg);
@@ -318,6 +320,16 @@
   .button.primary .spinner {
       border-color: #fff;
       border-bottom-color: transparent;
+  }
+  
+  .action-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--form-v-gap);
   }
 
   .results{
@@ -366,7 +378,7 @@
     grid-template-columns: subgrid;
     grid-column: 1 / -1;
     color: var(--primary-text);
-    padding: 10px 0;
+    padding: var(--form-v-gap) 0;
     border-bottom: 1px solid var(--border-color);
     align-items: baseline;
     font-weight: 400;
@@ -431,7 +443,7 @@
   }
   
   th, td {
-    padding: 10px 10px;
+    padding: var(--form-v-gap) 10px;
     text-align: right;
     border-bottom: 1px solid var(--border-color);
     font-weight: 400;
@@ -500,7 +512,7 @@
   }
   
   #rateText .spinner {
-     border: 2px solid var(--gray-400);
+     border: 2px solid var(--excel-green);
      border-bottom-color: transparent;
   }
   
@@ -544,9 +556,7 @@
       position: relative;
   }
   .button.button-icon {
-      padding: 0;
-      width: 38px;
-      height: 38px;
+      padding: 6px;
       flex-shrink: 0;
   }
   .button.button-icon svg {
@@ -681,14 +691,12 @@
     background-color: rgba(255, 255, 255, 0.2);
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    width: 38px;
-    height: 38px;
+    padding: 6px;
     border-radius: 50%;
     cursor: pointer;
     transition: background-color 0.2s ease;
     align-items: center;
     justify-content: center;
-    padding: 0;
   }
   #installBtn:hover {
     background-color: rgba(255, 255, 255, 0.3);
@@ -715,12 +723,18 @@
   }
   
   @media(max-width: 600px) {
-    .summary-item {
-        padding: 6.6px 0;
-    }
-    
     .projection-details-table th, .projection-details-table td {
-        padding: 6.6px 2px;
+        padding-top: var(--form-v-padding);
+        padding-bottom: var(--form-v-padding);
+    }
+
+    .button.button-icon, #installBtn {
+      padding: 4px;
+    }
+
+    .button.button-icon svg, #installBtn svg, .refresh svg {
+        width: 16px;
+        height: 16px;
     }
   }
 </style>
@@ -797,7 +811,7 @@
                     <input id="annualTaxBracketGrowth" type="number" value="15" min="0" step="0.01"/>
                   </div>
                 </div>
-                <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: -10px;">
+                <div class="action-row">
                   <div class="rate" id="rateBox">
                     <div class="rate-text" id="rateText"></div>
                     <button class="refresh" id="refreshBtn" title="Kur yenile" aria-label="Kur yenile">
