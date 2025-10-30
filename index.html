@@ -186,7 +186,7 @@
 
   .rate{
     background: rgba(52, 168, 83, 0.1);
-    border-radius: 12px;
+    border-radius: var(--radius-m);
     padding: var(--form-v-padding) 12px;
     display: flex;
     justify-content: space-between;
@@ -556,7 +556,8 @@
       position: relative;
   }
   .button.button-icon {
-      padding: 6px;
+      padding: var(--form-v-padding);
+      border-radius: 50%;
       flex-shrink: 0;
   }
   .button.button-icon svg {
@@ -728,7 +729,7 @@
         padding-bottom: var(--form-v-padding);
     }
 
-    .button.button-icon, #installBtn {
+    #installBtn {
       padding: 4px;
     }
 
