@@ -614,27 +614,28 @@
 
   .export-button::before {
     content: attr(data-tooltip);
-    background-color: var(--bg);
-    color: var(--primary-text);
+    background-color: rgba(52, 168, 83, 0.1);
+    color: var(--excel-green);
     font-family: 'Inter', sans-serif;
+    font-style: italic;
+    font-weight: 400;
     padding: 12px;
     border-radius: var(--radius-m);
     white-space: normal;
     width: 180px;
     text-align: center;
-    margin-bottom: 10px; /* Space between tooltip and arrow */
+    margin-bottom: 10px;
     box-shadow: none;
     right: 0;
-    border: 1px solid var(--border-color);
   }
   
   .export-button::after {
     content: '';
     border-style: solid;
     border-width: 6px 6px 0 6px;
-    border-color: var(--bg) transparent transparent transparent;
+    border-color: rgba(52, 168, 83, 0.1) transparent transparent transparent;
     margin-bottom: 4px;
-    right: 13px; /* (38px/2) - (12px/2) = 13px */
+    right: 13px;
   }
 
   .export-button:hover::before, .export-button:hover::after {
