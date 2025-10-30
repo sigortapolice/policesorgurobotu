@@ -625,6 +625,8 @@
     height: 20px;
     fill: currentColor;
     transition: transform 0.3s ease-in-out;
+    border-radius: 50%;
+    animation: pulse-animation 2s infinite;
   }
   .collapsible-content {
     max-height: 0;
@@ -638,6 +640,19 @@
   }
   .collapsible-section.is-open .arrow {
     transform: rotate(180deg);
+    animation: none;
+  }
+  
+  @keyframes pulse-animation {
+    0% {
+      box-shadow: 0 0 0 0 rgba(52, 168, 83, 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(52, 168, 83, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(52, 168, 83, 0);
+    }
   }
 
   /* PWA Install Button */
@@ -1215,7 +1230,7 @@ function compute10YearProjection(params) {
         </div>
         <div class="collapsible-section">
             <div class="collapsible-header">
-                <div class="collapsible-header-title">1 Yıllık Detay</div>
+                <div class="collapsible-header-title">1 Yıllık Tablo</div>
                 <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
             </div>
             <div class="collapsible-content">
@@ -1258,7 +1273,7 @@ function compute10YearProjection(params) {
         </div>
         <div class="collapsible-section">
             <div class="collapsible-header">
-                <div class="collapsible-header-title">10 Yıllık Detay</div>
+                <div class="collapsible-header-title">10 Yıllık Tablo</div>
                 <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
             </div>
             <div class="collapsible-content">
