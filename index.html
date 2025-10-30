@@ -68,13 +68,13 @@
   /* To ensure all text is consistent across devices, we explicitly set the font size for all text-containing elements. */
 
   /* Default for Desktop */
-  body, h2, h3, p, li, button, input, label, th, td {
+  body, h1, h2, h3, p, li, button, input, label, th, td {
     font-size: 15px;
   }
 
   /* Tablet */
   @media (max-width: 1024px) {
-    body, h2, h3, p, li, button, input, label, th, td {
+    body, h1, h2, h3, p, li, button, input, label, th, td {
       font-size: 14px;
     }
     .calculation-context-note, .has-tooltip::before {
@@ -88,7 +88,7 @@
       --form-v-padding: 8px;
       --form-v-gap: 8px;
     }
-    body, h2, h3, p, li, button, input, label, th, td {
+    body, h1, h2, h3, p, li, button, input, label, th, td {
       font-size: 13px;
     }
     .calculation-context-note, .has-tooltip::before {
@@ -96,24 +96,6 @@
     }
   }
   /* --- END UNIFIED FONT SIZING --- */
-
-  /* --- Specific Font Size for Main Header --- */
-  .header-box h2 {
-    font-size: 24px;
-  }
-
-  @media (max-width: 1024px) {
-    .header-box h2 {
-      font-size: 22px;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .header-box h2 {
-      font-size: 20px;
-    }
-  }
-  /* --- END Specific Font Size --- */
 
   #calculator-page {
       display: block;
@@ -141,11 +123,17 @@
     }
   }
 
+  .card-wrapper {
+    background-color: #eaf0ff;
+    padding: 10px;
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow);
+  }
+
   .card{
     width: 100%;
     background: var(--card);
     border-radius: var(--radius-l);
-    box-shadow: var(--shadow);
     padding: 0;
     box-sizing: border-box;
     overflow: hidden;
@@ -153,35 +141,7 @@
 
   .card-main-content {
     background-color: var(--card);
-    padding: 20px;
-  }
-
-  .header-box {
-    margin: -20px -20px 20px -20px;
-    padding: 20px;
-    border-top-left-radius: var(--radius-l);
-    border-top-right-radius: var(--radius-l);
-    position: relative;
-    overflow: hidden;
-    background-color: #2d3239;
-  }
-
-  h2{
-    margin: 0 0 8px;
-    color: var(--primary-text);
-    font-weight: 400;
-  }
-  
-  .sub{
-    color: var(--muted-text);
-    margin-bottom: 0;
-    line-height: 1.5;
-    font-weight: 400;
-  }
-  
-  .header-box h2,
-  .header-box .sub {
-    color: #fff;
+    padding: 10px 10px 0;
   }
 
   .rate{
@@ -226,17 +186,24 @@
     height: 20px;
   }
   
+  /*
   .form-grid{
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--form-v-gap);
     margin: 0;
   }
+  */
   
   .form-section {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--form-v-gap);
+    margin-bottom: var(--form-v-gap);
+  }
+
+  .form-section:last-of-type {
+      margin-bottom: 0;
   }
 
   .input-group {
@@ -358,6 +325,8 @@
     align-items: center;
     border-top: 1px solid var(--border-color);
     padding-top: var(--form-v-gap);
+    margin-top: var(--form-v-gap);
+    padding-bottom: var(--form-v-gap);
   }
 
   .results{
@@ -758,6 +727,38 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  /* Intro Header */
+  .intro-header {
+    text-align: left;
+    color: var(--primary-text);
+    padding: 10px;
+  }
+  .intro-header h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+  }
+  .intro-header p {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--muted-text);
+  }
+  
+  @media (max-width: 1024px) {
+    .intro-header h1 {
+      font-size: 20px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .intro-header {
+      padding: 8px;
+    }
+    .intro-header h1 {
+      font-size: 18px;
+    }
+  }
+
   /* Collapsible Section */
   .collapsible-section {
     border-top: 1px solid var(--border-color);
@@ -828,57 +829,27 @@
     }
   }
 
-  /* PWA Install Button */
-  #installBtn {
-    display: none; /* Hidden by default */
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 6px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    align-items: center;
-    justify-content: center;
-  }
-  #installBtn:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-  }
-  #installBtn svg {
-    width: 20px;
-    height: 20px;
-  }
-  @media(max-width: 460px) {
-    #installBtn {
-      top: 16px;
-      right: 16px;
-    }
-  }
-
   @media(max-width: 460px){ 
     .main-wrapper { padding: 16px; }
-    .card-main-content { padding: 16px; }
     th, td { padding: 8.8px 6.4px; }
-    .header-box {
-        margin: -16px -16px 16px -16px;
-        padding: 16px;
-    }
   }
   
   @media(max-width: 600px) {
+    .card-wrapper {
+      padding: 8px;
+    }
+    .card-main-content {
+      padding: 8px 8px 0;
+    }
+    .form-section {
+      margin-bottom: var(--form-v-gap);
+    }
     .projection-details-table th, .projection-details-table td {
         padding-top: var(--form-v-padding);
         padding-bottom: var(--form-v-padding);
     }
 
-    #installBtn {
-      padding: 4px;
-    }
-
-    .button.button-icon svg, #installBtn svg, .refresh svg, .info-tooltip svg, .info-icon-note svg {
+    .button.button-icon svg, .refresh svg, .info-tooltip svg, .info-icon-note svg {
         width: 16px;
         height: 16px;
     }
@@ -892,103 +863,107 @@
   <div id="calculator-page">
     <div class="main-wrapper">
       <div class="form-column">
-        <div class="card" role="region" aria-label="Poliçe Asistanı">
-          <div class="card-main-content">
-            <div class="header-box">
-              <h2>Poliçe Asistanı</h2>
-              <div class="sub">Brüt maaş ve prim bilgilerinizi girerek 1 ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</div>
-              <button id="installBtn" title="Uygulamayı Yükle" aria-label="Uygulamayı Yükle">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.17v6h7V9h3.17L12 2z"/></svg>
-              </button>
-            </div>
+        <div class="card-wrapper">
+          <div class="intro-header">
+            <h1>Poliçe Asistanı</h1>
+            <p>Brüt maaş ve prim bilgilerinizi girerek 1 ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</p>
+          </div>
+          <div class="card" role="region" aria-label="Poliçe Asistanı">
+            <div class="card-main-content">
+              <form id="calcForm">
+                <div class="form-section">
+                  <div class="two-col">
+                    <div class="input-group">
+                      <label for="monthlySalary">Aylık brüt maaş</label>
+                      <input id="monthlySalary" type="text" value="100.000" inputmode="numeric"/>
+                    </div>
+                    <div class="input-group">
+                      <label for="monthlyPremiumUsd">Aylık Prim (USD)</label>
+                      <input id="monthlyPremiumUsd" type="text" value="100" inputmode="decimal"/>
+                    </div>
+                  </div>
+                </div>
 
-            <form id="calcForm" class="form-grid">
-              <div class="form-section">
-                <div class="two-col">
-                  <div class="input-group">
-                    <label for="monthlySalary">Aylık brüt maaş</label>
-                    <input id="monthlySalary" type="text" value="100.000" inputmode="numeric"/>
-                  </div>
-                  <div class="input-group">
-                    <label for="monthlyPremiumUsd">Aylık Prim (USD)</label>
-                    <input id="monthlyPremiumUsd" type="text" value="100" inputmode="decimal"/>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-section">
-                <div class="two-col">
-                  <div class="input-group">
-                    <label for="annualSalaryGrowth">Yıllık maaş artışı %</label>
-                    <div class="input-wrapper has-tooltip" data-tooltip="Gelecek yıllardaki brüt maaşınızın yıllık yüzde kaç artacağını belirtir.">
-                      <input id="annualSalaryGrowth" type="number" value="15" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="input-group">
-                    <label for="annualPremiumGrowth">Yıllık prim artışı %</label>
-                    <div class="input-wrapper has-tooltip" data-tooltip="USD cinsinden ödediğiniz aylık prim tutarının yıllık yüzde kaç artacağını belirtir.">
-                      <input id="annualPremiumGrowth" type="number" value="0" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="two-col">
-                  <div class="input-group">
-                    <label for="usdTry">USD/TRY kuru</label>
-                    <input id="usdTry" type="number" step="0.01" placeholder="Otomatik çekilecek"/>
-                  </div>
-                  <div class="input-group">
-                    <label for="annualUsdGrowth">Yıllık kur artışı %</label>
-                    <div class="input-wrapper has-tooltip" data-tooltip="USD/TRY kurunun gelecek yıllarda yıllık ortalama yüzde kaç artacağını öngördüğünüzü belirtir.">
-                      <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="two-col">
-                  <div class="input-group">
-                    <label for="annualProfitRate">Yıllık kâr payı %</label>
-                    <div class="input-wrapper has-tooltip" data-tooltip="Poliçenize yıllık olarak eklenecek tahmini kâr payı oranıdır.">
-                      <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                   <div class="input-group">
-                    <label for="annualProfitRateGrowth">Yıllık kâr payı artışı %</label>
-                    <div class="input-wrapper has-tooltip" data-tooltip="Yıllık kâr payı oranının gelecek yıllarda yüzde kaç artacağını belirtir.">
-                      <input id="annualProfitRateGrowth" type="number" value="0" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="two-col" style="align-items: end;">
-                  <div class="input-group">
-                      <label for="annualExpenseRate">Gider kesintisi %</label>
-                      <div class="input-wrapper has-tooltip" data-tooltip="Ödediğiniz primlerden yıllık olarak kesilecek olan yönetim gideri oranıdır.">
-                        <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
+                <div class="form-section">
+                  <div class="two-col">
+                    <div class="input-group">
+                      <label for="annualSalaryGrowth">Yıllık maaş artışı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="Gelecek yıllardaki brüt maaşınızın yıllık yüzde kaç artacağını belirtir.">
+                        <input id="annualSalaryGrowth" type="number" value="15" min="0" step="0.01"/>
                         <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                         </button>
                       </div>
+                    </div>
+                    <div class="input-group">
+                      <label for="annualPremiumGrowth">Yıllık prim artışı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="USD cinsinden ödediğiniz aylık prim tutarının yıllık yüzde kaç artacağını belirtir.">
+                        <input id="annualPremiumGrowth" type="number" value="0" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div class="input-group">
-                    <label for="annualTaxBracketGrowth">Vergi matrahı artışı Yıl/%</label>
-                    <div class="input-wrapper has-tooltip" data-tooltip="Gelir vergisi dilimi tavanlarının her yıl yüzde kaç artacağını öngördüğünüzü belirtir.">
-                      <input id="annualTaxBracketGrowth" type="number" value="15" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                      </button>
+                </div>
+                <div class="form-section">
+                  <div class="two-col">
+                    <div class="input-group">
+                      <label for="usdTry">USD/TRY kuru</label>
+                      <input id="usdTry" type="number" step="0.01" placeholder="Otomatik çekilecek"/>
+                    </div>
+                    <div class="input-group">
+                      <label for="annualUsdGrowth">Yıllık kur artışı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="USD/TRY kurunun gelecek yıllarda yıllık ortalama yüzde kaç artacağını öngördüğünüzü belirtir.">
+                        <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-section">
+                  <div class="two-col">
+                    <div class="input-group">
+                      <label for="annualProfitRate">Yıllık kâr payı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="Poliçenize yıllık olarak eklenecek tahmini kâr payı oranıdır.">
+                        <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                     <div class="input-group">
+                      <label for="annualProfitRateGrowth">Yıllık kâr payı artışı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="Yıllık kâr payı oranının gelecek yıllarda yüzde kaç artacağını belirtir.">
+                        <input id="annualProfitRateGrowth" type="number" value="0" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-section">
+                  <div class="two-col" style="align-items: end;">
+                    <div class="input-group">
+                        <label for="annualExpenseRate">Gider kesintisi %</label>
+                        <div class="input-wrapper has-tooltip" data-tooltip="Ödediğiniz primlerden yıllık olarak kesilecek olan yönetim gideri oranıdır.">
+                          <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
+                          <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                          </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                      <label for="annualTaxBracketGrowth">Vergi matrahı artışı Yıl/%</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="Gelir vergisi dilimi tavanlarının her yıl yüzde kaç artacağını öngördüğünüzü belirtir.">
+                        <input id="annualTaxBracketGrowth" type="number" value="15" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1016,9 +991,9 @@
                     </button>
                   </div>
                 </div>
-              </div>
-            </form>
+              </form>
 
+            </div>
           </div>
         </div>
       </div>
@@ -1035,37 +1010,6 @@ document.addEventListener('DOMContentLoaded', () => {
       navigator.serviceWorker.register('/service-worker.js')
         .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
         .catch(err => console.log('ServiceWorker registration failed: ', err));
-    });
-  }
-
-  let deferredPrompt;
-  const installBtn = document.getElementById('installBtn');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent the mini-infobar from appearing on mobile
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    deferredPrompt = e;
-    // Update UI to notify the user they can install the PWA
-    if (installBtn) {
-        installBtn.style.display = 'flex';
-    }
-  });
-
-  if(installBtn) {
-    installBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) {
-            return;
-        }
-        // Show the install prompt
-        deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to the install prompt: ${outcome}`);
-        // We've used the prompt, and can't use it again, throw it away
-        deferredPrompt = null;
-        // Hide the install button
-        installBtn.style.display = 'none';
     });
   }
 
