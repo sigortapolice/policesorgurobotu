@@ -471,11 +471,45 @@
   .calculation-context-note.growth-rate-note {
     background-color: #edf0ff;
     color: #5a78ed;
+    font-weight: 400;
   }
 
   .calculation-context-note.projected-usd-note {
     background-color: #fef4e6;
     color: #b96900;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  
+  .projected-usd-note .info-tooltip {
+    padding: 0;
+    color: currentColor;
+    flex-shrink: 0;
+  }
+  
+  .projected-usd-note .info-tooltip:hover {
+    color: currentColor;
+  }
+
+  .projected-usd-note .has-tooltip::before {
+    width: 240px;
+    left: auto;
+    right: 50%;
+    transform: translateX(50%) translateY(5px);
+  }
+
+  .projected-usd-note .has-tooltip::after {
+    left: auto;
+    right: 50%;
+    transform: translateX(50%) translateY(5px);
+  }
+  
+  .projected-usd-note .has-tooltip:hover::before,
+  .projected-usd-note .has-tooltip:hover::after {
+      transform: translateX(50%) translateY(0);
   }
   
   .note{
@@ -1437,7 +1471,10 @@ function compute10YearProjection(params) {
             Başlangıç: ${formatNumber(params.monthlySalary)}₺ maaş, ${params.monthlyPremiumUsd}$ prim
           </div>
           <div class="calculation-context-note projected-usd-note">
-            2034 $/₺ ${projectedUsdTryFor2034.toFixed(2).replace('.',',')}
+            <span>$/₺ ${projectedUsdTryFor2034.toFixed(2).replace('.',',')}</span>
+            <button type="button" class="info-tooltip has-tooltip" data-tooltip="Bu, 10. yılın sonunda, girdiğiniz yıllık kur artışı oranına göre oluşması beklenen tahmini USD/TRY kurudur." aria-label="Daha fazla bilgi">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+            </button>
           </div>
           <div class="calculation-context-note growth-rate-note">
             Hesaplamada girdiğiniz yıllık artış oranları kullanılır
