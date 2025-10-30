@@ -75,12 +75,18 @@
     body, h2, h3, p, li, button, input, label, th, td {
       font-size: 14px;
     }
+    .calculation-context-note {
+      font-size: 13px !important;
+    }
   }
 
   /* Mobile */
   @media (max-width: 600px) {
     body, h2, h3, p, li, button, input, label, th, td {
       font-size: 13px;
+    }
+    .calculation-context-note {
+      font-size: 12px !important;
     }
   }
   /* --- END UNIFIED FONT SIZING --- */
@@ -400,12 +406,14 @@
   .calculation-context-note {
     padding: 8px 12px;
     margin-top: -4px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     background-color: rgba(52, 168, 83, 0.1);
     color: var(--excel-green);
     border-radius: 12px;
     font-style: italic;
-    font-weight: 200;
+    font-weight: 400;
+    font-size: 14px;
+    width: fit-content;
   }
   
   .note{
