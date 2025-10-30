@@ -372,7 +372,6 @@
     font-weight: 400;
   }
   .summary-list > .summary-item:last-child {
-    padding-bottom: 0;
     border-bottom: none;
   }
   .summary-item > div:first-child { color: var(--muted-text); white-space: nowrap; }
@@ -622,7 +621,6 @@
 
   /* Collapsible Section */
   .collapsible-section {
-    margin-top: 16px;
     border-top: 1px solid var(--border-color);
     padding-top: 12px;
   }
@@ -1271,6 +1269,9 @@ function compute10YearProjection(params) {
         <h3>
           10 Yıllık Projeksiyon Özeti
         </h3>
+        <div class="calculation-context-note">
+          ${formatNumber(params.monthlySalary)}₺ Brüt maaş ve ${params.monthlyPremiumUsd}$ Prim ödemesi için
+        </div>
         <div class="table-wrapper">
           <div class="summary-list">
             <div class="summary-item">
