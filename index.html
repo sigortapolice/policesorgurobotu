@@ -1372,7 +1372,7 @@ function compute10YearProjection(params) {
     const { rate, source } = await safeFetchUsdTry();
     const usdInput = document.getElementById('usdTry');
     if(!usdInput.value) usdInput.value = rate.toFixed(2);
-    rt.textContent = `Güncel kur 1 USD = ${rate.toFixed(2).replace('.', ',')} TRY`;
+    rt.textContent = `Güncel 1$ = ${rate.toFixed(2).replace('.', ',')}₺`;
     if(autoCompute) computeAndRender();
   }
   
