@@ -397,6 +397,17 @@
     font-weight: 400;
   }
   
+  .calculation-context-note {
+    padding: 8px 12px;
+    margin-top: -4px;
+    margin-bottom: 16px;
+    background-color: rgba(52, 168, 83, 0.1);
+    color: var(--excel-green);
+    border-radius: 12px;
+    font-style: italic;
+    font-weight: 200;
+  }
+  
   .note{
     margin-top: 20px;
     color: var(--muted-text);
@@ -1206,6 +1217,9 @@ function compute10YearProjection(params) {
         <h3>
           1 Yıllık Projeksiyon Özeti
         </h3>
+        <div class="calculation-context-note">
+          ${formatNumber(params.monthlySalary)}₺ Brüt maaş ve ${params.monthlyPremiumUsd}$ Prim ödemesi için
+        </div>
         <div class="table-wrapper">
           <div class="summary-list">
             <div class="summary-item">
