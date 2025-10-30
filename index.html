@@ -694,7 +694,7 @@
     box-sizing: border-box;
     text-align: left;
     margin-bottom: 10px;
-    box-shadow: none;
+    box-shadow: var(--shadow);
     transform: translateY(5px);
   }
   
@@ -714,6 +714,11 @@
     transform: translateY(0);
   }
   
+  .button.has-tooltip::before {
+    width: 220px;
+    left: auto;
+    right: 0;
+  }
 
   .table-wrapper {
     overflow-x: auto;
@@ -865,18 +870,18 @@
                 <div class="two-col">
                   <div class="input-group">
                     <label for="annualSalaryGrowth">Yıllık maaş artışı %</label>
-                    <div class="input-wrapper">
+                    <div class="input-wrapper has-tooltip" data-tooltip="Gelecek yıllardaki brüt maaşınızın yıllık yüzde kaç artacağını belirtir.">
                       <input id="annualSalaryGrowth" type="number" value="15" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Gelecek yıllardaki brüt maaşınızın yıllık yüzde kaç artacağını belirtir.">
+                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                       </button>
                     </div>
                   </div>
                   <div class="input-group">
                     <label for="annualPremiumGrowth">Yıllık prim artışı %</label>
-                    <div class="input-wrapper">
+                    <div class="input-wrapper has-tooltip" data-tooltip="USD cinsinden ödediğiniz aylık prim tutarının yıllık yüzde kaç artacağını belirtir.">
                       <input id="annualPremiumGrowth" type="number" value="0" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="USD cinsinden ödediğiniz aylık prim tutarının yıllık yüzde kaç artacağını belirtir.">
+                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                       </button>
                     </div>
@@ -889,9 +894,9 @@
                   </div>
                   <div class="input-group">
                     <label for="annualUsdGrowth">Yıllık kur artışı %</label>
-                    <div class="input-wrapper">
+                    <div class="input-wrapper has-tooltip" data-tooltip="USD/TRY kurunun gelecek yıllarda yıllık ortalama yüzde kaç artacağını öngördüğünüzü belirtir.">
                       <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="USD/TRY kurunun gelecek yıllarda yıllık ortalama yüzde kaç artacağını öngördüğünüzü belirtir.">
+                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                       </button>
                     </div>
@@ -900,18 +905,18 @@
                 <div class="two-col">
                   <div class="input-group">
                     <label for="annualProfitRate">Yıllık kâr payı %</label>
-                    <div class="input-wrapper">
+                    <div class="input-wrapper has-tooltip" data-tooltip="Poliçenize yıllık olarak eklenecek tahmini kâr payı oranıdır.">
                       <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Poliçenize yıllık olarak eklenecek tahmini kâr payı oranıdır.">
+                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                       </button>
                     </div>
                   </div>
                    <div class="input-group">
                     <label for="annualProfitRateGrowth">Yıllık kâr payı artışı %</label>
-                    <div class="input-wrapper">
+                    <div class="input-wrapper has-tooltip" data-tooltip="Yıllık kâr payı oranının gelecek yıllarda yüzde kaç artacağını belirtir.">
                       <input id="annualProfitRateGrowth" type="number" value="0" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Yıllık kâr payı oranının gelecek yıllarda yüzde kaç artacağını belirtir.">
+                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                       </button>
                     </div>
@@ -920,18 +925,18 @@
                 <div class="two-col" style="align-items: end;">
                   <div class="input-group">
                       <label for="annualExpenseRate">Gider kesintisi %</label>
-                      <div class="input-wrapper">
+                      <div class="input-wrapper has-tooltip" data-tooltip="Ödediğiniz primlerden yıllık olarak kesilecek olan yönetim gideri oranıdır.">
                         <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
-                        <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Ödediğiniz primlerden yıllık olarak kesilecek olan yönetim gideri oranıdır.">
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                         </button>
                       </div>
                   </div>
                   <div class="input-group">
                     <label for="annualTaxBracketGrowth">Vergi matrahı artışı Yıl/%</label>
-                    <div class="input-wrapper">
+                    <div class="input-wrapper has-tooltip" data-tooltip="Gelir vergisi dilimi tavanlarının her yıl yüzde kaç artacağını öngördüğünüzü belirtir.">
                       <input id="annualTaxBracketGrowth" type="number" value="15" min="0" step="0.01"/>
-                      <button type="button" class="info-tooltip has-tooltip" aria-label="Daha fazla bilgi" data-tooltip="Gelir vergisi dilimi tavanlarının her yıl yüzde kaç artacağını öngördüğünüzü belirtir.">
+                      <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                       </button>
                     </div>
