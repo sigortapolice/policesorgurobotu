@@ -469,11 +469,6 @@
   tr.total-row td {
     color: var(--primary-text);
   }
-
-  .chart-container {
-    height: 313px;
-    position: relative;
-  }
   
   .spinner {
     width: 14px;
@@ -695,13 +690,8 @@
     .projection-details-table th, .projection-details-table td {
         padding: 6.6px 2px;
     }
-
-    .chart-container {
-        height: 391px;
-    }
   }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 </head>
@@ -854,21 +844,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Calculator Page Functionality ---
   const resultsDiv = document.getElementById('results');
-  let projectionChartInstances = {};
   let lastCalculationResults = null;
   let isResetting = false;
-  Chart.defaults.font.family = "'Inter', sans-serif";
-  Chart.defaults.color = '#1f2937';
-
-  const letterSpacingPlugin = {
-    id: 'letterSpacingPlugin',
-    beforeDraw: (chart) => {
-      chart.ctx.letterSpacing = '-0.5px';
-    },
-    afterDraw: (chart) => {
-      chart.ctx.letterSpacing = '0px';
-    },
-  };
 
   // Gelir vergisi dilimleri
   const TAX_BRACKETS = [
@@ -1171,136 +1148,6 @@ function compute10YearProjection(params) {
     rt.textContent = `Güncel 1$ = ${rate.toFixed(2)} ₺`;
     if(autoCompute) computeAndRender();
   }
-
-  function getDynamicChartFontSize() {
-    if (window.innerWidth <= 600) return 11;
-    if (window.innerWidth <= 1024) return 12;
-    return 13;
-  }
-
-  function renderChart(canvasId, data, currency) {
-    if (projectionChartInstances[canvasId]) {
-      projectionChartInstances[canvasId].destroy();
-    }
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const labels = data.map(d => `${d.year}. Yıl`);
-    
-    let premiumData, gainData, gainLabel, premiumLabel, yTicksFormatter, tooltipFormatter;
-
-    const chartFontSize = getDynamicChartFontSize();
-    const fontFamily = "'Inter', sans-serif";
-    const fontWeight = '400';
-
-    if (currency === 'USD') {
-        premiumData = data.map(d => d.totalPremiumUsd);
-        gainData = data.map(d => d.accWithRebateUsd);
-        gainLabel = 'Toplam Birikim ($)';
-        premiumLabel = 'Prim Ödemesi ($)';
-        yTicksFormatter = value => {
-            if (value >= 1000000) return `${parseFloat((value / 1000000).toFixed(1))}M $`;
-            if (value >= 1000) return `${(value / 1000)}K $`;
-            return `${value} $`;
-        };
-        tooltipFormatter = fmtUSD;
-    } else { // TL
-        premiumData = data.map(d => d.totalPremiumTl);
-        gainData = data.map(d => d.accWithRebateTl);
-        gainLabel = 'Toplam Birikim (₺)';
-        premiumLabel = 'Prim Ödemesi (₺)';
-        yTicksFormatter = value => {
-            if (value >= 1000000) return `${parseFloat((value / 1000000).toFixed(1))}M ₺`;
-            if (value >= 1000) return `${(value / 1000).toLocaleString('tr-TR')}B ₺`;
-            return value.toLocaleString('tr-TR') + ' ₺';
-        };
-        tooltipFormatter = fmtTL;
-    }
-
-    projectionChartInstances[canvasId] = new Chart(ctx, {
-      type: 'line',
-      plugins: [letterSpacingPlugin],
-      data: {
-        labels: labels,
-        datasets: [{
-          label: gainLabel,
-          data: gainData,
-          borderColor: '#1f2937',
-          backgroundColor: 'rgba(31, 41, 55, 0.1)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#1f2937',
-          pointRadius: 8
-        },{
-          label: premiumLabel,
-          data: premiumData,
-          borderColor: '#9ca3af',
-          backgroundColor: 'rgba(156, 163, 175, 0.2)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#9ca3af',
-          pointRadius: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            ticks: {
-              font: {
-                size: chartFontSize,
-                family: fontFamily,
-                weight: fontWeight
-              }
-            }
-          },
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: yTicksFormatter,
-              font: {
-                size: chartFontSize,
-                family: fontFamily,
-                weight: fontWeight
-              },
-              align: 'start'
-            }
-          }
-        },
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              pointStyle: 'circle',
-              padding: 12,
-              font: {
-                size: chartFontSize,
-                family: fontFamily,
-                weight: fontWeight
-              }
-            }
-          },
-          tooltip: {
-            backgroundColor: '#ebedee',
-            titleColor: '#1f2937',
-            bodyColor: '#1f2937',
-            titleFont: { family: fontFamily, weight: fontWeight, size: chartFontSize },
-            bodyFont: { family: fontFamily, weight: fontWeight, size: chartFontSize },
-            padding: 12,
-            displayColors: false,
-            bodySpacing: 4,
-            titleMarginBottom: 4,
-            callbacks: {
-              label: context => context.dataset.label || '',
-              afterLabel: context => (context.parsed.y !== null) ? tooltipFormatter(context.parsed.y) : ''
-            }
-          }
-        }
-      }
-    });
-  }
   
   function getParamsFromForm() {
     return {
@@ -1451,18 +1298,6 @@ function compute10YearProjection(params) {
         </div>
       </div>
       <div class="results-card">
-        <h3>10 Yıllık Birikim Projeksiyonu ($)</h3>
-        <div class="chart-container">
-            <canvas id="projectionChartUsd"></canvas>
-        </div>
-      </div>
-      <div class="results-card">
-        <h3>10 Yıllık Birikim Projeksiyonu (₺)</h3>
-        <div class="chart-container">
-            <canvas id="projectionChartTl"></canvas>
-        </div>
-      </div>
-      <div class="results-card">
         <h3>
           Hesaplama Metodolojisi
         </h3>
@@ -1479,8 +1314,6 @@ function compute10YearProjection(params) {
     `;
 
     resultsDiv.style.display = 'grid';
-    renderChart('projectionChartUsd', proj10.yearlyData, 'USD');
-    renderChart('projectionChartTl', proj10.yearlyData, 'TL');
   }
   
   function exportToExcel() {
@@ -1554,8 +1387,6 @@ function compute10YearProjection(params) {
     document.getElementById('calcForm').reset();
     resultsDiv.style.display = 'none';
     resultsDiv.innerHTML = '';
-    Object.values(projectionChartInstances).forEach(chart => chart.destroy());
-    projectionChartInstances = {};
     lastCalculationResults = null;
     document.getElementById('usdTry').value = '';
     updateRateAndShow(false).then(() => {
@@ -1601,18 +1432,6 @@ function compute10YearProjection(params) {
         collapsible.classList.toggle('is-open');
       }
     }
-  });
-
-  // Resize listener for charts
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      if (lastCalculationResults) {
-        renderChart('projectionChartUsd', lastCalculationResults.proj10.yearlyData, 'USD');
-        renderChart('projectionChartTl', lastCalculationResults.proj10.yearlyData, 'TL');
-      }
-    }, 250);
   });
 });
 </script>
