@@ -259,7 +259,7 @@
     background: var(--input-bg);
     transition: background-color 0.2s ease;
   }
-  .input-wrapper:focus-within, .input-wrapper:hover {
+  .input-wrapper:focus-within {
       background-color: var(--input-focus-bg);
   }
 
@@ -284,12 +284,6 @@
     padding: var(--form-v-padding) 14px;
     margin: 0;
     outline: none;
-  }
-
-  .input-group > input[type=number]:hover,
-  .input-group > input[type=text]:hover,
-  .input-group > input[type=password]:hover {
-    background-color: var(--input-focus-bg);
   }
 
   input:focus {
@@ -696,6 +690,7 @@
     margin-bottom: 10px;
     box-shadow: var(--shadow);
     transform: translateY(5px);
+    border: 1px solid var(--border-color);
   }
   
   .has-tooltip::after {
