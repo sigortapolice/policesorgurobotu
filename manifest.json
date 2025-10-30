@@ -1,9 +1,21 @@
 {
-  "name": "Poliçe Bilanço Simülasyonu",
-  "short_name": "Poliçe Sorgu",
+  "name": "Poliçe Asistanı",
+  "short_name": "Poliçe Asistanı",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#f3f4f6",
-  "theme_color": "#4B5563",
-  "description": "Vergi iadeli hayat sigortası için aylık ve 10 yıllık projeksiyon hesaplayıcı."
+  "background_color": "#ebedee",
+  "theme_color": "#2d3239",
+  "description": "Vergi iadeli hayat sigortası için aylık ve 10 yıllık projeksiyonlarınızı kolayca hesaplayın."
 }

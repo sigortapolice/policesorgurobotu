@@ -3,12 +3,15 @@
 <head>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Poliçe Sorgu">
+  <meta name="apple-mobile-web-app-title" content="Poliçe Asistanı">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 
   <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Poliçe Bilanço Simülasyonu</title>
+<title>Poliçe Asistanı</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
@@ -629,11 +632,11 @@
   <div id="calculator-page">
     <div class="main-wrapper">
       <div class="form-column">
-        <div class="card" role="region" aria-label="Sigorta Poliçesi Simülatörü">
+        <div class="card" role="region" aria-label="Poliçe Asistanı">
           <div class="card-main-content">
             <div class="header-box">
-              <h2>Poliçe Bilanço Simülasyonu</h2>
-              <div class="sub">Brüt maaş ve prim bilgilerinizi girerek 1 yıllık ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</div>
+              <h2>Poliçe Asistanı</h2>
+              <div class="sub">Brüt maaş ve prim bilgilerinizi girerek 1 ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</div>
             </div>
 
             <form id="calcForm" class="form-grid">
@@ -1238,7 +1241,7 @@ function compute10YearProjection(params) {
               <div class="highlight-label">Poliçe tutarı</div><div>${fmtTL(proj1.yearEndPolicyAmountTl)}</div><div>${fmtUSD(proj1.yearEndPolicyAmountUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">Vergi iadesi dahil kazanım</div><div>${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
+              <div class="highlight-label">Vergi iadesi dahil toplam kazanım</div><div>${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
             </div>
           </div>
         </div>
@@ -1265,7 +1268,7 @@ function compute10YearProjection(params) {
               <div class="highlight-label">Poliçe tutarı</div><div>${fmtTL(proj10.totals.totalPolicyAmountTl)}</div><div>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">Vergi iadesi dahil kazanım</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
+              <div class="highlight-label">Vergi iadesi dahil toplam kazanım</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
             </div>
           </div>
         </div>
