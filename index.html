@@ -187,7 +187,7 @@
   .rate{
     background: rgba(52, 168, 83, 0.1);
     border-radius: var(--radius-m);
-    padding: var(--form-v-padding) 12px;
+    padding: 0 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -209,7 +209,7 @@
     color: var(--excel-green);
     border: none;
     background: none;
-    padding: 1px;
+    padding: var(--form-v-padding);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -414,6 +414,14 @@
     font-weight: 400;
   }
   
+  .calculation-context-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: -4px;
+    margin-bottom: 8px;
+  }
+
   .calculation-context-note {
     padding: 8px 12px;
     margin-top: -4px;
@@ -425,6 +433,10 @@
     font-weight: 400;
     font-size: 14px;
     width: fit-content;
+  }
+  
+  .calculation-context-wrapper .calculation-context-note {
+    margin: 0;
   }
   
   .note{
@@ -1284,8 +1296,13 @@ function compute10YearProjection(params) {
         <h3>
           10 Yıllık Projeksiyon Özeti
         </h3>
-        <div class="calculation-context-note">
-          ${formatNumber(params.monthlySalary)}₺ Brüt maaş ve ${params.monthlyPremiumUsd}$ Prim ödemesi için
+        <div class="calculation-context-wrapper">
+          <div class="calculation-context-note">
+            Başlangıç: ${formatNumber(params.monthlySalary)}₺ maaş, ${params.monthlyPremiumUsd}$ prim
+          </div>
+          <div class="calculation-context-note">
+            Hesaplamada yıllık artış oranları kullanılır
+          </div>
         </div>
         <div class="table-wrapper">
           <div class="summary-list">
