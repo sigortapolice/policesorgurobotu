@@ -42,6 +42,7 @@
     --warning: #fbbc05;
     --excel-green: #187040;
     --gray-400: #9ca3af; /* gray-400 */
+    --gray-600: #4b5563;
     --form-v-padding: 10px;
     --form-v-gap: 10px;
   }
@@ -124,7 +125,7 @@
   }
 
   .card-wrapper {
-    background-color: #eaf0ff;
+    background-color: #edf0ff;
     padding: 10px;
     border-radius: var(--radius-l);
     box-shadow: var(--shadow);
@@ -133,7 +134,7 @@
   .card{
     width: 100%;
     background: var(--card);
-    border-radius: var(--radius-l);
+    border-radius: 10px 10px var(--radius-l) var(--radius-l);
     padding: 0;
     box-sizing: border-box;
     overflow: hidden;
@@ -141,7 +142,11 @@
 
   .card-main-content {
     background-color: var(--card);
-    padding: 10px 10px 0;
+    padding: 10px;
+  }
+
+  #calcForm {
+    margin-bottom: 0;
   }
 
   .rate{
@@ -326,7 +331,6 @@
     border-top: 1px solid var(--border-color);
     padding-top: var(--form-v-gap);
     margin-top: var(--form-v-gap);
-    padding-bottom: var(--form-v-gap);
   }
 
   .results{
@@ -488,8 +492,9 @@
   /* Custom padding for projection tables */
   .projection-details-table th,
   .projection-details-table td {
-    padding-left: 2px;
-    padding-right: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-bottom: 3px;
   }
   .projection-details-table th:first-child,
   .projection-details-table td:first-child {
@@ -731,7 +736,7 @@
   .intro-header {
     text-align: left;
     color: var(--primary-text);
-    padding: 10px;
+    padding: 10px 10px 8px;
   }
   .intro-header h1 {
     font-size: 22px;
@@ -741,7 +746,7 @@
   .intro-header p {
     margin: 0;
     line-height: 1.5;
-    color: var(--muted-text);
+    color: var(--primary-text);
   }
   
   @media (max-width: 1024px) {
@@ -839,14 +844,14 @@
       padding: 8px;
     }
     .card-main-content {
-      padding: 8px 8px 0;
+      padding: 8px;
     }
     .form-section {
       margin-bottom: var(--form-v-gap);
     }
     .projection-details-table th, .projection-details-table td {
         padding-top: var(--form-v-padding);
-        padding-bottom: var(--form-v-padding);
+        padding-bottom: 3px;
     }
 
     .button.button-icon svg, .refresh svg, .info-tooltip svg, .info-icon-note svg {
