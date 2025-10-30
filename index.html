@@ -606,6 +606,45 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  /* Collapsible Section */
+  .collapsible-section {
+    margin-top: 16px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+  }
+  .collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+  }
+  .collapsible-header-title {
+    font-weight: 400;
+    color: var(--primary-text);
+    margin: 0;
+  }
+  .collapsible-header .arrow {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    transition: transform 0.3s ease-in-out;
+  }
+  .collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, margin-top 0.4s ease-in-out;
+    margin-top: 0;
+  }
+  .collapsible-section.is-open .collapsible-content {
+    max-height: 1000px; /* A large enough value to show the content */
+    margin-top: 12px;
+  }
+  .collapsible-section.is-open .arrow {
+    transform: rotate(180deg);
+  }
+
   /* PWA Install Button */
   #installBtn {
     display: none; /* Hidden by default */
@@ -814,6 +853,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Calculator Page Functionality ---
+  const resultsDiv = document.getElementById('results');
   let projectionChartInstances = {};
   let lastCalculationResults = null;
   let isResetting = false;
@@ -1288,7 +1328,6 @@ function compute10YearProjection(params) {
   function computeAndRender() {
     if (isResetting) return;
     const params = getParamsFromForm();
-    const resultsDiv = document.getElementById('results');
     if (!params.usdTry || !params.monthlySalary || !params.monthlyPremiumUsd) {
         resultsDiv.innerHTML = `<div class="results-card"><p>Lütfen tüm gerekli alanları (maaş, prim, USD kuru) doldurarak tekrar deneyin.</p></div>`;
         resultsDiv.style.display = 'grid';
@@ -1327,6 +1366,22 @@ function compute10YearProjection(params) {
             </div>
           </div>
         </div>
+        <div class="collapsible-section">
+            <div class="collapsible-header">
+                <div class="collapsible-header-title">1 Yıllık Detay</div>
+                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </div>
+            <div class="collapsible-content">
+                <div class="table-wrapper">
+                    <table class="projection-details-table one-year-table">
+                        <thead><tr>
+                            <th>Ay</th><th>Ödenen<br>Prim</th><th>Vergi<br>Dilimi</th><th>Vergi<br>İadesi</th><th>Kâr<br>Payı</th><th>Gider<br>Payı</th><th>Poliçe<br>Tutarı</th>
+                        </tr></thead>
+                        <tbody>${proj1.tableRowsHTML}</tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
       </div>
       <div class="results-card">
         <h3>
@@ -1353,19 +1408,6 @@ function compute10YearProjection(params) {
               <div class="highlight-label">Vergi iadesi dahil edildiğinde</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="results-card">
-        <h3>
-          1 Yıllık Detay
-        </h3>
-        <div class="table-wrapper">
-          <table class="projection-details-table one-year-table">
-              <thead><tr>
-                  <th>Ay</th><th>Ödenen<br>Prim</th><th>Vergi<br>Dilimi</th><th>Vergi<br>İadesi</th><th>Kâr<br>Payı</th><th>Gider<br>Payı</th><th>Poliçe<br>Tutarı</th>
-              </tr></thead>
-              <tbody>${proj1.tableRowsHTML}</tbody>
-          </table>
         </div>
       </div>
        <div class="results-card">
@@ -1508,7 +1550,6 @@ function compute10YearProjection(params) {
   function resetForm() {
     isResetting = true;
     document.getElementById('calcForm').reset();
-    const resultsDiv = document.getElementById('results');
     resultsDiv.style.display = 'none';
     resultsDiv.innerHTML = '';
     Object.values(projectionChartInstances).forEach(chart => chart.destroy());
@@ -1547,6 +1588,18 @@ function compute10YearProjection(params) {
   
   // Initial Rate Fetch on load
   updateRateAndShow(true);
+
+  // Collapsible sections handler
+  resultsDiv.addEventListener('click', (e) => {
+    const header = e.target.closest('.collapsible-header');
+    if (header) {
+      e.preventDefault();
+      const collapsible = header.closest('.collapsible-section');
+      if (collapsible) {
+        collapsible.classList.toggle('is-open');
+      }
+    }
+  });
 
   // Resize listener for charts
   let resizeTimer;
