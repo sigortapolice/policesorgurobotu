@@ -472,6 +472,12 @@
     background-color: #edf0ff;
     color: #5a78ed;
   }
+
+  .calculation-context-note.projected-usd-note {
+    background-color: #fef4e6;
+    color: #b96900;
+    font-weight: 500;
+  }
   
   .note{
     margin-top: 20px;
@@ -736,13 +742,31 @@
     color: var(--primary-text);
     margin: 0;
   }
-  .collapsible-header .arrow {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-    transition: transform 0.3s ease-in-out;
+  .collapsible-header .arrow-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+  }
+  .collapsible-header .arrow-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
     border-radius: 50%;
     animation: pulse-animation 2s infinite;
+  }
+  .collapsible-header .arrow {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+    transition: transform 0.3s ease-in-out;
+    position: relative;
   }
   .collapsible-content {
     max-height: 0;
@@ -756,7 +780,6 @@
   }
   .collapsible-section.is-open .arrow {
     transform: rotate(180deg);
-    animation: none;
   }
   
   @keyframes pulse-animation {
@@ -1043,7 +1066,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function safeFetchUsdTry(){
-    const FALLBACK = 41.95;
+    const FALLBACK = 41.98;
     try{
       const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=TRY',{cache:"no-store"});
       const j = await res.json();
@@ -1353,6 +1376,7 @@ function compute10YearProjection(params) {
 
     const proj1 = compute1YearProjection(params);
     const proj10 = compute10YearProjection(params);
+    const projectedUsdTryFor2034 = params.usdTryBase * Math.pow(1 + params.annualUsdGrowth / 100, 9);
     
     lastCalculationResults = { proj1, proj10, params };
 
@@ -1389,7 +1413,9 @@ function compute10YearProjection(params) {
         <div class="collapsible-section">
             <div class="collapsible-header">
                 <div class="collapsible-header-title">1 Yıllık Tablo</div>
-                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                <div class="arrow-container">
+                  <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                </div>
             </div>
             <div class="collapsible-content">
                 <div class="table-wrapper">
@@ -1410,6 +1436,9 @@ function compute10YearProjection(params) {
         <div class="calculation-context-wrapper">
           <div class="calculation-context-note">
             Başlangıç: ${formatNumber(params.monthlySalary)}₺ maaş, ${params.monthlyPremiumUsd}$ prim
+          </div>
+          <div class="calculation-context-note projected-usd-note">
+            2034 USD/TRY: ${projectedUsdTryFor2034.toFixed(2).replace('.',',')}₺
           </div>
           <div class="calculation-context-note growth-rate-note">
             Hesaplamada girdiğiniz yıllık artış oranları kullanılır
@@ -1440,7 +1469,9 @@ function compute10YearProjection(params) {
         <div class="collapsible-section">
             <div class="collapsible-header">
                 <div class="collapsible-header-title">10 Yıllık Tablo</div>
-                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                <div class="arrow-container">
+                  <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                </div>
             </div>
             <div class="collapsible-content">
                 <div class="table-wrapper">
