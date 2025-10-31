@@ -767,7 +767,7 @@
   /* Collapsible Section */
   .collapsible-section {
     border-top: 1px solid var(--border-color);
-    padding-top: 12px;
+    padding-top: calc(var(--form-v-gap) - 4px);
   }
   .collapsible-header {
     display: flex;
@@ -787,8 +787,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 22px;
+    height: 22px;
+    color: var(--gray-600);
   }
   .collapsible-header .arrow-container::before {
     content: '';
@@ -802,8 +803,8 @@
     animation: pulse-animation 2s infinite;
   }
   .collapsible-header .arrow {
-    width: 30px;
-    height: 30px;
+    width: 22px;
+    height: 22px;
     fill: currentColor;
     transition: transform 0.3s ease-in-out;
     position: relative;
@@ -824,13 +825,13 @@
   
   @keyframes pulse-animation {
     0% {
-      box-shadow: 0 0 0 0 rgba(52, 168, 83, 0.5);
+      box-shadow: 0 0 0 0 rgba(156, 163, 175, 0.5);
     }
     70% {
-      box-shadow: 0 0 0 10px rgba(52, 168, 83, 0);
+      box-shadow: 0 0 0 10px rgba(156, 163, 175, 0);
     }
     100% {
-      box-shadow: 0 0 0 0 rgba(52, 168, 83, 0);
+      box-shadow: 0 0 0 0 rgba(156, 163, 175, 0);
     }
   }
 
