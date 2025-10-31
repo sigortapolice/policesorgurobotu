@@ -1235,8 +1235,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { upTo: Infinity, rate: 0.40 }
   ];
 
-  const fmtTL = n => (Math.round(n)).toLocaleString('tr-TR') + ' ₺';
-  const fmtUSD = n => (Math.round(n)).toLocaleString('en-US') + ' $';
+  const fmtTL = n => (Math.round(n)).toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ₺';
+  const fmtUSD = n => (Math.round(n)).toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' $';
   const months = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
 
   function formatNumber(value) {
@@ -1716,69 +1716,143 @@ function compute10YearProjection(params) {
   
   function exportToExcel() {
     if (!lastCalculationResults) {
-      alert("Lütfen önce bir hesaplama yapın.");
-      return;
+        alert("Lütfen önce bir hesaplama yapın.");
+        return;
     }
 
     const { proj1, proj10, params } = lastCalculationResults;
-
     const wb = XLSX.utils.book_new();
 
-    // Sheet 1: Parameters
-    const paramsData = [
-      ["Parametre", "Değer"],
-      ["Aylık Brüt Maaş", fmtTL(params.monthlySalary)],
-      ["Aylık Prim (USD)", fmtUSD(params.monthlyPremiumUsd)],
-      ["Başlangıç USD/TRY Kuru", params.usdTry],
-      ["Yıllık Maaş Artışı %", params.annualSalaryGrowth],
-      ["Yıllık Prim Artışı %", params.annualPremiumGrowth],
-      ["Yıllık Kur Artışı %", params.annualUsdGrowth],
-      ["Yıllık Kâr Payı %", params.annualProfitRate],
-      ["Yıllık Kâr Payı Artışı %", params.annualProfitRateGrowth],
-      ["Gider Kesintisi %", params.annualExpenseRate],
-      ["Vergi Matrahı Artışı Yıl/%", params.annualTaxBracketGrowth]
-    ];
-    const ws_params = XLSX.utils.aoa_to_sheet(paramsData);
-    XLSX.utils.book_append_sheet(wb, ws_params, "Giriş Parametreleri");
+    const fmtUSDExcel = n => (Math.round(n)).toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' $';
 
-    // Sheet 2: 1 Year Projection
+    // --- Data Preparation ---
+    const paramsData = [
+        ["Parametre", "Değer"],
+        ["Aylık Brüt Maaş", fmtTL(params.monthlySalary)],
+        ["Aylık Prim (USD)", fmtUSDExcel(params.monthlyPremiumUsd)],
+        ["Başlangıç USD/TRY Kuru", params.usdTry.toFixed(2).replace('.', ',')],
+        ["Yıllık Maaş Artışı %", params.annualSalaryGrowth],
+        ["Yıllık Prim Artışı %", params.annualPremiumGrowth],
+        ["Yıllık Kur Artışı %", params.annualUsdGrowth],
+        ["Yıllık Kâr Payı %", params.annualProfitRate.toFixed(2).replace('.', ',')],
+        ["Yıllık Kâr Payı Artışı %", params.annualProfitRateGrowth],
+        ["Gider Kesintisi %", params.annualExpenseRate],
+        ["Vergi Matrahı Artışı Yıl/%", params.annualTaxBracketGrowth]
+    ];
+
     const oneYearHeaders = ["Ay", "Ödenen Prim ($)", "Vergi Dilimi (%)", "Vergi İadesi ($)", "Kâr Payı ($)", "Gider Payı ($)", "Poliçe Tutarı ($)"];
-    const oneYearData = proj1.monthlyDetails.map(d => [
+    const oneYearRows = proj1.monthlyDetails.map(d => [
         d.Ay,
-        d['Ödenen Prim'] ? fmtUSD(d['Ödenen Prim']) : '-',
-        d['Vergi Dilimi'] ? `${d['Vergi Dilimi'].toFixed(0)}%` : '-',
-        d['Vergi İadesi'] ? fmtUSD(d['Vergi İadesi']) : '-',
-        d['Kâr Payı'] ? fmtUSD(d['Kâr Payı']) : '-',
-        d['Gider Payı'] ? fmtUSD(d['Gider Payı']) : '-',
-        d['Poliçe Tutarı'] ? fmtUSD(d['Poliçe Tutarı']) : '-',
+        d['Ödenen Prim'] ? fmtUSDExcel(d['Ödenen Prim']) : '-',
+        d['Vergi Dilimi'] !== null ? `${(d['Vergi Dilimi']).toFixed(0)}%` : '-',
+        d['Vergi İadesi'] ? fmtUSDExcel(d['Vergi İadesi']) : '-',
+        d['Kâr Payı'] > 0 ? fmtUSDExcel(d['Kâr Payı']) : '-',
+        d['Gider Payı'] ? fmtUSDExcel(d['Gider Payı']) : '-',
+        d['Poliçe Tutarı'] ? fmtUSDExcel(d['Poliçe Tutarı']) : '-',
     ]);
-    const ws_1_year = XLSX.utils.aoa_to_sheet([oneYearHeaders, ...oneYearData]);
-    XLSX.utils.book_append_sheet(wb, ws_1_year, "1 Yıllık Projeksiyon");
-    
-    // Sheet 3: 10 Year Projection
+    const oneYearFullData = [oneYearHeaders, ...oneYearRows];
+
     const tenYearHeaders = ["Yıl", "Yıllık Ödenen Prim ($)", "Yıllık Vergi İadesi ($)", "Yıllık Kâr Payı ($)", "Yıllık Gider Payı ($)", "Poliçe Tutarı ($)"];
-    const tenYearData = proj10.yearlyData.map(d => [
-      `${d.year}. Yıl`,
-      fmtUSD(d.annualPremiumUsd),
-      fmtUSD(d.annualRebateUsd),
-      fmtUSD(d.annualProfitUsd),
-      fmtUSD(d.annualExpenseUsd),
-      fmtUSD(d.endOfYearPolicyAmountUsd),
+    const tenYearRows = proj10.yearlyData.map(d => [
+        `${d.year}. Yıl`,
+        fmtUSDExcel(d.annualPremiumUsd),
+        fmtUSDExcel(d.annualRebateUsd),
+        fmtUSDExcel(d.annualProfitUsd),
+        fmtUSDExcel(d.annualExpenseUsd),
+        fmtUSDExcel(d.endOfYearPolicyAmountUsd),
     ]);
     const tenYearTotals = [
-      "Top.",
-      fmtUSD(proj10.totals.totalPremiumUsd),
-      fmtUSD(proj10.totals.totalRebateUsd),
-      fmtUSD(proj10.totals.totalProfitUsd),
-      fmtUSD(proj10.totals.totalExpenseUsd),
-      fmtUSD(proj10.totals.totalPolicyAmountUsd),
+        "Top.",
+        fmtUSDExcel(proj10.totals.totalPremiumUsd),
+        fmtUSDExcel(proj10.totals.totalRebateUsd),
+        fmtUSDExcel(proj10.totals.totalProfitUsd),
+        fmtUSDExcel(proj10.totals.totalExpenseUsd),
+        fmtUSDExcel(proj10.totals.totalPolicyAmountUsd),
     ];
-    const ws_10_year = XLSX.utils.aoa_to_sheet([tenYearHeaders, ...tenYearData, tenYearTotals]);
-    XLSX.utils.book_append_sheet(wb, ws_10_year, "10 Yıllık Projeksiyon");
+    const tenYearFullData = [tenYearHeaders, ...tenYearRows, tenYearTotals];
+    
+    // --- Grid Assembly ---
+    const maxRows = Math.max(paramsData.length, oneYearFullData.length, tenYearFullData.length);
+    const combinedData = [];
+    const spacer = '';
 
+    for (let i = 0; i < maxRows; i++) {
+        const row = [];
+        // Parameters (2 cols)
+        row.push(paramsData[i]?.[0] || spacer);
+        row.push(paramsData[i]?.[1] || spacer);
+        // Add a spacer column for visual separation
+        row.push(spacer);
+        
+        // 1-Year (7 cols)
+        for (let j = 0; j < 7; j++) {
+            row.push(oneYearFullData[i]?.[j] || spacer);
+        }
+        // Add another spacer column
+        row.push(spacer);
+        
+        // 10-Year (6 cols)
+        for (let j = 0; j < 6; j++) {
+            row.push(tenYearFullData[i]?.[j] || spacer);
+        }
+        combinedData.push(row);
+    }
+    
+    const ws = XLSX.utils.aoa_to_sheet(combinedData, { skipHeader: true });
+
+    // --- Styling ---
+    // Column Widths
+    const colWidths = [];
+    if (combinedData.length > 0) {
+        // Iterate through each column to find the max width
+        for (let i = 0; i < combinedData[0].length; i++) {
+            // Set a fixed small width for spacer columns
+            if (i === 2 || i === 10) { 
+                colWidths.push({ wch: 3 });
+                continue;
+            }
+            
+            let maxWidth = 0;
+            // Check every row's cell content length in the current column
+            combinedData.forEach(row => {
+                const cellContent = row[i];
+                const cellLength = cellContent ? String(cellContent).length : 0;
+                if (cellLength > maxWidth) {
+                    maxWidth = cellLength;
+                }
+            });
+            
+            // Add padding to the max content length for a better visual.
+            colWidths.push({ wch: maxWidth + 2 });
+        }
+    }
+    ws['!cols'] = colWidths;
+
+    // Borders and Alignment
+    const style = {
+      border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } },
+      alignment: { horizontal: "left" }
+    };
+    const range = XLSX.utils.decode_range(ws['!ref']);
+
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            // Skip applying styles to spacer columns
+            if (C === 2 || C === 10) continue;
+
+            const cell_address = XLSX.utils.encode_cell({ c: C, r: R });
+            const cell = ws[cell_address];
+            
+            // Only apply styles to cells that have actual content
+            if (!cell || cell.v === undefined || cell.v === '' || cell.v === null) continue;
+            
+            cell.s = style;
+        }
+    }
+
+    XLSX.utils.book_append_sheet(wb, ws, "Police_Bilanco_Simulasyonu");
     XLSX.writeFile(wb, "Police_Bilanco_Simulasyonu.xlsx");
 }
-
   
   function resetForm() {
     isResetting = true;
