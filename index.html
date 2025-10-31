@@ -63,6 +63,8 @@
     font-weight: 400;
     letter-spacing: -0.5px;
     -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   /* --- UNIFIED FONT SIZING --- */
@@ -1390,7 +1392,7 @@ function compute10YearProjection(params) {
               <div class="highlight-label">Poliçe tutarı</div><div>${fmtTL(proj1.yearEndPolicyAmountTl)}</div><div>${fmtUSD(proj1.yearEndPolicyAmountUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">Vergi iadesi dahil edildiğinde</div><div>${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
+              <div class="highlight-label">Vergi iadesi eklendiğinde</div><div>${fmtTL(proj1.yearEndTl)}</div><div>${fmtUSD(proj1.yearEndUsd)}</div>
             </div>
           </div>
         </div>
@@ -1446,7 +1448,7 @@ function compute10YearProjection(params) {
               <div class="highlight-label">Poliçe tutarı</div><div>${fmtTL(proj10.totals.totalPolicyAmountTl)}</div><div>${fmtUSD(proj10.totals.totalPolicyAmountUsd)}</div>
             </div>
             <div class="summary-item">
-              <div class="highlight-label">Vergi iadesi dahil edildiğinde</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
+              <div class="highlight-label">Vergi iadesi eklendiğinde</div><div>${fmtTL(proj10.totals.accWithRebateTl)}</div><div>${fmtUSD(proj10.totals.accWithRebateUsd)}</div>
             </div>
           </div>
         </div>
