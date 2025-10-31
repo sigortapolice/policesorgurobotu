@@ -678,6 +678,9 @@
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     transition: transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .theme-toggle[aria-checked="true"] {
@@ -687,6 +690,25 @@
 
   .theme-toggle[aria-checked="true"] .toggle-thumb {
     transform: translateX(20px);
+  }
+
+  .toggle-icon {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937; /* gray-800 */
+    user-select: none;
+  }
+
+  .toggle-dark-icon {
+    display: none;
+  }
+
+  [data-theme="dark"] .toggle-light-icon {
+    display: none;
+  }
+
+  [data-theme="dark"] .toggle-dark-icon {
+    display: inline;
   }
 
   .button.export-button {
@@ -1140,7 +1162,10 @@
                       </svg>
                     </button>
                     <button type="button" id="themeToggleBtn" class="theme-toggle" role="switch" aria-label="Toggle Dark Mode">
-                      <span class="toggle-thumb"></span>
+                      <span class="toggle-thumb">
+                        <span class="toggle-icon toggle-light-icon">K</span>
+                        <span class="toggle-icon toggle-dark-icon">A</span>
+                      </span>
                     </button>
                   </div>
                 </div>
