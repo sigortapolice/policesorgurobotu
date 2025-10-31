@@ -937,12 +937,10 @@
     }
   }
 
-  @media(max-width: 460px){ 
-    .main-wrapper { padding: 16px; }
-    th, td { padding: 8.8px 6.4px; }
-  }
-  
   @media(max-width: 600px) {
+    .main-wrapper {
+      padding: 16px;
+    }
     .card-wrapper {
       padding: 8px 0 0;
     }
@@ -956,7 +954,9 @@
         padding-top: var(--form-v-padding);
         padding-bottom: 3px;
     }
-
+    th, td { 
+      padding: 8.8px 6.4px; 
+    }
     .button.button-icon svg, .refresh svg, .info-tooltip svg, .info-icon-note svg {
         width: 16px;
         height: 16px;
