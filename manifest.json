@@ -21,7 +21,7 @@
   ],
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ebedee",
+  "background_color": "#242424",
   "theme_color": "#ebedee",
   "description": "Vergi iadeli hayat sigortası için aylık ve 10 yıllık projeksiyonlarınızı kolayca hesaplayın."
 }
