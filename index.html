@@ -630,6 +630,7 @@
       justify-content: flex-end;
       gap: 10px;
       position: relative;
+      align-items: center;
   }
   .button.button-icon {
       padding: var(--form-v-padding);
@@ -643,33 +644,48 @@
       height: 20px;
   }
   
-  #themeToggleBtn {
-    height: calc(20px + 2 * var(--form-v-padding));
-    width: calc(20px + 2 * var(--form-v-padding));
-    padding: var(--form-v-padding);
+  .theme-toggle {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    position: relative;
+    display: inline-block;
+    width: 51px;
+    height: 31px;
+    margin: 0;
+    padding: 0;
+    background-color: var(--primary-light);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
   }
-  
-  #themeToggleBtn .icon-container {
-    transition: transform 0.4s ease-in-out;
+
+  .theme-toggle:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--success);
   }
-  
-  #themeToggleBtn svg {
+
+  .theme-toggle .toggle-thumb {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.2s ease-in-out;
+    top: 1px;
+    left: 1px;
+    width: 27px;
+    height: 27px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease-in-out;
   }
   
-  #themeToggleBtn .sun-icon { opacity: 1; }
-  #themeToggleBtn .moon-icon { opacity: 0; }
-
-  [data-theme="dark"] #themeToggleBtn .sun-icon { opacity: 0; }
-  [data-theme="dark"] #themeToggleBtn .moon-icon { opacity: 1; }
-  [data-theme="dark"] #themeToggleBtn .icon-container {
-    transform: rotate(360deg);
+  .theme-toggle[aria-checked="true"] {
+    background-color: var(--success);
+    border-color: var(--success);
   }
 
+  .theme-toggle[aria-checked="true"] .toggle-thumb {
+    transform: translateX(20px);
+  }
 
   .button.export-button {
     background-color: var(--input-bg);
@@ -947,10 +963,6 @@
         width: 16px;
         height: 16px;
     }
-    #themeToggleBtn {
-      height: calc(16px + 2 * var(--form-v-padding));
-      width: calc(16px + 2 * var(--form-v-padding));
-    }
     .intro-header {
       padding: 0 0 8px;
     }
@@ -1122,15 +1134,8 @@
                         </g>
                       </svg>
                     </button>
-                    <button type="button" id="themeToggleBtn" class="button button-icon" aria-label="Toggle Dark Mode">
-                      <span class="icon-container">
-                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 5a7 7 0 1 1 0 14 7 7 0 0 1 0-14Zm0-3a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 20a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1ZM5.636 5.636a1 1 0 0 1 1.414 0l.707.707a1 1 0 0 1-1.414 1.414l-.707-.707a1 1 0 0 1 0-1.414ZM16.95 16.95a1 1 0 0 1 1.414 0l.707.707a1 1 0 0 1-1.414 1.414l-.707-.707a1 1 0 0 1 0-1.414ZM2 12a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1ZM20 12a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2h-1a1 1 0 0 1-1-1ZM5.636 18.364a1 1 0 0 1 0-1.414l.707-.707a1 1 0 0 1 1.414 1.414l-.707.707a1 1 0 0 1-1.414 0ZM16.95 7.05a1 1 0 0 1 0-1.414l.707-.707a1 1 0 0 1 1.414 1.414l-.707.707a1 1 0 0 1-1.414 0Z"/>
-                        </svg>
-                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M11.01 3.05C6.51 3.54 3 7.36 3 12a9 9 0 0 0 9 9c4.64 0 8.46-3.51 8.95-8.01a1 1 0 0 0-.94-1.14 7.02 7.02 0 0 1-7.85-7.85 1 1 0 0 0-1.15-.95Z"/>
-                        </svg>
-                      </span>
+                    <button type="button" id="themeToggleBtn" class="theme-toggle" role="switch" aria-label="Toggle Dark Mode">
+                      <span class="toggle-thumb"></span>
                     </button>
                   </div>
                 </div>
@@ -1164,6 +1169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
+    themeToggleBtn.setAttribute('aria-checked', theme === 'dark');
     if(theme === 'dark') {
       themeMeta.setAttribute('content', darkThemeColor);
     } else {
@@ -1180,8 +1186,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   themeToggleBtn.addEventListener('click', toggleTheme);
 
-  // Initial theme is now set by a script in the <head> to prevent FOUC.
-  // The logic here is no longer needed.
+  // Initial theme is set by a script in the <head> to prevent FOUC.
+  // This line syncs the toggle's visual state on initial load.
+  const initialTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  themeToggleBtn.setAttribute('aria-checked', initialTheme === 'dark');
 
   // --- Calculator Page Functionality ---
   const resultsDiv = document.getElementById('results');
