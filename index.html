@@ -1517,13 +1517,16 @@ function compute10YearProjection(params) {
 }
 
 
-  async function updateRateAndShow(autoCompute = false){
+  async function updateRateAndShow(autoCompute = false, isManualRefresh = false){
     const rt = document.getElementById('rateText');
     if (!rt) return; // Exit if we are not on calculator page
     rt.innerHTML = '<span class="spinner"></span> Bekleyin..';
     const { rate, source } = await safeFetchUsdTry();
     const usdInput = document.getElementById('usdTry');
-    if(!usdInput.value) usdInput.value = rate.toFixed(2);
+    // On initial load, only populate if empty. On manual refresh, always update.
+    if(isManualRefresh || !usdInput.value) {
+        usdInput.value = rate.toFixed(2);
+    }
     rt.textContent = `1$ = ${rate.toFixed(2).replace('.', ',')}₺`;
     if(autoCompute) computeAndRender();
   }
@@ -1778,20 +1781,15 @@ function compute10YearProjection(params) {
 
     for (let i = 0; i < maxRows; i++) {
         const row = [];
-        // Parameters (2 cols)
         row.push(paramsData[i]?.[0] || spacer);
         row.push(paramsData[i]?.[1] || spacer);
-        // Add a spacer column for visual separation
         row.push(spacer);
         
-        // 1-Year (7 cols)
         for (let j = 0; j < 7; j++) {
             row.push(oneYearFullData[i]?.[j] || spacer);
         }
-        // Add another spacer column
         row.push(spacer);
         
-        // 10-Year (6 cols)
         for (let j = 0; j < 6; j++) {
             row.push(tenYearFullData[i]?.[j] || spacer);
         }
@@ -1804,16 +1802,13 @@ function compute10YearProjection(params) {
     // Column Widths
     const colWidths = [];
     if (combinedData.length > 0) {
-        // Iterate through each column to find the max width
         for (let i = 0; i < combinedData[0].length; i++) {
-            // Set a fixed small width for spacer columns
             if (i === 2 || i === 10) { 
                 colWidths.push({ wch: 3 });
                 continue;
             }
             
             let maxWidth = 0;
-            // Check every row's cell content length in the current column
             combinedData.forEach(row => {
                 const cellContent = row[i];
                 const cellLength = cellContent ? String(cellContent).length : 0;
@@ -1821,32 +1816,51 @@ function compute10YearProjection(params) {
                     maxWidth = cellLength;
                 }
             });
-            
-            // Add padding to the max content length for a better visual.
             colWidths.push({ wch: maxWidth + 2 });
         }
     }
     ws['!cols'] = colWidths;
 
-    // Borders and Alignment
-    const style = {
-      border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } },
-      alignment: { horizontal: "left" }
+    // Cell Styles
+    const borderStyle = { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } };
+    const headerStyle = {
+        font: { color: { rgb: "FFFFFF" }, bold: true },
+        fill: { fgColor: { rgb: "4A5568" } }, // Dark Gray (Tailwind Gray 700)
+        border: borderStyle,
+        alignment: { horizontal: "left" }
     };
-    const range = XLSX.utils.decode_range(ws['!ref']);
+    const dataStyle = {
+        border: borderStyle,
+        alignment: { horizontal: "left" }
+    };
+    const totalStyle = {
+        font: { bold: true },
+        border: borderStyle,
+        alignment: { horizontal: "left" }
+    };
 
+    const range = XLSX.utils.decode_range(ws['!ref']);
     for (let R = range.s.r; R <= range.e.r; ++R) {
         for (let C = range.s.c; C <= range.e.c; ++C) {
-            // Skip applying styles to spacer columns
             if (C === 2 || C === 10) continue;
 
             const cell_address = XLSX.utils.encode_cell({ c: C, r: R });
             const cell = ws[cell_address];
             
-            // Only apply styles to cells that have actual content
             if (!cell || cell.v === undefined || cell.v === '' || cell.v === null) continue;
             
-            cell.s = style;
+            let isTotalRow = false;
+            if (ws[XLSX.utils.encode_cell({c: 3, r: R})]?.v === 'Top.' || ws[XLSX.utils.encode_cell({c: 11, r: R})]?.v === 'Top.') {
+                isTotalRow = true;
+            }
+
+            if (R === 0) {
+                cell.s = headerStyle;
+            } else if (isTotalRow) {
+                cell.s = totalStyle;
+            } else {
+                cell.s = dataStyle;
+            }
         }
     }
 
@@ -1887,7 +1901,7 @@ function compute10YearProjection(params) {
     }
   });
 
-  document.getElementById('refreshBtn').addEventListener('click', () => updateRateAndShow(true));
+  document.getElementById('refreshBtn').addEventListener('click', () => updateRateAndShow(true, true));
   document.getElementById('resetFormBtn').addEventListener('click', resetForm);
   document.getElementById('exportBtn').addEventListener('click', exportToExcel);
   
