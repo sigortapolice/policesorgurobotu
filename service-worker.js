@@ -3,10 +3,6 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png',
-  '/favicon-32x32.png',
-  '/favicon-16x16.png',
   'https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js'
 ];
 
