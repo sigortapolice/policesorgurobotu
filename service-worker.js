@@ -1,4 +1,4 @@
-const CACHE_NAME = 'police-asistani-v9';
+const CACHE_NAME = 'police-asistani-v10';
 const urlsToCache = [
   '/',
   '/index.html',
