@@ -60,7 +60,7 @@
   [data-theme="dark"] {
     --bg: #242424;
     --card: #2E2E2E;
-    --muted-text: #9E9E9E;
+    --muted-text: #d1d5db;
     --primary-text: #f5f5f5;
     --primary: #f5f5f5;
     --primary-hover: #e5e7eb;
@@ -72,8 +72,8 @@
     --success: #68d391;
     --warning: #f6e05e;
     --excel-green: #68d391;
-    --gray-400: #9E9E9E;
-    --gray-600: #757575;
+    --gray-400: #d1d5db;
+    --gray-600: #bdbdbd;
     --card-wrapper-bg: #242424;
     --rate-bg: #3c3c3c;
     --rate-text: #f6e05e;
@@ -192,6 +192,7 @@
     box-sizing: border-box;
     border: none;
     transition: background-color 0.3s ease, color 0.3s ease;
+    height: 42px;
   }
 
   .rate-text {
@@ -319,7 +320,7 @@
     background-color: var(--input-bg);
     color: var(--primary-text);
     border: 1px solid var(--border-color);
-    padding: var(--form-v-padding) 20px;
+    padding: 0 20px;
     border-radius: var(--radius-m);
     font-weight: 400;
     cursor: pointer;
@@ -329,6 +330,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    height: 42px;
   }
   .button:hover:not(:disabled) {
     background-color: var(--input-focus-bg);
@@ -352,7 +354,7 @@
   }
   
   #resetFormBtn {
-      padding: var(--form-v-padding) 16px;
+      padding: 0 16px;
   }
 
   .action-row {
@@ -968,6 +970,9 @@
     }
     .intro-header h1 {
       font-size: 18px;
+    }
+    .rate, .button {
+      height: 34px;
     }
   }
 </style>
