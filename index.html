@@ -960,7 +960,36 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+  // Prevents FOUC (Flash of Unstyled Content) for theme changes.
+  // This script runs before the body is rendered to apply the correct theme instantly.
+  (function() {
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    const lightThemeColor = '#ebedee';
+    const darkThemeColor = '#242424';
 
+    function applyInitialTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (themeMeta) {
+        themeMeta.setAttribute('content', theme === 'dark' ? darkThemeColor : lightThemeColor);
+      }
+    }
+
+    try {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        applyInitialTheme(savedTheme);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyInitialTheme('dark');
+      } else {
+        applyInitialTheme('light');
+      }
+    } catch (e) {
+      // Fallback to light theme in case of any errors
+      applyInitialTheme('light');
+    }
+  })();
+</script>
 </head>
 <body>
 
@@ -1151,17 +1180,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   themeToggleBtn.addEventListener('click', toggleTheme);
 
-  // Set initial theme based on localStorage or system preference
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  if (savedTheme) {
-    applyTheme(savedTheme);
-  } else if (prefersDark) {
-    applyTheme('dark');
-  } else {
-    applyTheme('light');
-  }
+  // Initial theme is now set by a script in the <head> to prevent FOUC.
+  // The logic here is no longer needed.
 
   // --- Calculator Page Functionality ---
   const resultsDiv = document.getElementById('results');
