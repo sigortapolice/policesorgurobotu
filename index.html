@@ -110,8 +110,6 @@
   }
 
   /* --- UNIFIED FONT SIZING --- */
-  /* To ensure all text is consistent across devices, we explicitly set the font size for all text-containing elements. */
-
   /* Default for Desktop */
   body, h1, h2, h3, p, li, button, input, label, th, td {
     font-size: 15px;
@@ -124,20 +122,6 @@
     }
     .calculation-context-note, .has-tooltip::before {
       font-size: 13px !important;
-    }
-  }
-
-  /* Mobile */
-  @media (max-width: 600px) {
-    :root {
-      --form-v-padding: 8px;
-      --form-v-gap: 8px;
-    }
-    body, h1, h2, h3, p, li, button, input, label, th, td {
-      font-size: 13px;
-    }
-    .calculation-context-note, .has-tooltip::before {
-      font-size: 12px !important;
     }
   }
   /* --- END UNIFIED FONT SIZING --- */
@@ -169,8 +153,8 @@
   }
 
   .card-wrapper {
-    background-color: var(--card-wrapper-bg);
-    padding: 10px 0 0;
+    background-color: var(--card);
+    padding: 20px;
     border-radius: var(--radius-l);
     box-shadow: var(--shadow);
     transition: background-color 0.3s ease;
@@ -179,7 +163,7 @@
   .card{
     width: 100%;
     background: var(--card);
-    border-radius: 10px 10px var(--radius-l) var(--radius-l);
+    border-radius: 0;
     padding: 0;
     box-sizing: border-box;
     overflow: hidden;
@@ -188,7 +172,7 @@
 
   .card-main-content {
     background-color: var(--card);
-    padding: 10px;
+    padding: 0;
     transition: background-color 0.3s ease;
   }
 
@@ -832,7 +816,7 @@
   .intro-header {
     text-align: left;
     color: var(--primary-text);
-    padding: 10px 10px 8px;
+    padding: 0 0 8px;
     transition: color 0.3s ease;
   }
   .intro-header h1 {
@@ -854,15 +838,6 @@
     }
   }
   
-  @media (max-width: 600px) {
-    .intro-header {
-      padding: 8px;
-    }
-    .intro-header h1 {
-      font-size: 18px;
-    }
-  }
-
   /* Collapsible Section */
   .collapsible-section {
     border-top: 1px solid var(--border-color);
@@ -937,15 +912,26 @@
     }
   }
 
-  @media(max-width: 600px) {
+  /* Mobile */
+  @media (max-width: 600px) {
+    :root {
+      --form-v-padding: 8px;
+      --form-v-gap: 8px;
+    }
+    body, h1, h2, h3, p, li, button, input, label, th, td {
+      font-size: 13px;
+    }
+    .calculation-context-note, .has-tooltip::before {
+      font-size: 12px !important;
+    }
     .main-wrapper {
       padding: 16px;
     }
     .card-wrapper {
-      padding: 8px 0 0;
+      padding: 16px;
     }
     .card-main-content {
-      padding: 8px;
+      padding: 0;
     }
     .form-section {
       margin-bottom: var(--form-v-gap);
@@ -964,6 +950,12 @@
     #themeToggleBtn {
       height: calc(16px + 2 * var(--form-v-padding));
       width: calc(16px + 2 * var(--form-v-padding));
+    }
+    .intro-header {
+      padding: 0 0 8px;
+    }
+    .intro-header h1 {
+      font-size: 18px;
     }
   }
 </style>
