@@ -1,8 +1,11 @@
-const CACHE_NAME = 'police-asistani-v8';
+const CACHE_NAME = 'police-asistani-v9';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/icon-180x180.png',
+  '/icon-192x192.png',
+  '/icon-512x512.png',
   'https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js'
 ];
 
