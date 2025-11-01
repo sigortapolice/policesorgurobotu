@@ -1,9 +1,10 @@
-const CACHE_NAME = 'police-asistani-v12';
+const CACHE_NAME = 'police-asistani-v13';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.ico',
+  'CNAME',
   '/icon-16x16.png',
   '/icon-32x32.png',
   '/icon-180x180.png',
