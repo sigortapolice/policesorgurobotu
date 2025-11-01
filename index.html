@@ -487,17 +487,16 @@
     background-color: var(--note-context-success-bg);
     color: var(--note-context-success-text);
     border-radius: 12px;
-    font-style: italic;
     font-weight: 400;
     font-size: 14px;
     width: fit-content;
     transition: background-color 0.3s ease, color 0.3s ease;
+    font-style: normal;
   }
   
   .calculation-context-note.warning {
     background-color: var(--note-context-warning-bg);
     color: var(--note-context-warning-text);
-    font-style: normal;
     width: fit-content;
   }
 
@@ -1606,7 +1605,6 @@ function compute10YearProjection(params) {
 
     const proj1 = compute1YearProjection(params);
     const proj10 = compute10YearProjection(params);
-    const projectedUsdTryFor2034 = params.usdTryBase * Math.pow(1 + params.annualUsdGrowth / 100, 9);
     
     lastCalculationResults = { proj1, proj10, params };
 
@@ -1664,15 +1662,14 @@ function compute10YearProjection(params) {
           10 Yıllık Projeksiyon Özeti
         </h3>
         <div class="calculation-context-wrapper">
-          <div class="calculation-context-note">
+          <div class="calculation-context-note growth-rate-note">
             Başlangıç: ${formatNumber(params.monthlySalary)}₺ maaş, ${params.monthlyPremiumUsd}$ prim
           </div>
-          <div class="calculation-context-note projected-usd-note">
-            $/₺ ${projectedUsdTryFor2034.toFixed(2).replace('.',',')}
-          </div>
-          <div class="calculation-context-note growth-rate-note">
-            Girdiğiniz yıllık artış oranları kullanılır
-          </div>
+          ${params.annualSalaryGrowth > 0 ? `<div class="calculation-context-note growth-rate-note"><span>Yıllık %${params.annualSalaryGrowth} maaş artışı</span></div>` : ''}
+          ${params.annualPremiumGrowth > 0 ? `<div class="calculation-context-note growth-rate-note"><span>Yıllık %${params.annualPremiumGrowth} prim artışı</span></div>` : ''}
+          ${params.annualUsdGrowth > 0 ? `<div class="calculation-context-note growth-rate-note"><span>Yıllık %${params.annualUsdGrowth} kur artışı</span></div>` : ''}
+          ${params.annualProfitRateGrowth > 0 ? `<div class="calculation-context-note growth-rate-note"><span>Yıllık %${params.annualProfitRateGrowth} kâr payı artışı</span></div>` : ''}
+          ${params.annualTaxBracketGrowth > 0 ? `<div class="calculation-context-note growth-rate-note"><span>Yıllık %${params.annualTaxBracketGrowth} vergi matrahı artışı</span></div>` : ''}
         </div>
         <div class="table-wrapper">
           <div class="summary-list">
