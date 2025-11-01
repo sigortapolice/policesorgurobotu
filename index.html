@@ -52,6 +52,8 @@
     --note-context-growth-text: #5a78ed;
     --note-context-usd-bg: #fef4e6;
     --note-context-usd-text: #b96900;
+    --note-context-warning-bg: rgba(239, 68, 68, 0.1);
+    --note-context-warning-text: #b91c1c;
     --tooltip-bg: rgba(235, 237, 238, 0.65);
     --pulse-color: rgba(156, 163, 175, 0.5);
     --intro-text: var(--primary-text);
@@ -83,6 +85,8 @@
     --note-context-growth-text: #a3b3f8;
     --note-context-usd-bg: #3c3c3c;
     --note-context-usd-text: #f6e05e;
+    --note-context-warning-bg: rgba(239, 68, 68, 0.15);
+    --note-context-warning-text: #f87171;
     --tooltip-bg: rgba(46, 46, 46, 0.65);
     --pulse-color: rgba(158, 158, 158, 0.3);
     --intro-text: #d1d5db;
@@ -474,6 +478,9 @@
   }
 
   .calculation-context-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
     padding: 8px 12px;
     margin-top: -4px;
     margin-bottom: 8px;
@@ -487,6 +494,24 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   
+  .calculation-context-note.warning {
+    background-color: var(--note-context-warning-bg);
+    color: var(--note-context-warning-text);
+    font-style: normal;
+    width: fit-content;
+  }
+
+  .calculation-context-note svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  .calculation-context-note > span {
+    min-width: 0; /* Prevents text overflow in flex containers */
+  }
+
   .calculation-context-wrapper .calculation-context-note {
     margin: 0;
   }
@@ -546,10 +571,12 @@
   /* Custom padding for projection tables */
   .projection-details-table th,
   .projection-details-table td {
+    padding-top: 8px;
+    padding-bottom: 8px;
     padding-left: 3px;
     padding-right: 3px;
-    padding-bottom: 3px;
   }
+
   .projection-details-table th:first-child,
   .projection-details-table td:first-child {
     padding-left: 0;
@@ -985,12 +1012,12 @@
     }
     .projection-details-table th, .projection-details-table td {
         padding-top: var(--form-v-padding);
-        padding-bottom: 3px;
+        padding-bottom: var(--form-v-padding);
     }
     th, td { 
       padding: 8.8px 6.4px; 
     }
-    .button.button-icon svg, .refresh svg, .info-tooltip svg, .info-icon-note svg {
+    .button.button-icon svg, .refresh svg, .info-tooltip svg, .info-icon-note svg, .calculation-context-note svg {
         width: 16px;
         height: 16px;
     }
@@ -1050,6 +1077,9 @@
           <div class="card" role="region" aria-label="Poliçe Asistanı">
             <div class="card-main-content">
               <form id="calcForm">
+                <div id="form-context-note-wrapper" style="display: none; margin-top: var(--form-v-gap);">
+                  <div class="calculation-context-note" id="form-context-note" style="margin: 0;"></div>
+                </div>
                 <div class="form-divider"></div>
                 <div class="form-section">
                   <div class="two-col">
@@ -1377,7 +1407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         yearlyTl: totalPremiumTl,
         totalRebateTl: totalRebateTl,
         yearlyProfitTl: totalProfitTl,
-        yearlyExpenseTl: totalExpenseTl,
+        yearlyExpenseTl: totalExpenseUsd * usdTry,
         yearEndTl: yearEndTl,
         yearEndPolicyAmountTl: yearEndPolicyAmountTl,
         yearlyPremiumUsd: totalPremiumUsd,
@@ -1565,9 +1595,14 @@ function compute10YearProjection(params) {
   function computeAndRender() {
     if (isResetting) return;
     const params = getParamsFromForm();
+    const formNoteWrapper = document.getElementById('form-context-note-wrapper');
+    
     if (!params.usdTry || !params.monthlySalary || !params.monthlyPremiumUsd) {
         resultsDiv.innerHTML = `<div class="results-card"><p>Lütfen tüm gerekli alanları (maaş, prim, USD kuru) doldurarak tekrar deneyin.</p></div>`;
         resultsDiv.style.display = 'grid';
+        if (formNoteWrapper) {
+            formNoteWrapper.style.display = 'none';
+        }
         return;
     }
 
@@ -1577,13 +1612,21 @@ function compute10YearProjection(params) {
     
     lastCalculationResults = { proj1, proj10, params };
 
+    const formNote = document.getElementById('form-context-note');
+    if(formNoteWrapper && formNote) {
+      formNote.className = 'calculation-context-note warning';
+      formNote.innerHTML = `<span>Uygulama girdiğiniz verilere göre varsayımsal sonuçlar vermektedir.</span>`;
+      formNoteWrapper.style.display = 'block';
+    }
+
     resultsDiv.innerHTML = `
       <div class="results-card">
         <h3>
           1 Yıllık Projeksiyon Özeti
         </h3>
         <div class="calculation-context-note">
-          ${formatNumber(params.monthlySalary)}₺ Brüt maaş ve ${params.monthlyPremiumUsd}$ Prim ödemesi için
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+          <span>${formatNumber(params.monthlySalary)}₺ Brüt maaş ve ${params.monthlyPremiumUsd}$ Prim ödemesi için</span>
         </div>
         <div class="table-wrapper">
           <div class="summary-list">
@@ -1880,6 +1923,12 @@ function compute10YearProjection(params) {
     resultsDiv.innerHTML = '';
     lastCalculationResults = null;
     document.getElementById('usdTry').value = '';
+
+    const formNoteWrapper = document.getElementById('form-context-note-wrapper');
+    if (formNoteWrapper) {
+        formNoteWrapper.style.display = 'none';
+    }
+
     updateRateAndShow(false, true).then(() => {
         isResetting = false;
         computeAndRender();
