@@ -1077,8 +1077,10 @@
           <div class="card" role="region" aria-label="Poliçe Asistanı">
             <div class="card-main-content">
               <form id="calcForm">
-                <div id="form-context-note-wrapper" style="display: none; margin-top: var(--form-v-gap);">
-                  <div class="calculation-context-note" id="form-context-note" style="margin: 0;"></div>
+                <div id="form-context-note-wrapper" style="margin-top: var(--form-v-gap);">
+                  <div class="calculation-context-note warning" id="form-context-note" style="margin: 0;">
+                    <span>Sorumluluk reddi: Uygulama girdiğiniz verilere göre varsayımsal sonuçlar vermektedir.</span>
+                  </div>
                 </div>
                 <div class="form-divider"></div>
                 <div class="form-section">
@@ -1595,14 +1597,10 @@ function compute10YearProjection(params) {
   function computeAndRender() {
     if (isResetting) return;
     const params = getParamsFromForm();
-    const formNoteWrapper = document.getElementById('form-context-note-wrapper');
     
     if (!params.usdTry || !params.monthlySalary || !params.monthlyPremiumUsd) {
         resultsDiv.innerHTML = `<div class="results-card"><p>Lütfen tüm gerekli alanları (maaş, prim, USD kuru) doldurarak tekrar deneyin.</p></div>`;
         resultsDiv.style.display = 'grid';
-        if (formNoteWrapper) {
-            formNoteWrapper.style.display = 'none';
-        }
         return;
     }
 
@@ -1611,13 +1609,6 @@ function compute10YearProjection(params) {
     const projectedUsdTryFor2034 = params.usdTryBase * Math.pow(1 + params.annualUsdGrowth / 100, 9);
     
     lastCalculationResults = { proj1, proj10, params };
-
-    const formNote = document.getElementById('form-context-note');
-    if(formNoteWrapper && formNote) {
-      formNote.className = 'calculation-context-note warning';
-      formNote.innerHTML = `<span>Sorumluluk reddi: Uygulama girdiğiniz verilere göre varsayımsal sonuçlar vermektedir.</span>`;
-      formNoteWrapper.style.display = 'block';
-    }
 
     resultsDiv.innerHTML = `
       <div class="results-card">
@@ -1922,11 +1913,6 @@ function compute10YearProjection(params) {
     resultsDiv.innerHTML = '';
     lastCalculationResults = null;
     document.getElementById('usdTry').value = '';
-
-    const formNoteWrapper = document.getElementById('form-context-note-wrapper');
-    if (formNoteWrapper) {
-        formNoteWrapper.style.display = 'none';
-    }
 
     updateRateAndShow(false, true).then(() => {
         isResetting = false;
