@@ -357,6 +357,13 @@
       padding: 0 16px;
   }
 
+  .form-divider {
+    border-top: 1px solid var(--border-color);
+    margin-top: var(--form-v-gap);
+    margin-bottom: var(--form-v-gap);
+    transition: border-color 0.3s ease;
+  }
+
   .action-row {
     grid-column: 1 / -1;
     display: grid;
@@ -856,7 +863,7 @@
   .intro-header {
     text-align: left;
     color: var(--primary-text);
-    padding: 0 0 8px;
+    padding: 0;
     transition: color 0.3s ease;
   }
   .intro-header h1 {
@@ -865,7 +872,7 @@
     margin: 0 0 8px 0;
   }
   .intro-header p {
-    margin: 0 0 var(--form-v-gap) 0;
+    margin: 0;
     line-height: 1.5;
     color: var(--intro-text);
     transition: color 0.3s ease;
@@ -988,7 +995,7 @@
         height: 16px;
     }
     .intro-header {
-      padding: 0 0 8px;
+      padding: 0;
     }
     .intro-header h1 {
       font-size: 18px;
@@ -1043,6 +1050,7 @@
           <div class="card" role="region" aria-label="Poliçe Asistanı">
             <div class="card-main-content">
               <form id="calcForm">
+                <div class="form-divider"></div>
                 <div class="form-section">
                   <div class="two-col">
                     <div class="input-group">
