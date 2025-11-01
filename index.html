@@ -984,6 +984,15 @@
     }
   }
 
+  footer {
+    padding: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted-text);
+    font-weight: 300;
+    transition: color .3s ease;
+  }
+
   /* Mobile */
   @media (max-width: 600px) {
     :root {
@@ -1217,9 +1226,13 @@
       <div id="results" class="results" aria-live="polite"></div>
     </div>
   </div>
+  
+  <footer>Tüm hakları saklıdır © <span id="copyright-year"></span> Poliçe Asistanı</footer>
 
 <script type="module">
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
   // --- PWA Service Worker and Install Functionality ---
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
