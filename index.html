@@ -469,6 +469,10 @@
     transition: color 0.3s ease;
   }
   
+  #form-context-note-wrapper {
+    display: flex;
+  }
+
   .calculation-context-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -478,7 +482,7 @@
   }
 
   .calculation-context-note {
-    display: flex;
+    display: inline-flex;
     align-items: flex-start;
     gap: 8px;
     padding: 8px 12px;
@@ -491,12 +495,12 @@
     font-size: 14px;
     transition: background-color 0.3s ease, color 0.3s ease;
     font-style: normal;
+    width: fit-content;
   }
   
   .calculation-context-note.warning {
     background-color: var(--note-context-warning-bg);
     color: var(--note-context-warning-text);
-    width: fit-content;
   }
 
   .calculation-context-note svg {
