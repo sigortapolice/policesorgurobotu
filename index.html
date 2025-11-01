@@ -1163,8 +1163,8 @@
                     </button>
                     <button type="button" id="themeToggleBtn" class="theme-toggle" role="switch" aria-label="Toggle Dark Mode">
                       <span class="toggle-thumb">
-                        <span class="toggle-icon toggle-light-icon">K</span>
-                        <span class="toggle-icon toggle-dark-icon">A</span>
+                        <span class="toggle-icon toggle-light-icon">A</span>
+                        <span class="toggle-icon toggle-dark-icon">K</span>
                       </span>
                     </button>
                   </div>
@@ -1726,146 +1726,143 @@ function compute10YearProjection(params) {
     const { proj1, proj10, params } = lastCalculationResults;
     const wb = XLSX.utils.book_new();
 
-    const fmtUSDExcel = n => (Math.round(n)).toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' $';
-
-    // --- Data Preparation ---
     const paramsData = [
         ["Parametre", "Değer"],
-        ["Aylık Brüt Maaş", fmtTL(params.monthlySalary)],
-        ["Aylık Prim (USD)", fmtUSDExcel(params.monthlyPremiumUsd)],
+        ["Aylık Brüt Maaş", `${formatNumber(params.monthlySalary)} ₺`],
+        ["Aylık Prim (USD)", `${params.monthlyPremiumUsd} $`],
         ["Başlangıç USD/TRY Kuru", params.usdTry.toFixed(2).replace('.', ',')],
-        ["Yıllık Maaş Artışı %", params.annualSalaryGrowth],
-        ["Yıllık Prim Artışı %", params.annualPremiumGrowth],
-        ["Yıllık Kur Artışı %", params.annualUsdGrowth],
+        ["Yıllık Maaş Artışı %", String(params.annualSalaryGrowth)],
+        ["Yıllık Prim Artışı %", String(params.annualPremiumGrowth)],
+        ["Yıllık Kur Artışı %", String(params.annualUsdGrowth)],
         ["Yıllık Kâr Payı %", params.annualProfitRate.toFixed(2).replace('.', ',')],
-        ["Yıllık Kâr Payı Artışı %", params.annualProfitRateGrowth],
-        ["Gider Kesintisi %", params.annualExpenseRate],
-        ["Vergi Matrahı Artışı Yıl/%", params.annualTaxBracketGrowth]
+        ["Yıllık Kâr Payı Artışı %", String(params.annualProfitRateGrowth)],
+        ["Gider Kesintisi %", String(params.annualExpenseRate)],
+        ["Vergi Matrahı Artışı Yıl/%", String(params.annualTaxBracketGrowth)]
     ];
 
     const oneYearHeaders = ["Ay", "Ödenen Prim ($)", "Vergi Dilimi (%)", "Vergi İadesi ($)", "Kâr Payı ($)", "Gider Payı ($)", "Poliçe Tutarı ($)"];
     const oneYearRows = proj1.monthlyDetails.map(d => [
         d.Ay,
-        d['Ödenen Prim'] ? fmtUSDExcel(d['Ödenen Prim']) : '-',
+        d['Ödenen Prim'],
         d['Vergi Dilimi'] !== null ? `${(d['Vergi Dilimi']).toFixed(0)}%` : '-',
-        d['Vergi İadesi'] ? fmtUSDExcel(d['Vergi İadesi']) : '-',
-        d['Kâr Payı'] > 0 ? fmtUSDExcel(d['Kâr Payı']) : '-',
-        d['Gider Payı'] ? fmtUSDExcel(d['Gider Payı']) : '-',
-        d['Poliçe Tutarı'] ? fmtUSDExcel(d['Poliçe Tutarı']) : '-',
+        d['Vergi İadesi'],
+        d['Kâr Payı'],
+        d['Gider Payı'],
+        d['Poliçe Tutarı'],
     ]);
     const oneYearFullData = [oneYearHeaders, ...oneYearRows];
 
     const tenYearHeaders = ["Yıl", "Yıllık Ödenen Prim ($)", "Yıllık Vergi İadesi ($)", "Yıllık Kâr Payı ($)", "Yıllık Gider Payı ($)", "Poliçe Tutarı ($)"];
     const tenYearRows = proj10.yearlyData.map(d => [
         `${d.year}. Yıl`,
-        fmtUSDExcel(d.annualPremiumUsd),
-        fmtUSDExcel(d.annualRebateUsd),
-        fmtUSDExcel(d.annualProfitUsd),
-        fmtUSDExcel(d.annualExpenseUsd),
-        fmtUSDExcel(d.endOfYearPolicyAmountUsd),
+        d.annualPremiumUsd,
+        d.annualRebateUsd,
+        d.annualProfitUsd,
+        d.annualExpenseUsd,
+        d.endOfYearPolicyAmountUsd,
     ]);
     const tenYearTotals = [
         "Top.",
-        fmtUSDExcel(proj10.totals.totalPremiumUsd),
-        fmtUSDExcel(proj10.totals.totalRebateUsd),
-        fmtUSDExcel(proj10.totals.totalProfitUsd),
-        fmtUSDExcel(proj10.totals.totalExpenseUsd),
-        fmtUSDExcel(proj10.totals.totalPolicyAmountUsd),
+        proj10.totals.totalPremiumUsd,
+        proj10.totals.totalRebateUsd,
+        proj10.totals.totalProfitUsd,
+        proj10.totals.totalExpenseUsd,
+        proj10.totals.totalPolicyAmountUsd,
     ];
     const tenYearFullData = [tenYearHeaders, ...tenYearRows, tenYearTotals];
-    
-    // --- Grid Assembly ---
-    const maxRows = Math.max(paramsData.length, oneYearFullData.length, tenYearFullData.length);
-    const combinedData = [];
-    const spacer = '';
 
-    for (let i = 0; i < maxRows; i++) {
-        const row = [];
-        row.push(paramsData[i]?.[0] || spacer);
-        row.push(paramsData[i]?.[1] || spacer);
-        row.push(spacer);
-        
-        for (let j = 0; j < 7; j++) {
-            row.push(oneYearFullData[i]?.[j] || spacer);
-        }
-        row.push(spacer);
-        
-        for (let j = 0; j < 6; j++) {
-            row.push(tenYearFullData[i]?.[j] || spacer);
-        }
-        combinedData.push(row);
-    }
-    
-    const ws = XLSX.utils.aoa_to_sheet(combinedData, { skipHeader: true });
+    const allData = [
+        ...paramsData,
+        [], 
+        ...oneYearFullData,
+        [], 
+        ...tenYearFullData
+    ];
 
-    // --- Styling ---
-    // Column Widths
-    const colWidths = [];
-    if (combinedData.length > 0) {
-        for (let i = 0; i < combinedData[0].length; i++) {
-            if (i === 2 || i === 10) { 
-                colWidths.push({ wch: 3 });
-                continue;
-            }
-            
-            let maxWidth = 0;
-            combinedData.forEach(row => {
-                const cellContent = row[i];
-                const cellLength = cellContent ? String(cellContent).length : 0;
-                if (cellLength > maxWidth) {
-                    maxWidth = cellLength;
-                }
-            });
-            colWidths.push({ wch: maxWidth + 2 });
-        }
-    }
+    const ws = XLSX.utils.aoa_to_sheet(allData);
+
+    const colWidths = Array(Math.max(paramsData[0].length, oneYearHeaders.length, tenYearHeaders.length)).fill({ wch: 19 });
     ws['!cols'] = colWidths;
 
-    // Cell Styles
     const borderStyle = { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } };
     const headerStyle = {
         font: { color: { rgb: "FFFFFF" }, bold: true },
-        fill: { fgColor: { rgb: "4A5568" } }, // Dark Gray (Tailwind Gray 700)
-        border: borderStyle,
-        alignment: { horizontal: "left" }
+        fill: { fgColor: { rgb: "4A5568" } }
     };
-    const dataStyle = {
-        border: borderStyle,
-        alignment: { horizontal: "left" }
-    };
-    const totalStyle = {
-        font: { bold: true },
-        border: borderStyle,
-        alignment: { horizontal: "left" }
-    };
+    const totalStyle = { font: { bold: true } };
+    const leftAlign = { alignment: { horizontal: "left" } };
+    const rightAlign = { alignment: { horizontal: "right" } };
 
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    for (let R = range.s.r; R <= range.e.r; ++R) {
-        for (let C = range.s.c; C <= range.e.c; ++C) {
-            if (C === 2 || C === 10) continue;
+    const paramsStartRow = 0;
+    const paramsEndRow = paramsData.length - 1;
+    const oneYearHeaderRow = paramsEndRow + 2;
+    const oneYearEndRow = oneYearHeaderRow + oneYearRows.length;
+    const oneYearTotalRow = oneYearEndRow;
+    const tenYearHeaderRow = oneYearEndRow + 2;
+    const tenYearEndRow = tenYearHeaderRow + tenYearRows.length;
+    const tenYearTotalRow = tenYearEndRow;
 
-            const cell_address = XLSX.utils.encode_cell({ c: C, r: R });
-            const cell = ws[cell_address];
-            
-            if (!cell || cell.v === undefined || cell.v === '' || cell.v === null) continue;
-            
-            let isTotalRow = false;
-            if (ws[XLSX.utils.encode_cell({c: 3, r: R})]?.v === 'Top.' || ws[XLSX.utils.encode_cell({c: 11, r: R})]?.v === 'Top.') {
-                isTotalRow = true;
-            }
+    const tableBlocks = [
+        { startRow: paramsStartRow, endRow: paramsEndRow, numCols: paramsData[0].length, headerRow: paramsStartRow, totalRow: -1 },
+        { startRow: oneYearHeaderRow, endRow: oneYearEndRow, numCols: oneYearHeaders.length, headerRow: oneYearHeaderRow, totalRow: oneYearTotalRow },
+        { startRow: tenYearHeaderRow, endRow: tenYearEndRow, numCols: tenYearHeaders.length, headerRow: tenYearHeaderRow, totalRow: tenYearTotalRow }
+    ];
 
-            if (R === 0) {
-                cell.s = headerStyle;
-            } else if (isTotalRow) {
-                cell.s = totalStyle;
-            } else {
-                cell.s = dataStyle;
+    tableBlocks.forEach(block => {
+        for (let R = block.startRow; R <= block.endRow; ++R) {
+            for (let C = 0; C < block.numCols; ++C) {
+                const cell_address = XLSX.utils.encode_cell({ c: C, r: R });
+                const cell = ws[cell_address] = ws[cell_address] || {};
+                
+                let alignment;
+                // For the parameters table, left-align the first two columns (Parameter, Değer).
+                if (block.startRow === paramsStartRow) {
+                    alignment = (C < 2) ? leftAlign.alignment : rightAlign.alignment;
+                } else {
+                    // For projection tables, left-align only the first column (Ay, Yıl).
+                    alignment = (C === 0) ? leftAlign.alignment : rightAlign.alignment;
+                }
+
+                const currentStyle = {
+                    border: borderStyle,
+                    alignment: alignment
+                };
+
+                if (R === block.headerRow) {
+                    currentStyle.font = headerStyle.font;
+                    currentStyle.fill = headerStyle.fill;
+                } else if (R === block.totalRow) {
+                    currentStyle.font = { ...currentStyle.font, ...totalStyle.font };
+                }
+
+                const cellValue = cell.v;
+                if (typeof cellValue === 'number') {
+                    cell.t = 'n';
+                    const isOneYearPercentageColumn = block.startRow === oneYearHeaderRow && C === 2;
+                    if (cellValue > 0 && C > 0 && !isOneYearPercentageColumn) {
+                         cell.z = '#.##0,00" $"';
+                    }
+                }
+                
+                if (typeof cellValue === 'string' && cellValue.includes('%')) {
+                    currentStyle.alignment = rightAlign.alignment;
+                }
+                
+                cell.s = currentStyle;
             }
         }
-    }
-
+    });
+    
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const filename = `Police-simulasyonu-${year}${month}${day}-${hours}${minutes}.xlsx`;
+    
     XLSX.utils.book_append_sheet(wb, ws, "Police_Bilanco_Simulasyonu");
-    XLSX.writeFile(wb, "Police_Bilanco_Simulasyonu.xlsx");
+    XLSX.writeFile(wb, filename);
 }
   
   function resetForm() {
@@ -1875,9 +1872,9 @@ function compute10YearProjection(params) {
     resultsDiv.innerHTML = '';
     lastCalculationResults = null;
     document.getElementById('usdTry').value = '';
-    updateRateAndShow(false).then(() => {
-      isResetting = false;
-      computeAndRender();
+    updateRateAndShow(false, true).then(() => {
+        isResetting = false;
+        computeAndRender();
     });
   }
 
