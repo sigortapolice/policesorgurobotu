@@ -725,10 +725,11 @@
     left: 1px;
     width: 27px;
     height: 27px;
-    background-color: #ffffff;
+    background-color: var(--card);
+    border: 1px solid var(--border-color);
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease, border-color 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -746,8 +747,9 @@
   .toggle-icon {
     font-size: 15px;
     font-weight: 600;
-    color: #1f2937; /* gray-800 */
+    color: var(--primary-text);
     user-select: none;
+    transition: color 0.3s ease;
   }
 
   .toggle-dark-icon {
@@ -838,7 +840,6 @@
     text-align: left;
     margin-bottom: 10px;
     box-shadow: var(--shadow);
-    transform: translateY(5px);
     border: 1px solid var(--border-color);
   }
   
