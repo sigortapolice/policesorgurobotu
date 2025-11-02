@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const isDark = theme === 'dark';
     document.documentElement.setAttribute('data-theme', theme);
     themeToggleCheckbox.checked = isDark;
-    themeToggleLabel.setAttribute('aria-checked', String(isDark));
+    if (themeToggleLabel) {
+      themeToggleLabel.setAttribute('aria-checked', String(isDark));
+    }
     if(themeMeta) {
       themeMeta.setAttribute('content', isDark ? darkThemeColor : lightThemeColor);
     }
@@ -70,7 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function parseFloatWithComma(value) {
       if (!value) return 0;
-      return parseFloat(String(value).replace(',', '.')) || 0;
+      // For Turkish locale, '.' is thousands separator, ',' is decimal.
+      // Remove all '.' and replace ',' with '.' for parsing.
+      const sanitized = String(value).replace(/\./g, '').replace(',', '.');
+      return parseFloat(sanitized) || 0;
     }
 
     async function safeFetchUsdTry(){
