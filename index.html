@@ -1005,6 +1005,22 @@
     }
   }
 
+  .admin-link-container {
+    margin-bottom: 10px;
+  }
+
+  .admin-link-container a {
+    color: var(--muted-text);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s ease;
+  }
+
+  .admin-link-container a:hover {
+    color: var(--primary-text);
+    text-decoration: underline;
+  }
+
   footer {
     padding: 20px;
     text-align: center;
@@ -1480,7 +1496,12 @@
     </div>
   </div>
   
-  <footer>Tüm hakları saklıdır © <span id="copyright-year"></span> Poliçe Asistanı</footer>
+  <footer>
+    <div class="admin-link-container">
+      <a href="#admin">Admin panele git</a>
+    </div>
+    Tüm hakları saklıdır © <span id="copyright-year"></span> Poliçe Asistanı
+  </footer>
 
 <script type="module">
 document.addEventListener('DOMContentLoaded', () => {
