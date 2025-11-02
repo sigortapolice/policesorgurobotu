@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggleCheckbox.checked = isDark;
     themeToggleLabel.setAttribute('aria-checked', String(isDark));
     if(themeMeta) {
-      themeMeta.setAttribute('content', isDark ? darkThemeColor : darkThemeColor);
+      themeMeta.setAttribute('content', isDark ? darkThemeColor : lightThemeColor);
     }
   }
 
@@ -66,6 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function parseFormattedNumber(value) {
       if (!value) return 0;
       return parseInt(String(value).replace(/[^\d]/g, ''), 10) || 0;
+    }
+
+    function parseFloatWithComma(value) {
+      if (!value) return 0;
+      return parseFloat(String(value).replace(',', '.')) || 0;
     }
 
     async function safeFetchUsdTry(){
@@ -341,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { rate, source } = await safeFetchUsdTry();
       const usdInput = document.getElementById('usdTry') as HTMLInputElement;
       if(isManualRefresh || !usdInput.value) {
-          usdInput.value = rate.toFixed(2);
+          usdInput.value = rate.toFixed(2).replace('.', ',');
       }
       rt.textContent = `1$ = ${rate.toFixed(2).replace('.', ',')}₺`;
       if(autoCompute) computeAndRender();
@@ -350,23 +355,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function getParamsFromForm() {
       return {
         monthlySalary: parseFormattedNumber((document.getElementById('monthlySalary') as HTMLInputElement).value),
-        monthlyPremiumUsd: parseFloat((document.getElementById('monthlyPremiumUsd') as HTMLInputElement).value) || 0,
-        annualSalaryGrowth: parseFloat((document.getElementById('annualSalaryGrowth') as HTMLInputElement).value) || 0,
-        annualPremiumGrowth: parseFloat((document.getElementById('annualPremiumGrowth') as HTMLInputElement).value) || 0,
-        annualUsdGrowth: parseFloat((document.getElementById('annualUsdGrowth') as HTMLInputElement).value) || 0,
-        usdTry: parseFloat((document.getElementById('usdTry') as HTMLInputElement).value) || 0,
-        usdTryBase: parseFloat((document.getElementById('usdTry') as HTMLInputElement).value) || 0,
-        annualProfitRate: parseFloat((document.getElementById('annualProfitRate') as HTMLInputElement).value) || 0,
-        profitRatePct: parseFloat((document.getElementById('annualProfitRate') as HTMLInputElement).value) || 0,
-        annualProfitRateGrowth: parseFloat((document.getElementById('annualProfitRateGrowth') as HTMLInputElement).value) || 0,
-        profitRateGrowthPct: parseFloat((document.getElementById('annualProfitRateGrowth') as HTMLInputElement).value) || 0,
-        annualExpenseRate: parseFloat((document.getElementById('annualExpenseRate') as HTMLInputElement).value) || 0,
-        expenseRatePct: parseFloat((document.getElementById('annualExpenseRate') as HTMLInputElement).value) || 0,
-        annualTaxBracketGrowth: parseFloat((document.getElementById('annualTaxBracketGrowth') as HTMLInputElement).value) || 0,
-        premiumGrowthPct: parseFloat((document.getElementById('annualPremiumGrowth') as HTMLInputElement).value) || 0,
-        salaryGrowthPct: parseFloat((document.getElementById('annualSalaryGrowth') as HTMLInputElement).value) || 0,
-        usdGrowthPct: parseFloat((document.getElementById('annualUsdGrowth') as HTMLInputElement).value) || 0,
-        taxBracketGrowthPct: parseFloat((document.getElementById('annualTaxBracketGrowth') as HTMLInputElement).value) || 0,
+        monthlyPremiumUsd: parseFloatWithComma((document.getElementById('monthlyPremiumUsd') as HTMLInputElement).value),
+        annualSalaryGrowth: parseFloatWithComma((document.getElementById('annualSalaryGrowth') as HTMLInputElement).value),
+        annualPremiumGrowth: parseFloatWithComma((document.getElementById('annualPremiumGrowth') as HTMLInputElement).value),
+        annualUsdGrowth: parseFloatWithComma((document.getElementById('annualUsdGrowth') as HTMLInputElement).value),
+        usdTry: parseFloatWithComma((document.getElementById('usdTry') as HTMLInputElement).value),
+        usdTryBase: parseFloatWithComma((document.getElementById('usdTry') as HTMLInputElement).value),
+        annualProfitRate: parseFloatWithComma((document.getElementById('annualProfitRate') as HTMLInputElement).value),
+        profitRatePct: parseFloatWithComma((document.getElementById('annualProfitRate') as HTMLInputElement).value),
+        annualProfitRateGrowth: parseFloatWithComma((document.getElementById('annualProfitRateGrowth') as HTMLInputElement).value),
+        profitRateGrowthPct: parseFloatWithComma((document.getElementById('annualProfitRateGrowth') as HTMLInputElement).value),
+        annualExpenseRate: parseFloatWithComma((document.getElementById('annualExpenseRate') as HTMLInputElement).value),
+        expenseRatePct: parseFloatWithComma((document.getElementById('annualExpenseRate') as HTMLInputElement).value),
+        annualTaxBracketGrowth: parseFloatWithComma((document.getElementById('annualTaxBracketGrowth') as HTMLInputElement).value),
+        premiumGrowthPct: parseFloatWithComma((document.getElementById('annualPremiumGrowth') as HTMLInputElement).value),
+        salaryGrowthPct: parseFloatWithComma((document.getElementById('annualSalaryGrowth') as HTMLInputElement).value),
+        usdGrowthPct: parseFloatWithComma((document.getElementById('annualUsdGrowth') as HTMLInputElement).value),
+        taxBracketGrowthPct: parseFloatWithComma((document.getElementById('annualTaxBracketGrowth') as HTMLInputElement).value),
       };
     }
     
@@ -550,11 +555,11 @@ document.addEventListener('DOMContentLoaded', () => {
           ["Parametre", "Değer"],
           ["Aylık Brüt Maaş", `${formatNumber(params.monthlySalary)} ₺`],
           ["Aylık Prim (USD)", `${params.monthlyPremiumUsd} $`],
-          ["Başlangıç USD/TRY Kuru", params.usdTry.toFixed(2).replace('.', ',')],
+          ["Başlangıç USD/TRY Kuru", String(params.usdTry).replace('.', ',')],
           ["Yıllık Maaş Artışı %", String(params.annualSalaryGrowth)],
           ["Yıllık Prim Artışı %", String(params.annualPremiumGrowth)],
           ["Yıllık Kur Artışı %", String(params.annualUsdGrowth)],
-          ["Yıllık Kâr Payı %", params.annualProfitRate.toFixed(2).replace('.', ',')],
+          ["Yıllık Kâr Payı %", String(params.annualProfitRate).replace('.', ',')],
           ["Yıllık Kâr Payı Artışı %", String(params.annualProfitRateGrowth)],
           ["Gider Kesintisi %", String(params.annualExpenseRate)],
           ["Vergi Matrahı Artışı Yıl/%", String(params.annualTaxBracketGrowth)]
