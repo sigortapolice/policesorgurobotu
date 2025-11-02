@@ -1,0 +1,1268 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <!-- Favicon and App Icons -->
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
+  
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="theme-color" content="#ebedee">
+<title>Poliçe Asistanı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ebedee;
+    --card: #ffffff;
+    --muted-text: #1f2937; /* gray-800 */
+    --primary-text: #1f2937; /* gray-800 */
+    --primary: #1f2937; /* gray-800 */
+    --primary-hover: #111827; /* gray-900 */
+    --primary-light: #e5e7eb; /* gray-200 */
+    --border-color: #d1d5db; /* gray-300 */
+    --input-bg: #ebedee;
+    --input-focus-bg: #e5e7eb; /* gray-200 */
+    --shadow: 0 1px 2px 0 rgba(60,64,67,0.075), 0 2px 6px 2px rgba(60,64,67,0.075);
+    --radius-m: 40px;
+    --radius-l: 20px;
+    --success: #34a853;
+    --warning: #fbbc05;
+    --excel-green: #187040;
+    --gray-400: #9ca3af; /* gray-400 */
+    --gray-600: #4b5563;
+    --form-v-padding: 10px;
+    --form-v-gap: 10px;
+    --card-wrapper-bg: #d1d5db;
+    --rate-bg: #fef4e6;
+    --rate-text: #b96900;
+    --note-context-success-bg: rgba(52, 168, 83, 0.1);
+    --note-context-success-text: var(--excel-green);
+    --note-context-growth-bg: #edf0ff;
+    --note-context-growth-text: #5a78ed;
+    --note-context-usd-bg: #fef4e6;
+    --note-context-usd-text: #b96900;
+    --note-context-warning-bg: rgba(239, 68, 68, 0.1);
+    --note-context-warning-text: #b91c1c;
+    --tooltip-bg: rgba(235, 237, 238, 0.65);
+    --pulse-color: rgba(156, 163, 175, 0.5);
+    --intro-text: var(--primary-text);
+    --danger: #b91c1c;
+    --danger-hover: #991b1b;
+  }
+
+  [data-theme="dark"] {
+    --bg: #242424;
+    --card: #2E2E2E;
+    --muted-text: #d1d5db;
+    --primary-text: #f5f5f5;
+    --primary: #f5f5f5;
+    --primary-hover: #e5e7eb;
+    --primary-light: #4a4a4a;
+    --border-color: #4a4a4a;
+    --input-bg: #242424;
+    --input-focus-bg: #4a4a4a;
+    --shadow: 0 1px 2px 0 rgba(0,0,0,0.15), 0 2px 6px 2px rgba(0,0,0,0.15);
+    --success: #68d391;
+    --warning: #f6e05e;
+    --excel-green: #68d391;
+    --gray-400: #d1d5db;
+    --gray-600: #bdbdbd;
+    --card-wrapper-bg: #242424;
+    --rate-bg: #3c3c3c;
+    --rate-text: #f6e05e;
+    --note-context-success-bg: rgba(104, 211, 145, 0.1);
+    --note-context-success-text: var(--excel-green);
+    --note-context-growth-bg: #3c4a7e;
+    --note-context-growth-text: #a3b3f8;
+    --note-context-usd-bg: #3c3c3c;
+    --note-context-usd-text: #f6e05e;
+    --note-context-warning-bg: rgba(239, 68, 68, 0.15);
+    --note-context-warning-text: #f87171;
+    --tooltip-bg: rgba(46, 46, 46, 0.65);
+    --pulse-color: rgba(158, 158, 158, 0.3);
+    --intro-text: #d1d5db;
+  }
+  
+  html {
+    color-scheme: light dark;
+  }
+
+  html, body {
+    overflow-x: hidden;
+  }
+
+  body{
+    margin:0;
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--primary-text);
+    min-height: 100vh;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* --- UNIFIED FONT SIZING --- */
+  /* Default for Desktop */
+  body, h1, h2, h3, p, li, button, input, label, th, td {
+    font-size: 15px;
+  }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    body, h1, h2, h3, p, li, button, input, label, th, td {
+      font-size: 14px;
+    }
+    .calculation-context-note, .has-tooltip::before {
+      font-size: 13px !important;
+    }
+  }
+  /* --- END UNIFIED FONT SIZING --- */
+
+  .main-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  @media (min-width: 1024px) {
+    .main-wrapper {
+      display: grid;
+      grid-template-columns: 450px 1fr;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .form-column {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 20px;
+    }
+  }
+
+  .card-wrapper {
+    background-color: var(--card);
+    padding: 20px;
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow);
+    transition: background-color 0.3s ease;
+  }
+
+  .card{
+    width: 100%;
+    background: var(--card);
+    border-radius: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+  }
+
+  .card-main-content {
+    background-color: var(--card);
+    padding: 0;
+    transition: background-color 0.3s ease;
+  }
+
+  #calcForm {
+    margin-bottom: 0;
+  }
+
+  .rate{
+    background: var(--rate-bg);
+    border-radius: var(--radius-m);
+    padding: 0 0 0 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 400;
+    color: var(--rate-text);
+    box-sizing: border-box;
+    border: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    height: 42px;
+  }
+
+  .rate-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .refresh {
+    cursor: pointer;
+    color: var(--rate-text);
+    border: none;
+    background: none;
+    padding: var(--form-v-padding);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+  }
+
+  .refresh:hover {
+    background-color: rgba(185, 105, 0, 0.1);
+    transform: rotate(90deg);
+  }
+  [data-theme="dark"] .refresh:hover {
+    background-color: rgba(246, 224, 94, 0.1);
+  }
+
+
+  .refresh svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .form-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--form-v-gap);
+    margin-bottom: var(--form-v-gap);
+  }
+
+  .form-section:last-of-type {
+      margin-bottom: 0;
+  }
+
+  .input-group {
+    margin-bottom: 20px;
+  }
+  #calcForm .input-group {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted-text);
+    font-weight: 400;
+    transition: color 0.3s ease;
+  }
+  
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    transition: background-color 0.2s ease;
+  }
+  .input-wrapper:focus-within {
+  }
+
+  input[type=number], input[type=text], input[type=password] {
+    width: 100%;
+    padding: var(--form-v-padding) 14px;
+    margin-top: 0;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    box-sizing: border-box;
+    color: var(--primary-text);
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.3s ease;
+  }
+  
+  /* Reset styles for inputs within the wrapper */
+  .input-wrapper input {
+    flex-grow: 1;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: var(--form-v-padding) 14px;
+    margin: 0;
+    outline: none;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--border-color);
+    box-shadow: none;
+  }
+  #calcForm input:focus {
+     background-color: var(--input-bg);
+  }
+  
+  /* Override general focus style for wrapped inputs */
+  .input-wrapper input:focus {
+      background-color: transparent;
+      box-shadow: none;
+  }
+
+
+  /* Hide number input arrows */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .two-col{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  
+  .input-with-button {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: end;
+  }
+  .button {
+    background-color: var(--input-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--border-color);
+    padding: 0 20px;
+    border-radius: var(--radius-m);
+    font-weight: 400;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 42px;
+    touch-action: manipulation;
+  }
+  .button:hover:not(:disabled) {
+    background-color: var(--input-focus-bg);
+  }
+  .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+  }
+  .button.primary {
+    background-color: var(--primary);
+    color: var(--bg);
+    border-color: var(--primary);
+    transition: background-color 0.2s ease, color 0.3s ease;
+  }
+  .button.primary:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+  }
+  .button.primary .spinner {
+      border-color: var(--bg);
+      border-bottom-color: transparent;
+  }
+  
+  #resetFormBtn {
+      padding: 0 16px;
+  }
+
+  .form-divider {
+    border-top: 1px solid var(--border-color);
+    margin-top: var(--form-v-gap);
+    margin-bottom: var(--form-v-gap);
+    transition: border-color 0.3s ease;
+  }
+
+  .action-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--form-v-gap);
+    margin-top: var(--form-v-gap);
+    transition: border-color 0.3s ease;
+  }
+
+  .results{
+    display: none;
+    animation: fadeIn 0.5s ease;
+    margin-top: 20px;
+    gap: 20px;
+  }
+  
+  @media (min-width: 1024px) {
+    .results {
+      margin-top: 0;
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .results-card {
+    background: var(--card);
+    border-radius: var(--radius-l);
+    padding: 19px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+    transition: background-color 0.3s ease;
+  }
+
+  .results-card:last-child {
+    margin-bottom: 0;
+  }
+  
+  h3 {
+    font-weight: 400;
+    margin: 0 0 12px;
+    color: var(--primary-text);
+    transition: color 0.3s ease;
+  }
+
+  .summary-list {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0 16px;
+  }
+  .summary-item {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    color: var(--primary-text);
+    padding: var(--form-v-gap) 0;
+    border-bottom: 1px solid var(--border-color);
+    align-items: baseline;
+    font-weight: 400;
+    transition: color 0.3s ease, border-color 0.3s ease;
+  }
+  .summary-list > .summary-item:last-child {
+    border-bottom: none;
+  }
+  .summary-item > div:first-child { color: var(--muted-text); white-space: nowrap; transition: color 0.3s ease; }
+  .summary-item > div:not(:first-child) { 
+    text-align: right; 
+    white-space: nowrap;
+  }
+  .summary-item > div:nth-child(2) {
+    color: var(--gray-400);
+    transition: color 0.3s ease;
+  }
+  
+  .summary-item .highlight-label {
+    font-weight: 400;
+    color: var(--primary-text);
+    transition: color 0.3s ease;
+  }
+
+  .results-note{
+    margin-top: 16px;
+    padding: 12px;
+    color: var(--muted-text);
+    background-color: var(--bg);
+    border-radius: var(--radius-l);
+    line-height: 1.6;
+    font-style: italic;
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+  .results-note strong {
+    color: var(--primary-text);
+    font-weight: 400;
+    transition: color 0.3s ease;
+  }
+  
+  #form-context-note-wrapper {
+  }
+
+  .calculation-context-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: -4px;
+    margin-bottom: 8px;
+  }
+
+  .calculation-context-note {
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-top: -4px;
+    margin-bottom: 8px;
+    background-color: var(--note-context-success-bg);
+    color: var(--note-context-success-text);
+    border-radius: 12px;
+    font-weight: 400;
+    font-size: 14px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-style: normal;
+  }
+  
+  .calculation-context-note.warning {
+    background-color: var(--note-context-warning-bg);
+    color: var(--note-context-warning-text);
+  }
+
+  .calculation-context-note svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  .calculation-context-note > span {
+    min-width: 0; /* Prevents text overflow in flex containers */
+  }
+
+  .calculation-context-wrapper .calculation-context-note {
+    margin: 0;
+  }
+  
+  .calculation-context-note.growth-rate-note {
+    background-color: var(--note-context-growth-bg);
+    color: var(--note-context-growth-text);
+    font-weight: 400;
+  }
+
+  .calculation-context-note.projected-usd-note {
+    background-color: var(--note-context-usd-bg);
+    color: var(--note-context-usd-text);
+    font-weight: 400;
+  }
+  
+  .note{
+    margin-top: 20px;
+    color: var(--muted-text);
+    text-align: center;
+    background: var(--bg);
+    padding: 12px;
+    border-radius: var(--radius-l);
+    border: 1px solid var(--border-color);
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: var(--form-v-gap) 10px;
+    text-align: right;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 400;
+    transition: border-color 0.3s ease;
+  }
+  thead th {
+    font-weight: 400;
+    color: var(--muted-text);
+    border-bottom-width: 1px;
+    vertical-align: top;
+    transition: color 0.3s ease;
+  }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child, th:first-child { text-align: left; }
+  
+  tbody tr { transition: background-color 0.1s ease; }
+  tbody tr:hover { background-color: var(--bg); }
+
+  .projection-details-table td {
+    white-space: nowrap;
+  }
+
+  /* Custom padding for projection tables */
+  .projection-details-table th,
+  .projection-details-table td {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
+  .projection-details-table th:first-child,
+  .projection-details-table td:first-child {
+    padding-left: 0;
+  }
+  .projection-details-table th:last-child,
+  .projection-details-table td:last-child {
+    padding-right: 0;
+  }
+
+  .projection-details-table th:first-child,
+  .projection-details-table td:first-child {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: var(--card);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .projection-details-table tbody tr:hover td:first-child {
+    background-color: var(--bg);
+  }
+
+  tr.total-row {
+    font-weight: 400;
+  }
+  tr.total-row td {
+    color: var(--primary-text);
+    transition: color 0.3s ease;
+  }
+  
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #fff;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+  }
+  
+  #rateText .spinner {
+     border: 2px solid var(--rate-text);
+     border-bottom-color: transparent;
+  }
+  
+  .button .spinner {
+      border-color: var(--primary-text);
+      border-bottom-color: transparent;
+  }
+
+  @keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .methodology-text {
+    color: var(--muted-text);
+    line-height: 1.6;
+    font-weight: 400;
+    transition: color 0.3s ease;
+  }
+  .methodology-text p {
+    margin-top: 0;
+  }
+  .methodology-text ul {
+    padding-left: 20px;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: grid;
+    gap: 8px;
+  }
+   .methodology-text li::marker {
+      color: var(--primary-text);
+      transition: color 0.3s ease;
+  }
+  .methodology-text strong {
+    color: var(--primary-text);
+    font-weight: 400;
+    transition: color 0.3s ease;
+  }
+
+  .button-group-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      position: relative;
+      align-items: center;
+      z-index: 5;
+  }
+  .button.button-icon {
+      padding: var(--form-v-padding);
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+  }
+  .button.button-icon svg {
+      width: 20px;
+      height: 20px;
+  }
+  
+  .theme-toggle-checkbox {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  .theme-toggle {
+    position: relative;
+    display: inline-block;
+    width: 51px;
+    height: 31px;
+    margin: 0;
+    padding: 0;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    touch-action: manipulation;
+  }
+
+  .theme-toggle-checkbox:focus-visible + .theme-toggle {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--success);
+  }
+
+  .theme-toggle .toggle-thumb {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 27px;
+    height: 27px;
+    background-color: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .theme-toggle-checkbox:checked + .theme-toggle {
+    background-color: var(--input-bg);
+  }
+
+  .theme-toggle-checkbox:checked + .theme-toggle .toggle-thumb {
+    transform: translateX(20px);
+  }
+
+  .toggle-icon {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    user-select: none;
+    transition: color 0.3s ease;
+  }
+
+  .toggle-dark-icon {
+    display: none;
+  }
+
+  [data-theme="dark"] .toggle-light-icon {
+    display: none;
+  }
+
+  [data-theme="dark"] .toggle-dark-icon {
+    display: inline;
+  }
+
+  .button.export-button {
+    background-color: var(--input-bg);
+    color: var(--primary-text);
+    position: relative;
+  }
+
+  .export-button svg .cls-1 {
+    fill: var(--excel-green);
+    transition: fill 0.2s ease;
+  }
+
+  .button.export-button:hover:not(:disabled) {
+    background-color: var(--excel-green);
+  }
+  
+  .button.export-button:hover:not(:disabled) svg .cls-1 {
+    fill: var(--card);
+  }
+  
+  .info-tooltip {
+    background: none;
+    border: none;
+    padding: var(--form-v-padding);
+    border-radius: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+  }
+  
+  .info-tooltip:hover {
+    color: var(--excel-green);
+  }
+
+  .info-tooltip svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+  
+  .has-tooltip {
+    position: relative;
+  }
+
+  .has-tooltip::before, .has-tooltip::after {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    z-index: 10;
+    transform-origin: bottom center;
+  }
+
+  .has-tooltip::before {
+    content: attr(data-tooltip);
+    background-color: var(--tooltip-bg);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: var(--primary-text);
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    font-weight: 400;
+    padding: 8px 12px;
+    border-radius: 12px;
+    white-space: normal;
+    width: auto;
+    box-sizing: border-box;
+    text-align: left;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+  }
+  
+  .has-tooltip::after {
+    content: '';
+    border-style: solid;
+    border-width: 6px 6px 0 6px;
+    border-color: var(--tooltip-bg) transparent transparent transparent;
+    margin-bottom: 4px;
+    left: auto;
+    right: 13px;
+    transform: translateY(5px);
+  }
+
+  .has-tooltip:hover::before, .has-tooltip:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .button.has-tooltip::before {
+    width: 220px;
+    left: auto;
+    right: 0;
+  }
+  
+  .with-info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: help;
+  }
+
+  .info-icon-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--rate-text);
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .info-icon-note svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+  
+  .with-info-icon.has-tooltip::before {
+    width: 240px;
+    left: auto;
+    right: 0;
+  }
+  
+  .with-info-icon.has-tooltip::after {
+    left: auto;
+    right: 13px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Intro Header */
+  .intro-header {
+    text-align: left;
+    color: var(--primary-text);
+    padding: 0;
+    transition: color 0.3s ease;
+  }
+  .intro-header h1 {
+    font-size: 22px;
+    font-weight: 300;
+    margin: 0 0 8px 0;
+  }
+  .intro-header p {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--intro-text);
+    transition: color 0.3s ease;
+    font-weight: 300;
+  }
+  
+  @media (max-width: 1024px) {
+    .intro-header h1 {
+      font-size: 20px;
+    }
+  }
+  
+  /* Collapsible Section */
+  .collapsible-section {
+    border-top: 1px solid var(--border-color);
+    padding-top: calc(var(--form-v-gap) - 4px);
+    transition: border-color 0.3s ease;
+  }
+  .collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+  }
+  .collapsible-header-title {
+    font-weight: 400;
+    color: var(--primary-text);
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+  .collapsible-header .arrow-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: var(--gray-600);
+    transition: color 0.3s ease;
+  }
+  .collapsible-header .arrow-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    animation: pulse-animation 2s infinite;
+  }
+  .collapsible-header .arrow {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+    transition: transform 0.3s ease-in-out;
+    position: relative;
+  }
+  .collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, margin-top 0.4s ease-in-out;
+    margin-top: 0;
+  }
+  .collapsible-section.is-open .collapsible-content {
+    max-height: 1000px; /* A large enough value to show the content */
+    margin-top: 12px;
+  }
+  .collapsible-section.is-open .arrow {
+    transform: rotate(180deg);
+  }
+  
+  @keyframes pulse-animation {
+    0% {
+      box-shadow: 0 0 0 0 var(--pulse-color);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(156, 163, 175, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(156, 163, 175, 0);
+    }
+  }
+
+  footer {
+    padding: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted-text);
+    font-weight: 300;
+    transition: color .3s ease;
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    :root {
+      --form-v-padding: 8px;
+      --form-v-gap: 8px;
+    }
+    body, h1, h2, h3, p, li, button, input, label, th, td {
+      font-size: 13px;
+    }
+    /* Prevents auto-zoom on form inputs in iOS */
+    input[type=number], input[type=text], input[type=password] {
+      font-size: 16px;
+    }
+    .calculation-context-note, .has-tooltip::before {
+      font-size: 12px !important;
+    }
+    .main-wrapper {
+      padding: 16px;
+    }
+    .card-wrapper {
+      padding: 16px;
+    }
+    .card-main-content {
+      padding: 0;
+    }
+    .form-section {
+      margin-bottom: var(--form-v-gap);
+    }
+    .projection-details-table th, .projection-details-table td {
+        padding-top: var(--form-v-padding);
+        padding-bottom: var(--form-v-padding);
+    }
+    th, td { 
+      padding: 8.8px 6.4px; 
+    }
+    .button.button-icon svg, .refresh svg, .info-tooltip svg, .info-icon-note svg, .calculation-context-note svg {
+        width: 16px;
+        height: 16px;
+    }
+    .intro-header {
+      padding: 0;
+    }
+    .intro-header h1 {
+      font-size: 18px;
+    }
+    .rate, .button {
+      height: 34px;
+    }
+  }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+  // Prevents FOUC (Flash of Unstyled Content) for theme changes.
+  // This script runs before the body is rendered to apply the correct theme instantly.
+  (function() {
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    const lightThemeColor = '#ebedee';
+    const darkThemeColor = '#242424';
+
+    function applyInitialTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (themeMeta) {
+        themeMeta.setAttribute('content', theme === 'dark' ? darkThemeColor : lightThemeColor);
+      }
+    }
+
+    try {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        applyInitialTheme(savedTheme);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyInitialTheme('dark');
+      } else {
+        applyInitialTheme('light');
+      }
+    } catch (e) {
+      // Fallback to light theme in case of any errors
+      applyInitialTheme('light');
+    }
+  })();
+</script>
+<link rel="stylesheet" href="/index.css">
+<script type="importmap">
+{
+  "imports": {
+    "path": "https://aistudiocdn.com/path@^0.12.7",
+    "vite": "https://aistudiocdn.com/vite@^7.1.12",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.5"
+  }
+}
+</script>
+</head>
+<body>
+
+  <div id="calculator-page">
+    <div class="main-wrapper">
+      <div class="form-column">
+        <div class="card-wrapper">
+          <div class="intro-header">
+            <h1 id="app-title">Poliçe Asistanı</h1>
+            <p id="app-subtitle">Brüt maaş ve prim bilgilerinizi girerek 1 ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</p>
+          </div>
+          <div class="card" role="region" aria-label="Poliçe Asistanı">
+            <div class="card-main-content">
+              <form id="calcForm">
+                <div id="form-context-note-wrapper" style="margin-top: var(--form-v-gap);">
+                  <div class="calculation-context-note warning" id="form-context-note" style="margin: 0;">
+                    <span id="app-disclaimer">Sorumluluk reddi: Uygulama girdiğiniz verilere göre varsayımsal sonuçlar vermektedir.</span>
+                  </div>
+                </div>
+                <div class="form-divider"></div>
+                <div class="form-section">
+                  <div class="two-col">
+                    <div class="input-group">
+                      <label for="monthlySalary">Aylık brüt maaş</label>
+                      <input id="monthlySalary" type="text" value="100.000" inputmode="numeric"/>
+                    </div>
+                    <div class="input-group">
+                      <label for="monthlyPremiumUsd">Aylık Prim (USD)</label>
+                      <input id="monthlyPremiumUsd" type="text" value="100" inputmode="decimal"/>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-section">
+                  <div class="two-col">
+                    <div class="input-group">
+                      <label for="annualSalaryGrowth">Yıllık maaş artışı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="Gelecek yıllardaki brüt maaşınızın yıllık yüzde kaç artacağını belirtir.">
+                        <input id="annualSalaryGrowth" type="number" value="15" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="input-group">
+                      <label for="annualPremiumGrowth">Yıllık prim artışı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="USD cinsinden ödediğiniz aylık prim tutarının yıllık yüzde kaç artacağını belirtir.">
+                        <input id="annualPremiumGrowth" type="number" value="0" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-section">
+                  <div class="two-col">
+                    <div class="input-group">
+                      <label for="usdTry">USD/TRY kuru</label>
+                      <input id="usdTry" type="number" step="0.01" placeholder="Otomatik çekilecek"/>
+                    </div>
+                    <div class="input-group">
+                      <label for="annualUsdGrowth">Yıllık kur artışı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="USD/TRY kurunun gelecek yıllarda yıllık ortalama yüzde kaç artacağını öngördüğünüzü belirtir.">
+                        <input id="annualUsdGrowth" type="number" value="15" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-section">
+                  <div class="two-col">
+                    <div class="input-group">
+                      <label for="annualProfitRate">Yıllık kâr payı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="Poliçenize yıllık olarak eklenecek tahmini kâr payı oranıdır.">
+                        <input id="annualProfitRate" type="number" value="6.24" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                     <div class="input-group">
+                      <label for="annualProfitRateGrowth">Yıllık kâr payı artışı %</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="Yıllık kâr payı oranının gelecek yıllarda yüzde kaç artacağını belirtir.">
+                        <input id="annualProfitRateGrowth" type="number" value="0" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-section">
+                  <div class="two-col" style="align-items: end;">
+                    <div class="input-group">
+                        <label for="annualExpenseRate">Gider kesintisi %</label>
+                        <div class="input-wrapper has-tooltip" data-tooltip="Ödediğiniz primlerden yıllık olarak kesilecek olan yönetim gideri oranıdır.">
+                          <input id="annualExpenseRate" type="number" value="5" min="0" step="0.01"/>
+                          <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                          </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                      <label for="annualTaxBracketGrowth">Vergi matrahı artışı Yıl/%</label>
+                      <div class="input-wrapper has-tooltip" data-tooltip="Gelir vergisi dilimi tavanlarının her yıl yüzde kaç artacağını öngördüğünüzü belirtir.">
+                        <input id="annualTaxBracketGrowth" type="number" value="15" min="0" step="0.01"/>
+                        <button type="button" class="info-tooltip" aria-label="Daha fazla bilgi">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <div class="rate" id="rateBox">
+                    <div class="rate-text" id="rateText">1$ = ..,..₺</div>
+                    <button class="refresh" id="refreshBtn" title="Kur yenile" aria-label="Kur yenile">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    </button>
+                  </div>
+                  <div class="button-group-wrapper">
+                    <button type="button" id="resetFormBtn" class="button">
+                      Sıfırla
+                    </button>
+                    <button type="button" id="exportBtn" class="button button-icon export-button has-tooltip" aria-label="Dışa Aktar" data-tooltip="Sonuçları Excel olarak indir">
+                      
+                      <svg id="katman_2" data-name="katman 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800.8">
+                        <g id="Capa_1" data-name="Capa 1">
+                          <g>
+                            <path class="cls-1" d="M774.19,92.81h-282.19v92h94v62h-94l1,61h92v62h-92v61h92v62h-92l-1,61h93v62h-93v92h282.19c14.2,0,25.81-12.02,25.81-26.75V119.56c0-14.73-11.61-26.75-25.81-26.75ZM739,615.81h-123v-62h123v62ZM739,492.81h-123v-62h123v62ZM739,369.81h-123v-62h123v62ZM739,246.81h-123v-62h123v62Z"/>
+                            <path class="cls-1" d="M0,88.98v622.87l462,88.95V0L0,88.98ZM291.99,556.81l-53.53-101.2c-2.02-3.77-4.11-10.71-6.29-20.8h-.83c-1.01,4.75-3.41,11.99-7.18,21.69l-53.71,100.31h-83.9l99.43-155.98-90.96-156.02h85.4l44.66,93.66c3.48,7.4,6.6,16.19,9.38,26.34h.74c1.76-6.1,5.03-15.17,9.8-27.23l49.64-92.77h78.06l-93.25,154.2,95.86,156.8-83.13,1h-.18Z"/>
+                          </g>
+                        </g>
+                      </svg>
+                    </button>
+                    <input type="checkbox" id="themeToggleCheckbox" class="theme-toggle-checkbox">
+                    <label for="themeToggleCheckbox" class="theme-toggle" role="switch" aria-label="Toggle Dark Mode">
+                      <span class="toggle-thumb">
+                        <span class="toggle-icon toggle-light-icon">A</span>
+                        <span class="toggle-icon toggle-dark-icon">K</span>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="results" class="results" aria-live="polite"></div>
+    </div>
+    <footer>
+      Tüm hakları saklıdır © <span id="copyright-year"></span> Poliçe Asistanı
+    </footer>
+  </div>
+  
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
