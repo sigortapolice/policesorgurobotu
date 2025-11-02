@@ -470,7 +470,6 @@
   }
   
   #form-context-note-wrapper {
-    display: flex;
   }
 
   .calculation-context-wrapper {
@@ -483,6 +482,8 @@
 
   .calculation-context-note {
     display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
     align-items: flex-start;
     gap: 8px;
     padding: 8px 12px;
@@ -495,7 +496,6 @@
     font-size: 14px;
     transition: background-color 0.3s ease, color 0.3s ease;
     font-style: normal;
-    width: fit-content;
   }
   
   .calculation-context-note.warning {
@@ -1265,7 +1265,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('theme', newTheme);
+    try {
+      localStorage.setItem('theme', newTheme);
+    } catch (e) {
+      console.error("Could not save theme to localStorage:", e);
+    }
     applyTheme(newTheme);
   }
 
