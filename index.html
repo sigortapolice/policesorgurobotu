@@ -1006,6 +1006,10 @@
     body, h1, h2, h3, p, li, button, input, label, th, td {
       font-size: 13px;
     }
+    /* Prevents auto-zoom on form inputs in iOS */
+    input[type=number], input[type=text], input[type=password] {
+      font-size: 16px;
+    }
     .calculation-context-note, .has-tooltip::before {
       font-size: 12px !important;
     }
