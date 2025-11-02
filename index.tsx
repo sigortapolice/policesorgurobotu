@@ -79,14 +79,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function safeFetchUsdTry(){
-      const FALLBACK = 41.98;
+      const FALLBACK = 33.05; // Updated fallback
       try{
-        const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=TRY',{cache:"no-store"});
+        // Switched to a more reliable, CDN-hosted API endpoint
+        const res = await fetch('https://latest.currency-api.pages.dev/v1/currencies/usd.json',{cache:"no-store"});
         const j = await res.json();
-        const rate = j?.rates?.TRY;
+        const rate = j?.usd?.try; // Updated path to the rate (lowercase 'try')
         if(typeof rate === 'number') return { rate, source: 'live' };
-        throw new Error();
-      }catch{ return { rate: FALLBACK, source: 'fallback' }; }
+        throw new Error('Primary API failed to return a valid rate.');
+      }catch(e){ 
+        console.error("Failed to fetch live currency rate, using fallback.", e);
+        return { rate: FALLBACK, source: 'fallback' }; 
+      }
     }
 
     function getTaxRateForAnnualIncome(cumulativeIncome, brackets = TAX_BRACKETS){
@@ -353,7 +357,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if(isManualRefresh || !usdInput.value) {
           usdInput.value = rate.toFixed(2).replace('.', ',');
       }
-      rt.textContent = `1$ = ${rate.toFixed(2).replace('.', ',')}₺`;
+      
+      if (source === 'fallback') {
+        rt.innerHTML = `1$ = ${rate.toFixed(2).replace('.', ',')}₺ <span class="fallback-rate-indicator" title="Canlı kur verisi alınamadı. Tahmini bir değer kullanılıyor.">(tahmini)</span>`;
+      } else {
+        rt.textContent = `1$ = ${rate.toFixed(2).replace('.', ',')}₺`;
+      }
+
       if(autoCompute) computeAndRender();
     }
     
