@@ -688,10 +688,18 @@
       height: 20px;
   }
   
+  .theme-toggle-checkbox {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
   .theme-toggle {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
     position: relative;
     display: inline-block;
     width: 51px;
@@ -706,7 +714,7 @@
     touch-action: manipulation;
   }
 
-  .theme-toggle:focus-visible {
+  .theme-toggle-checkbox:focus-visible + .theme-toggle {
     outline: none;
     box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--success);
   }
@@ -726,12 +734,12 @@
     justify-content: center;
   }
   
-  .theme-toggle[aria-checked="true"] {
+  .theme-toggle-checkbox:checked + .theme-toggle {
     background-color: var(--success);
     border-color: var(--success);
   }
 
-  .theme-toggle[aria-checked="true"] .toggle-thumb {
+  .theme-toggle-checkbox:checked + .theme-toggle .toggle-thumb {
     transform: translateX(20px);
   }
 
@@ -1223,12 +1231,13 @@
                         </g>
                       </svg>
                     </button>
-                    <button type="button" id="themeToggleBtn" class="theme-toggle" role="switch" aria-label="Toggle Dark Mode">
+                    <input type="checkbox" id="themeToggleCheckbox" class="theme-toggle-checkbox">
+                    <label for="themeToggleCheckbox" class="theme-toggle" role="switch" aria-label="Toggle Dark Mode">
                       <span class="toggle-thumb">
                         <span class="toggle-icon toggle-light-icon">A</span>
                         <span class="toggle-icon toggle-dark-icon">K</span>
                       </span>
-                    </button>
+                    </label>
                   </div>
                 </div>
               </form>
@@ -1259,24 +1268,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // --- Theme Toggle Functionality ---
-  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  const themeToggleCheckbox = document.getElementById('themeToggleCheckbox');
+  const themeToggleLabel = document.querySelector('label[for="themeToggleCheckbox"]');
   const themeMeta = document.querySelector('meta[name="theme-color"]');
   const lightThemeColor = '#ebedee';
   const darkThemeColor = '#242424';
 
   function applyTheme(theme) {
+    const isDark = theme === 'dark';
     document.documentElement.setAttribute('data-theme', theme);
-    themeToggleBtn.setAttribute('aria-checked', theme === 'dark');
-    if(theme === 'dark') {
-      themeMeta.setAttribute('content', darkThemeColor);
-    } else {
-      themeMeta.setAttribute('content', lightThemeColor);
+    themeToggleCheckbox.checked = isDark;
+    themeToggleLabel.setAttribute('aria-checked', String(isDark));
+    if(themeMeta) {
+      themeMeta.setAttribute('content', isDark ? darkThemeColor : lightThemeColor);
     }
   }
 
-  function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  function handleThemeChange() {
+    const newTheme = themeToggleCheckbox.checked ? 'dark' : 'light';
     try {
       localStorage.setItem('theme', newTheme);
     } catch (e) {
@@ -1284,13 +1293,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     applyTheme(newTheme);
   }
-
-  themeToggleBtn.addEventListener('click', toggleTheme);
+  
+  themeToggleCheckbox.addEventListener('change', handleThemeChange);
 
   // Initial theme is set by a script in the <head> to prevent FOUC.
-  // This line syncs the toggle's visual state on initial load.
+  // This syncs the toggle's visual and state on initial load.
   const initialTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  themeToggleBtn.setAttribute('aria-checked', initialTheme === 'dark');
+  applyTheme(initialTheme);
+
 
   // --- Calculator Page Functionality ---
   const resultsDiv = document.getElementById('results');
