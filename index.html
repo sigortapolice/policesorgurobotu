@@ -1064,28 +1064,28 @@
     }
   }
 
-  /* --- MANAGEMENT PANEL STYLES --- */
-  #manage-page .main-wrapper {
+  /* --- ADMIN PANEL STYLES --- */
+  #admin-page .main-wrapper {
     max-width: 600px;
     margin: 40px auto;
   }
-  #manage-page .card-wrapper {
+  #admin-page .card-wrapper {
     padding: 30px;
   }
-  #manage-page h1 {
+  #admin-page h1 {
     text-align: center;
     font-weight: 300;
     margin-top: 0;
   }
-  #manage-page .input-group {
+  #admin-page .input-group {
     margin-bottom: 20px;
   }
-  #manage-page .color-input-group {
+  #admin-page .color-input-group {
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  #manage-page input[type="color"] {
+  #admin-page input[type="color"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -1096,44 +1096,44 @@
     border-radius: 50%;
     cursor: pointer;
   }
-  #manage-page input[type="color"]::-webkit-color-swatch {
+  #admin-page input[type="color"]::-webkit-color-swatch {
     border-radius: 50%;
     border: none;
   }
-  #manage-page input[type="color"]::-moz-color-swatch {
+  #admin-page input[type="color"]::-moz-color-swatch {
     border-radius: 50%;
     border: none;
   }
-  #manage-page .button {
+  #admin-page .button {
     width: 100%;
     padding: 12px 20px;
     font-size: 15px;
   }
-  #manage-page .button.secondary {
+  #admin-page .button.secondary {
     background-color: var(--input-bg);
     color: var(--primary-text);
     border-color: var(--border-color);
   }
-  #manage-page .button.secondary:hover {
+  #admin-page .button.secondary:hover {
     background-color: var(--input-focus-bg);
   }
-  #manage-page .button.danger {
+  #admin-page .button.danger {
     background-color: transparent;
     border-color: var(--danger);
     color: var(--danger);
   }
-  #manage-page .button.danger:hover {
+  #admin-page .button.danger:hover {
       background-color: var(--danger);
       color: var(--card);
   }
   #admin-panel { display: none; }
-  #manage-page .error-message {
+  #admin-page .error-message {
     color: var(--danger);
     text-align: center;
     margin-top: 15px;
     display: none;
   }
-  #manage-page .success-message {
+  #admin-page .success-message {
       color: #187040;
       text-align: center;
       margin-bottom: 15px;
@@ -1142,28 +1142,28 @@
       border-radius: var(--radius-m);
       display: none;
   }
-  #manage-page fieldset {
+  #admin-page fieldset {
       border: 1px solid var(--border-color);
       border-radius: var(--radius-l);
       padding: 20px;
       margin-bottom: 20px;
   }
-  #manage-page legend {
+  #admin-page legend {
       padding: 0 10px;
       font-weight: 400;
       color: var(--muted-text);
   }
-  #manage-page .form-actions {
+  #admin-page .form-actions {
       display: grid;
       gap: 10px;
       margin-top: 20px;
   }
-  #manage-page .header-actions {
+  #admin-page .header-actions {
       display: flex;
       justify-content: flex-end;
       margin-bottom: 20px;
   }
-  #manage-page .logout-btn {
+  #admin-page .logout-btn {
       background: none;
       border: none;
       color: var(--muted-text);
@@ -1397,7 +1397,7 @@
     </div>
   </div>
 
-  <div id="manage-page" style="display: none;">
+  <div id="admin-page" style="display: none;">
     <div class="main-wrapper">
       <div id="login-container">
         <div class="card-wrapper">
@@ -2228,14 +2228,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // --- MANAGEMENT PANEL LOGIC ---
-  let managePanelInitialized = false;
-  function initializeManagePanel() {
-      if (managePanelInitialized) {
+  // --- ADMIN PANEL LOGIC ---
+  let adminPanelInitialized = false;
+  function initializeAdminPanel() {
+      if (adminPanelInitialized) {
         if(window.checkLoginStatus) window.checkLoginStatus();
         return;
       }
-      managePanelInitialized = true;
+      adminPanelInitialized = true;
 
       const CONFIG_KEY = 'police-asistani-config';
       const loginContainer = document.getElementById('login-container');
@@ -2367,17 +2367,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- ROUTING LOGIC ---
   const calculatorPage = document.getElementById('calculator-page');
-  const managePage = document.getElementById('manage-page');
+  const adminPage = document.getElementById('admin-page');
 
   function handleRouting() {
-      if (window.location.hash === '#manage') {
+      if (window.location.hash === '#admin') {
           calculatorPage.style.display = 'none';
-          managePage.style.display = 'block';
+          adminPage.style.display = 'block';
           document.title = 'Yönetim Paneli - Poliçe Asistanı';
-          initializeManagePanel();
+          initializeAdminPanel();
       } else {
           calculatorPage.style.display = 'block';
-          managePage.style.display = 'none';
+          adminPage.style.display = 'none';
           document.title = 'Poliçe Asistanı';
           initializeCalculator();
       }
