@@ -706,7 +706,7 @@
     height: 31px;
     margin: 0;
     padding: 0;
-    background-color: var(--primary-light);
+    background-color: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 16px;
     cursor: pointer;
@@ -725,8 +725,8 @@
     left: 1px;
     width: 27px;
     height: 27px;
-    background-color: var(--card);
-    border: 1px solid var(--border-color);
+    background-color: #fff;
+    border: none;
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     transition: transform 0.2s ease-in-out, background-color 0.3s ease, border-color 0.3s ease;
@@ -736,8 +736,7 @@
   }
   
   .theme-toggle-checkbox:checked + .theme-toggle {
-    background-color: var(--success);
-    border-color: var(--success);
+    background-color: var(--input-bg);
   }
 
   .theme-toggle-checkbox:checked + .theme-toggle .toggle-thumb {
@@ -747,7 +746,7 @@
   .toggle-icon {
     font-size: 15px;
     font-weight: 600;
-    color: var(--primary-text);
+    color: #1f2937;
     user-select: none;
     transition: color 0.3s ease;
   }
@@ -1065,6 +1064,41 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script>
+  // --- MANAGEMENT PANEL CONFIG LOADER ---
+  // This script runs before anything else to apply custom styles from the management panel.
+  (function applyCustomConfig() {
+    try {
+      const savedConfig = localStorage.getItem('police-asistani-config');
+      if (!savedConfig) return;
+
+      const config = JSON.parse(savedConfig);
+
+      // Apply styles
+      if (config.styles) {
+        for (const [key, value] of Object.entries(config.styles)) {
+          if (key && value) {
+            document.documentElement.style.setProperty(key, value);
+          }
+        }
+      }
+
+      // Apply texts after DOM is loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        if (config.texts) {
+          for (const [key, value] of Object.entries(config.texts)) {
+            const element = document.getElementById(key);
+            if (element && value) element.textContent = value;
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Yönetim paneli yapılandırması uygulanamadı:', e);
+      // In case of error, clear the faulty config to revert to default
+      localStorage.removeItem('police-asistani-config');
+    }
+  })();
+
+
   // Prevents FOUC (Flash of Unstyled Content) for theme changes.
   // This script runs before the body is rendered to apply the correct theme instantly.
   (function() {
@@ -1102,15 +1136,15 @@
       <div class="form-column">
         <div class="card-wrapper">
           <div class="intro-header">
-            <h1>Poliçe Asistanı</h1>
-            <p>Brüt maaş ve prim bilgilerinizi girerek 1 ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</p>
+            <h1 id="app-title">Poliçe Asistanı</h1>
+            <p id="app-subtitle">Brüt maaş ve prim bilgilerinizi girerek 1 ve 10 yıllık potansiyel vergi iadesi ve birikim projeksiyonunuzu anında hesaplayın.</p>
           </div>
           <div class="card" role="region" aria-label="Poliçe Asistanı">
             <div class="card-main-content">
               <form id="calcForm">
                 <div id="form-context-note-wrapper" style="margin-top: var(--form-v-gap);">
                   <div class="calculation-context-note warning" id="form-context-note" style="margin: 0;">
-                    <span>Sorumluluk reddi: Uygulama girdiğiniz verilere göre varsayımsal sonuçlar vermektedir.</span>
+                    <span id="app-disclaimer">Sorumluluk reddi: Uygulama girdiğiniz verilere göre varsayımsal sonuçlar vermektedir.</span>
                   </div>
                 </div>
                 <div class="form-divider"></div>
