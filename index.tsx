@@ -716,8 +716,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('#calcForm input');
     inputs.forEach(input => {
       input.addEventListener('input', computeAndRender);
-
-      if (input.getAttribute('type') === 'text' && (input.id === 'monthlySalary' || input.id === 'monthlyPremiumUsd')) {
+      
+      // FIX: The thousand-separator formatting should only apply to the integer-based salary input.
+      // It was previously also applied to the monthly premium input, which accepts decimals,
+      // causing it to strip out commas and prevent users from entering decimal values.
+      if (input.id === 'monthlySalary') {
         input.addEventListener('keyup', (e) => {
           const target = e.target as HTMLInputElement;
           const formattedValue = formatNumber(target.value);
