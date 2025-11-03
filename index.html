@@ -51,6 +51,7 @@
     --intro-text: var(--primary-text);
     --danger: #b91c1c;
     --danger-hover: #991b1b;
+    --theme-transition-speed: 0.3s;
   }
 
   [data-theme="dark"] {
@@ -108,7 +109,27 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* --- SYNCHRONIZED THEME TRANSITIONS --- */
+  body, .card-wrapper, .card, .card-main-content, .rate, label,
+  input[type=number], input[type=text], input[type=password],
+  .form-divider, .action-row, .results-card, h3, .summary-item,
+  .summary-item > div, .results-note, .results-note strong, .note,
+  th, td, thead th, .methodology-text, .methodology-text strong,
+  .methodology-text li::marker, .theme-toggle, .theme-toggle .toggle-thumb,
+  .button, .collapsible-section, .collapsible-header-title,
+  .collapsible-header .arrow-container, footer, .intro-header, .intro-header p,
+  .projection-details-table th:first-child, .projection-details-table td:first-child,
+  .calculation-context-note, .export-button svg .cls-1, .info-tooltip,
+  .has-tooltip::before, tbody tr:hover, .with-info-icon.has-tooltip::after,
+  .toggle-icon, .rate-text
+  {
+    transition: background-color var(--theme-transition-speed) ease,
+                color var(--theme-transition-speed) ease,
+                border-color var(--theme-transition-speed) ease,
+                box-shadow var(--theme-transition-speed) ease,
+                fill var(--theme-transition-speed) ease;
   }
 
   /* --- UNIFIED FONT SIZING --- */
@@ -155,23 +176,20 @@
     padding: 20px;
     border-radius: var(--radius-l);
     box-shadow: var(--shadow);
-    transition: background-color 0.3s ease;
   }
 
   .card{
     width: 100%;
-    background: var(--card);
+    background-color: var(--card);
     border-radius: 0;
     padding: 0;
     box-sizing: border-box;
     overflow: hidden;
-    transition: background-color 0.3s ease;
   }
 
   .card-main-content {
     background-color: var(--card);
     padding: 0;
-    transition: background-color 0.3s ease;
   }
 
   #calcForm {
@@ -179,7 +197,7 @@
   }
 
   .rate{
-    background: var(--rate-bg);
+    background-color: var(--rate-bg);
     border-radius: var(--radius-m);
     padding: 0 0 0 12px;
     display: flex;
@@ -189,7 +207,6 @@
     color: var(--rate-text);
     box-sizing: border-box;
     border: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
     height: 42px;
   }
 
@@ -258,7 +275,6 @@
     margin-bottom: 8px;
     color: var(--muted-text);
     font-weight: 400;
-    transition: color 0.3s ease;
   }
   
   .input-wrapper {
@@ -267,7 +283,7 @@
     align-items: center;
     border-radius: var(--radius-m);
     border: 1px solid var(--border-color);
-    background: var(--input-bg);
+    background-color: var(--input-bg);
     transition: background-color 0.2s ease;
   }
   .input-wrapper:focus-within {
@@ -279,10 +295,9 @@
     margin-top: 0;
     border-radius: var(--radius-m);
     border: 1px solid var(--border-color);
-    background: var(--input-bg);
+    background-color: var(--input-bg);
     box-sizing: border-box;
     color: var(--primary-text);
-    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.3s ease;
   }
   
   /* Reset styles for inputs within the wrapper */
@@ -290,7 +305,7 @@
     flex-grow: 1;
     width: 100%;
     border: none;
-    background: transparent;
+    background-color: transparent;
     padding: var(--form-v-padding) 14px;
     margin: 0;
     outline: none;
@@ -358,7 +373,6 @@
     background-color: var(--primary);
     color: var(--bg);
     border-color: var(--primary);
-    transition: background-color 0.2s ease, color 0.3s ease;
   }
   .button.primary:hover:not(:disabled) {
       background-color: var(--primary-hover);
@@ -376,7 +390,6 @@
     border-top: 1px solid var(--border-color);
     margin-top: var(--form-v-gap);
     margin-bottom: var(--form-v-gap);
-    transition: border-color 0.3s ease;
   }
 
   .action-row {
@@ -388,7 +401,6 @@
     border-top: 1px solid var(--border-color);
     padding-top: var(--form-v-gap);
     margin-top: var(--form-v-gap);
-    transition: border-color 0.3s ease;
   }
 
   .results{
@@ -410,12 +422,11 @@
   }
   
   .results-card {
-    background: var(--card);
+    background-color: var(--card);
     border-radius: var(--radius-l);
     padding: 19px;
     box-shadow: var(--shadow);
     min-width: 0;
-    transition: background-color 0.3s ease;
   }
 
   .results-card:last-child {
@@ -426,7 +437,6 @@
     font-weight: 400;
     margin: 0 0 12px;
     color: var(--primary-text);
-    transition: color 0.3s ease;
   }
 
   .summary-list {
@@ -443,25 +453,22 @@
     border-bottom: 1px solid var(--border-color);
     align-items: baseline;
     font-weight: 400;
-    transition: color 0.3s ease, border-color 0.3s ease;
   }
   .summary-list > .summary-item:last-child {
     border-bottom: none;
   }
-  .summary-item > div:first-child { color: var(--muted-text); white-space: nowrap; transition: color 0.3s ease; }
+  .summary-item > div:first-child { color: var(--muted-text); white-space: nowrap; }
   .summary-item > div:not(:first-child) { 
     text-align: right; 
     white-space: nowrap;
   }
   .summary-item > div:nth-child(2) {
     color: var(--gray-400);
-    transition: color 0.3s ease;
   }
   
   .summary-item .highlight-label {
     font-weight: 400;
     color: var(--primary-text);
-    transition: color 0.3s ease;
   }
 
   .results-note{
@@ -472,12 +479,10 @@
     border-radius: var(--radius-l);
     line-height: 1.6;
     font-style: italic;
-    transition: color 0.3s ease, background-color 0.3s ease;
   }
   .results-note strong {
     color: var(--primary-text);
     font-weight: 400;
-    transition: color 0.3s ease;
   }
   
   #form-context-note-wrapper {
@@ -505,7 +510,6 @@
     border-radius: 12px;
     font-weight: 400;
     font-size: 14px;
-    transition: background-color 0.3s ease, color 0.3s ease;
     font-style: normal;
   }
   
@@ -545,11 +549,10 @@
     margin-top: 20px;
     color: var(--muted-text);
     text-align: center;
-    background: var(--bg);
+    background-color: var(--bg);
     padding: 12px;
     border-radius: var(--radius-l);
     border: 1px solid var(--border-color);
-    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
   }
 
   table {
@@ -562,14 +565,12 @@
     text-align: right;
     border-bottom: 1px solid var(--border-color);
     font-weight: 400;
-    transition: border-color 0.3s ease;
   }
   thead th {
     font-weight: 400;
     color: var(--muted-text);
     border-bottom-width: 1px;
     vertical-align: top;
-    transition: color 0.3s ease;
   }
   tr:last-child td { border-bottom: 0; }
   td:first-child, th:first-child { text-align: left; }
@@ -606,7 +607,6 @@
     left: 0;
     z-index: 1;
     background-color: var(--card);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
   }
 
   .projection-details-table tbody tr:hover td:first-child {
@@ -618,7 +618,6 @@
   }
   tr.total-row td {
     color: var(--primary-text);
-    transition: color 0.3s ease;
   }
   
   .spinner {
@@ -651,7 +650,6 @@
     color: var(--muted-text);
     line-height: 1.6;
     font-weight: 400;
-    transition: color 0.3s ease;
   }
   .methodology-text p {
     margin-top: 0;
@@ -665,12 +663,10 @@
   }
    .methodology-text li::marker {
       color: var(--primary-text);
-      transition: color 0.3s ease;
   }
   .methodology-text strong {
     color: var(--primary-text);
     font-weight: 400;
-    transition: color 0.3s ease;
   }
 
   .button-group-wrapper {
@@ -734,7 +730,7 @@
     border: none;
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease-in-out, background-color 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.2s ease-in-out, background-color var(--theme-transition-speed) ease, border-color var(--theme-transition-speed) ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -753,25 +749,26 @@
   }
 
   .toggle-icon {
-    width: 18px;
-    height: 18px;
     color: var(--primary-text);
-    fill: currentColor;
     user-select: none;
-    transition: color 0.3s ease;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+    position: absolute;
+    transition: opacity 0.2s ease, color var(--theme-transition-speed) ease;
   }
-
-  .toggle-dark-icon {
-    display: none;
+  .toggle-light-text {
+    opacity: 1;
   }
-
-  [data-theme="dark"] .toggle-light-icon {
-    display: none;
-  }
-
-  [data-theme="dark"] .toggle-dark-icon {
-    display: inline;
+  .toggle-dark-text {
+    opacity: 0;
     color: var(--warning);
+  }
+  [data-theme="dark"] .toggle-light-text {
+    opacity: 0;
+  }
+  [data-theme="dark"] .toggle-dark-text {
+    opacity: 1;
   }
 
   .button.export-button {
@@ -782,7 +779,6 @@
 
   .export-button svg .cls-1 {
     fill: var(--excel-green);
-    transition: fill 0.2s ease;
   }
 
   .button.export-button:hover:not(:disabled) {
@@ -803,7 +799,6 @@
     align-items: center;
     justify-content: center;
     color: var(--gray-400);
-    transition: background-color 0.2s ease, color 0.2s ease;
     flex-shrink: 0;
   }
   
@@ -919,7 +914,6 @@
     text-align: left;
     color: var(--primary-text);
     padding: 0;
-    transition: color 0.3s ease;
   }
   .intro-header h1 {
     font-size: 22px;
@@ -930,7 +924,6 @@
     margin: 0;
     line-height: 1.5;
     color: var(--intro-text);
-    transition: color 0.3s ease;
     font-weight: 300;
   }
   
@@ -944,7 +937,6 @@
   .collapsible-section {
     border-top: 1px solid var(--border-color);
     padding-top: calc(var(--form-v-gap) - 4px);
-    transition: border-color 0.3s ease;
   }
   .collapsible-header {
     display: flex;
@@ -958,7 +950,6 @@
     font-weight: 400;
     color: var(--primary-text);
     margin: 0;
-    transition: color 0.3s ease;
   }
   .collapsible-header .arrow-container {
     position: relative;
@@ -968,7 +959,6 @@
     width: 22px;
     height: 22px;
     color: var(--gray-600);
-    transition: color 0.3s ease;
   }
   .collapsible-header .arrow-container::before {
     content: '';
@@ -1020,7 +1010,6 @@
     font-size: 12px;
     color: var(--muted-text);
     font-weight: 300;
-    transition: color .3s ease;
   }
 
   /* Mobile */
@@ -1040,7 +1029,7 @@
       font-size: 12px !important;
     }
     .main-wrapper {
-      padding: 16px;
+      padding: 16px 16px 0;
     }
     .card-wrapper {
       padding: 16px;
@@ -1247,12 +1236,8 @@
                     <input type="checkbox" id="themeToggleCheckbox" class="theme-toggle-checkbox">
                     <label for="themeToggleCheckbox" class="theme-toggle" role="switch" aria-label="Toggle Dark Mode">
                       <span class="toggle-thumb">
-                        <svg class="toggle-icon toggle-light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                        </svg>
-                        <svg class="toggle-icon toggle-dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M10 2c-1.82 0-3.53.5-5 1.35C7.99 5.08 10 8.3 10 12s-2.01 6.92-5 8.65C6.47 21.5 8.18 22 10 22c5.52 0 10-4.48 10-10S15.52 2 10 2z"/>
-                        </svg>
+                        <span class="toggle-icon toggle-light-text">A</span>
+                        <span class="toggle-icon toggle-dark-text">K</span>
                       </span>
                     </label>
                   </div>
