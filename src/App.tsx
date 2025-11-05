@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
 
@@ -451,7 +451,14 @@ const App = () => {
                                         <div className="button-group-wrapper">
                                             <button type="button" onClick={handleReset} className="button">Sıfırla</button>
                                             <button type="button" onClick={handleExport} className="button button-icon export-button has-tooltip" data-tooltip="Sonuçları Excel olarak indir">
-                                                {/* SVG Icon */}
+                                            <svg id="katman_2" data-name="katman 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800.8">
+                                                <g id="Capa_1" data-name="Capa 1">
+                                                  <g>
+                                                    <path className="cls-1" d="M774.19,92.81h-282.19v92h94v62h-94l1,61h92v62h-92v61h92v62h-92l-1,61h93v62h-93v92h282.19c14.2,0,25.81-12.02,25.81-26.75V119.56c0-14.73-11.61-26.75-25.81-26.75ZM739,615.81h-123v-62h123v62ZM739,492.81h-123v-62h123v62ZM739,369.81h-123v-62h123v62ZM739,246.81h-123v-62h123v62Z"/>
+                                                    <path className="cls-1" d="M0,88.98v622.87l462,88.95V0L0,88.98ZM291.99,556.81l-53.53-101.2c-2.02-3.77-4.11-10.71-6.29-20.8h-.83c-1.01,4.75-3.41,11.99-7.18,21.69l-53.71,100.31h-83.9l99.43-155.98-90.96-156.02h85.4l44.66,93.66c3.48,7.4,6.6,16.19,9.38,26.34h.74c1.76-6.1,5.03-15.17,9.8-27.23l49.64-92.77h78.06l-93.25,154.2,95.86,156.8-83.13,1h-.18Z"/>
+                                                  </g>
+                                                </g>
+                                              </svg>
                                             </button>
                                             {/* Theme Toggle */}
                                             <input type="checkbox" id="themeToggleCheckbox" className="theme-toggle-checkbox" checked={theme === 'dark'} onChange={() => setTheme(theme === 'light' ? 'dark' : 'light')} />
@@ -501,7 +508,15 @@ const App = () => {
                             </ResultsCard>
 
                             <ResultsCard title="Hesaplama Metodolojisi">
-                                {/* ... Methodology text ... */}
+                            <div className="methodology-text">
+                                <p>Bu simülasyon, girdiğiniz verilere dayanarak potansiyel birikim ve vergi iadesi projeksiyonu sunar. Temel varsayımlar şunlardır:</p>
+                                <ul>
+                                  <li><strong>Başlangıç Yılı:</strong> Tüm hesaplamalar <strong>2025</strong> yılı baz alınarak başlar ve ilk yıl için 2025 gelir vergisi dilimleri kullanılır.</li>
+                                  <li><strong>Vergi İadesi:</strong> Vergi iadesi, aylık brüt maaşınızın <strong>%15'ini aşmayacak</strong> şekilde ödediğiniz prim tutarı üzerinden, o an içinde bulunduğunuz gelir vergisi dilimi oranına göre hesaplanır.</li>
+                                  <li><strong>Dinamik Projeksiyon:</strong> 10 yıllık projeksiyonda maaş, prim, kur ve vergi dilimlerinin matrahları (üst limitleri), girdiğiniz yıllık artış oranlarına göre her yıl bileşik olarak artırılır. Bu, daha gerçekçi bir senaryo sunar.</li>
+                                  <li><strong>Kâr Payı:</strong> Kâr payı, günlük bileşik getiri varsayımıyla hesaplanır ve fonunuza eklenir.</li>
+                                </ul>
+                              </div>
                             </ResultsCard>
                         </>
                     )}
@@ -564,7 +579,7 @@ const ProjectionTable = ({ data, type }: any) => {
         <div className="table-wrapper">
             <table className={`projection-details-table ${isOneYear ? 'one-year-table' : 'ten-year-table'}`}>
                 <thead>
-                    <tr>{headers.map(h => <th key={h}>{h.replace(' ', '<br>')}</th>)}</tr>
+                    <tr>{headers.map(h => <th key={h}>{h.split(' ').map((word, i) => <Fragment key={i}>{i > 0 && <br />}{word}</Fragment>)}</th>)}</tr>
                 </thead>
                 <tbody>
                     {data.map((row: any, index: number) => (
