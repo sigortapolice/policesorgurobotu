@@ -28,6 +28,65 @@ interface CalculationParams {
     annualTaxBracketGrowth: number;
 }
 
+interface MonthlyDetail {
+    'Ay': string;
+    'Ödenen Prim': number;
+    'Vergi Dilimi': number | null;
+    'Vergi İadesi': number;
+    'Kâr Payı': number;
+    'Gider Payı': number;
+    'Poliçe Tutarı': number;
+}
+
+interface YearlyData {
+    year: number;
+    annualPremiumUsd: number;
+    annualRebateUsd: number;
+    annualProfitUsd: number;
+    annualExpenseUsd: number;
+    endOfYearPolicyAmountUsd: number;
+}
+
+interface Projection1Year {
+    monthlyDetails: MonthlyDetail[];
+    yearlyTl: number;
+    totalRebateTl: number;
+    yearlyProfitTl: number;
+    yearlyExpenseTl: number;
+    yearEndTl: number;
+    yearEndPolicyAmountTl: number;
+    yearlyPremiumUsd: number;
+    totalRebateUsd: number;
+    yearlyProfitUsd: number;
+    yearlyExpenseUsd: number;
+    yearEndUsd: number;
+    yearEndPolicyAmountUsd: number;
+}
+
+interface Projection10Year {
+    totals: {
+        totalPremiumTl: number;
+        totalRebateTl: number;
+        totalProfitTl: number;
+        totalExpenseTl: number;
+        accWithRebateTl: number;
+        totalPolicyAmountTl: number;
+        totalPremiumUsd: number;
+        totalRebateUsd: number;
+        totalProfitUsd: number;
+        totalExpenseUsd: number;
+        accWithRebateUsd: number;
+        totalPolicyAmountUsd: number;
+    };
+    yearlyData: YearlyData[];
+}
+
+interface Results {
+    proj1: Projection1Year;
+    proj10: Projection10Year;
+    params: CalculationParams;
+}
+
 // --- Helper Functions ---
 const fmtTL = (n: number) => `${Math.round(n).toLocaleString('tr-TR')} ₺`;
 const fmtUSD = (n: number) => `${Math.round(n).toLocaleString('tr-TR')} $`;
@@ -66,7 +125,7 @@ const compute1YearProjection = (params: CalculationParams) => {
     let fundUsd = 0, policyAmount = 0, totalPremiumTl = 0, totalRebateTl = 0;
     let totalProfitTl = 0, totalExpenseTl = 0, cumulativeIncome = 0;
     let totalProfitUsd = 0, totalExpenseUsd = 0;
-    const monthlyDetails: any[] = [];
+    const monthlyDetails: MonthlyDetail[] = [];
 
     for (let i = 0; i < 12; i++) {
         const monthName = MONTHS[i];
@@ -127,11 +186,11 @@ const compute10YearProjection = (params: CalculationParams) => {
     } = params;
 
     const years = 10;
-    const yearlyData: any[] = [];
+    const yearlyData: YearlyData[] = [];
     let cumulativePremiumTl = 0, cumulativeRebateTl = 0, cumulativeFundUsd = 0,
         cumulativePolicyAmountUsd = 0, cumulativeProfitTl = 0, cumulativeExpenseTl = 0,
         cumulativePremiumUsd = 0, cumulativeRebateUsd = 0, cumulativeProfitUsd = 0,
-        cumulativeExpenseUsd = 0, cumulativePremiumUsdForChart = 0;
+        cumulativeExpenseUsd = 0;
 
     for (let y = 1; y <= years; y++) {
         const yearProfitRatePct = annualProfitRate * Math.pow(1 + annualProfitRateGrowth / 100, y - 1);
@@ -182,7 +241,6 @@ const compute10YearProjection = (params: CalculationParams) => {
         }
 
         const annualPremiumUsdForYear = yearMonthlyPremiumUsd * 12;
-        cumulativePremiumUsdForChart += annualPremiumUsdForYear;
         cumulativePremiumTl += annualPremiumTlForYear;
         cumulativeRebateTl += rebateAnnualTl;
         cumulativeProfitTl += annualProfitTlForYear;
@@ -241,7 +299,7 @@ const App = () => {
         annualTaxBracketGrowth: '15',
     });
 
-    const [results, setResults] = useState<any>(null);
+    const [results, setResults] = useState<Results | null>(null);
     const [rateStatus, setRateStatus] = useState({ message: '1$ = ..,..₺', loading: true, isFallback: false });
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
     const [openCollapsibles, setOpenCollapsibles] = useState<{ [key: string]: boolean }>({});
@@ -348,7 +406,7 @@ const App = () => {
       ];
 
       const oneYearHeaders = ["Ay", "Ödenen Prim ($)", "Vergi Dilimi (%)", "Vergi İadesi ($)", "Kâr Payı ($)", "Gider Payı ($)", "Poliçe Tutarı ($)"];
-      const oneYearRows = proj1.monthlyDetails.map((d: any) => [
+      const oneYearRows = proj1.monthlyDetails.map((d: MonthlyDetail) => [
           d.Ay,
           d['Ödenen Prim'],
           d['Vergi Dilimi'] !== null ? `${(d['Vergi Dilimi']).toFixed(0)}%` : '-',
@@ -360,7 +418,7 @@ const App = () => {
       const oneYearFullData = [oneYearHeaders, ...oneYearRows];
 
       const tenYearHeaders = ["Yıl", "Yıllık Ödenen Prim ($)", "Yıllık Vergi İadesi ($)", "Yıllık Kâr Payı ($)", "Yıllık Gider Payı ($)", "Poliçe Tutarı ($)"];
-      const tenYearRows = proj10.yearlyData.map((d: any) => [
+      const tenYearRows = proj10.yearlyData.map((d: YearlyData) => [
           `${d.year}. Yıl`,
           d.annualPremiumUsd,
           d.annualRebateUsd,
@@ -529,8 +587,16 @@ const App = () => {
     );
 };
 
+interface InputFieldProps {
+    label: string;
+    id: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    tooltip: string;
+    placeholder?: string;
+}
 
-const InputField = ({ label, id, value, onChange, tooltip, placeholder }: any) => (
+const InputField = ({ label, id, value, onChange, tooltip, placeholder }: InputFieldProps) => (
     <div className="form-section">
         <div className="input-group">
             <label htmlFor={id}>{label}</label>
@@ -542,14 +608,26 @@ const InputField = ({ label, id, value, onChange, tooltip, placeholder }: any) =
     </div>
 );
 
-const ResultsCard = ({ title, children }: any) => (
+interface ResultsCardProps {
+    title: string;
+    children: React.ReactNode;
+}
+
+const ResultsCard = ({ title, children }: ResultsCardProps) => (
     <div className="results-card">
         <h3>{title}</h3>
         {children}
     </div>
 );
 
-const SummaryItem = ({ label, valueTl, valueUsd, highlight = false }: any) => (
+interface SummaryItemProps {
+    label: string;
+    valueTl: string;
+    valueUsd: string;
+    highlight?: boolean;
+}
+
+const SummaryItem = ({ label, valueTl, valueUsd, highlight = false }: SummaryItemProps) => (
     <div className="summary-item">
         <div className={highlight ? 'highlight-label' : ''}>{label}</div>
         <div>{valueTl}</div>
@@ -557,7 +635,15 @@ const SummaryItem = ({ label, valueTl, valueUsd, highlight = false }: any) => (
     </div>
 );
 
-const CollapsibleSection = ({ title, id, isOpen, toggle, children }: any) => (
+interface CollapsibleSectionProps {
+    title: string;
+    id: string;
+    isOpen: boolean;
+    toggle: () => void;
+    children: React.ReactNode;
+}
+
+const CollapsibleSection = ({ title, id, isOpen, toggle, children }: CollapsibleSectionProps) => (
      <div className={`collapsible-section ${isOpen ? 'is-open' : ''}`}>
         <div className="collapsible-header" onClick={toggle} aria-expanded={isOpen} aria-controls={id}>
             <div className="collapsible-header-title">{title}</div>
@@ -569,7 +655,12 @@ const CollapsibleSection = ({ title, id, isOpen, toggle, children }: any) => (
     </div>
 );
 
-const ProjectionTable = ({ data, type }: any) => {
+interface ProjectionTableProps {
+    data: MonthlyDetail[] | YearlyData[];
+    type: '1-year' | '10-year';
+}
+
+const ProjectionTable = ({ data, type }: ProjectionTableProps) => {
     const isOneYear = type === '1-year';
     const headers = isOneYear
         ? ["Ay", "Ödenen Prim", "Vergi Dilimi", "Vergi İadesi", "Kâr Payı", "Gider Payı", "Poliçe Tutarı"]
@@ -582,30 +673,30 @@ const ProjectionTable = ({ data, type }: any) => {
                     <tr>{headers.map(h => <th key={h}>{h.split(' ').map((word, i) => <Fragment key={i}>{i > 0 && <br />}{word}</Fragment>)}</th>)}</tr>
                 </thead>
                 <tbody>
-                    {data.map((row: any, index: number) => (
-                        <tr key={index} className={row.Ay === 'Top.' || row.year === 'Top.' ? 'total-row' : ''}>
-                           {isOneYear ? (
-                                <>
-                                    <td>{row['Ay']}</td>
-                                    <td>{fmtUSD(row['Ödenen Prim'])}</td>
-                                    <td>{row['Vergi Dilimi'] ? `${row['Vergi Dilimi'].toFixed(0)}%` : '-'}</td>
-                                    <td>{fmtUSD(row['Vergi İadesi'])}</td>
-                                    <td>{fmtUSD(row['Kâr Payı'])}</td>
-                                    <td>{fmtUSD(row['Gider Payı'])}</td>
-                                    <td>{fmtUSD(row['Poliçe Tutarı'])}</td>
-                                </>
-                           ) : (
-                               <>
-                                    <td>{row.year}. Yıl</td>
-                                    <td>{fmtUSD(row.annualPremiumUsd)}</td>
-                                    <td>{fmtUSD(row.annualRebateUsd)}</td>
-                                    <td>{fmtUSD(row.annualProfitUsd)}</td>
-                                    <td>{fmtUSD(row.annualExpenseUsd)}</td>
-                                    <td>{fmtUSD(row.endOfYearPolicyAmountUsd)}</td>
-                               </>
-                           )}
-                        </tr>
-                    ))}
+                    {isOneYear ? (
+                        (data as MonthlyDetail[]).map((row, index) => (
+                            <tr key={index} className={row['Ay'] === 'Top.' ? 'total-row' : ''}>
+                                <td>{row['Ay']}</td>
+                                <td>{fmtUSD(row['Ödenen Prim'])}</td>
+                                <td>{row['Vergi Dilimi'] !== null ? `${row['Vergi Dilimi'].toFixed(0)}%` : '-'}</td>
+                                <td>{fmtUSD(row['Vergi İadesi'])}</td>
+                                <td>{fmtUSD(row['Kâr Payı'])}</td>
+                                <td>{fmtUSD(row['Gider Payı'])}</td>
+                                <td>{fmtUSD(row['Poliçe Tutarı'])}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        (data as YearlyData[]).map((row, index) => (
+                            <tr key={index}>
+                                <td>{row.year}. Yıl</td>
+                                <td>{fmtUSD(row.annualPremiumUsd)}</td>
+                                <td>{fmtUSD(row.annualRebateUsd)}</td>
+                                <td>{fmtUSD(row.annualProfitUsd)}</td>
+                                <td>{fmtUSD(row.annualExpenseUsd)}</td>
+                                <td>{fmtUSD(row.endOfYearPolicyAmountUsd)}</td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
         </div>
