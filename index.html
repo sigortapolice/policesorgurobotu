@@ -1316,10 +1316,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gelir vergisi dilimleri
     const TAX_BRACKETS = [
-      { upTo: 158000, rate: 0.15 },
-      { upTo: 330000, rate: 0.20 },
-      { upTo: 1200000, rate: 0.27 },
-      { upTo: 4300000, rate: 0.35 },
+      { upTo: 190000, rate: 0.15 },
+      { upTo: 400000, rate: 0.20 },
+      { upTo: 1500000, rate: 0.27 },
+      { upTo: 5300000, rate: 0.35 },
       { upTo: Infinity, rate: 0.40 }
     ];
 
@@ -1833,7 +1833,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="methodology-text">
             <p>Bu simülasyon, girdiğiniz verilere dayanarak potansiyel birikim ve vergi iadesi projeksiyonu sunar. Temel varsayımlar şunlardır:</p>
             <ul>
-              <li><strong>Başlangıç Yılı:</strong> Tüm hesaplamalar <strong>2025</strong> yılı baz alınarak başlar ve ilk yıl için 2025 gelir vergisi dilimleri kullanılır.</li>
+              <li><strong>Başlangıç Yılı:</strong> Tüm hesaplamalar <strong>2026</strong> yılı baz alınarak başlar ve ilk yıl için 2026 gelir vergisi dilimleri kullanılır.</li>
               <li><strong>Vergi İadesi:</strong> Vergi iadesi, aylık brüt maaşınızın <strong>%15'ini aşmayacak</strong> şekilde ödediğiniz prim tutarı üzerinden, o an içinde bulunduğunuz gelir vergisi dilimi oranına göre hesaplanır. Vergi dilimi hesaplanırken SGK ve işsizlik sigortası payları düşülerek matrah hesaplanır.</li>
               <li><strong>Dinamik Projeksiyon:</strong> 10 yıllık projeksiyonda maaş, prim, kur ve vergi dilimlerinin matrahları (üst limitleri), girdiğiniz yıllık artış oranlarına göre her yıl bileşik olarak artırılır. Bu, daha gerçekçi bir senaryo sunar.</li>
               <li><strong>Kâr Payı:</strong> Kâr payı, günlük bileşik getiri varsayımıyla hesaplanır ve fonunuza eklenir.</li>
