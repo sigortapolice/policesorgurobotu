@@ -1348,7 +1348,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function safeFetchUsdTry(){
-      const FALLBACK = 35.20; // Updated fallback based on more realistic current market rates
+      const FALLBACK = 43.00; // Updated fallback based on user request
       const apis = [
         { url: 'https://api.frankfurter.app/latest?from=USD&to=TRY', extract: d => d.rates.TRY },
         { url: 'https://open.er-api.com/v6/latest/USD', extract: d => d.rates.TRY },
