@@ -1096,6 +1096,16 @@
 </script>
 
 <link rel="stylesheet" href="/index.css">
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
+  }
+}
+</script>
 </head>
 <body>
 
@@ -1338,18 +1348,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function safeFetchUsdTry(){
-      const FALLBACK = 33.05; // Updated fallback
-      try{
-        // Switched to a more reliable, CDN-hosted API endpoint
-        const res = await fetch('https://latest.currency-api.pages.dev/v1/currencies/usd.json',{cache:"no-store"});
-        const j = await res.json();
-        const rate = j?.usd?.try; // Updated path to the rate (lowercase 'try')
-        if(typeof rate === 'number') return { rate, source: 'live' };
-        throw new Error('Primary API failed to return a valid rate.');
-      }catch(e){ 
-        console.error("Failed to fetch live currency rate, using fallback.", e);
-        return { rate: FALLBACK, source: 'fallback' }; 
+      const FALLBACK = 35.20; // Updated fallback based on more realistic current market rates
+      const apis = [
+        { url: 'https://api.frankfurter.app/latest?from=USD&to=TRY', extract: d => d.rates.TRY },
+        { url: 'https://open.er-api.com/v6/latest/USD', extract: d => d.rates.TRY },
+        { url: 'https://latest.currency-api.pages.dev/v1/currencies/usd.json', extract: d => d.usd.try },
+        { url: 'https://api.exchangerate-api.com/v4/latest/USD', extract: d => d.rates.TRY }
+      ];
+
+      for (const api of apis) {
+        try {
+          const cacheBuster = `&_=${Date.now()}`;
+          const url = api.url + (api.url.includes('?') ? cacheBuster : `?${cacheBuster.substring(1)}`);
+
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            const rate = api.extract(data);
+            if (typeof rate === 'number' && rate > 0) {
+              return { rate, source: 'live' };
+            }
+          }
+        } catch (e) {
+          console.warn('API error:', e);
+        }
       }
+      
+      console.warn("All APIs failed. Using fallback.");
+      return { rate: FALLBACK, source: 'fallback' }; 
     }
 
     function getTaxRateForAnnualIncome(cumulativeIncome, brackets = TAX_BRACKETS){
@@ -1390,7 +1416,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const monthlyPremiumTl = monthlyPremiumUsd * usdTry;
 
-          cumulativeIncome += monthlySalary;
+          // Tax Base Calculation: Gross Salary - 14% SGK - 1% Unemployment = ~85% of Gross
+          // Tax brackets apply to this base.
+          cumulativeIncome += monthlySalary * 0.85; 
           const taxRate = getTaxRateForAnnualIncome(cumulativeIncome);
           const maxRefundable = monthlySalary * 0.15;
           const actualRefundable = Math.min(monthlyPremiumTl, maxRefundable);
@@ -1532,7 +1560,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
               const monthlyPremiumTl = yearMonthlyPremiumUsd * yearUsdRate;
 
-              cumulativeIncomeForYear += yearMonthlySalary;
+              // Use Tax Base (85% of Gross) for bracket determination
+              cumulativeIncomeForYear += yearMonthlySalary * 0.85;
               const taxRateForMonth = getTaxRateForAnnualIncome(cumulativeIncomeForYear, adjustedBrackets);
               const maxRefundablePremiumTlForMonth = yearMonthlySalary * 0.15;
               const actualRefundablePremiumTlForMonth = Math.min(monthlyPremiumTl, maxRefundablePremiumTlForMonth);
@@ -1805,7 +1834,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>Bu simülasyon, girdiğiniz verilere dayanarak potansiyel birikim ve vergi iadesi projeksiyonu sunar. Temel varsayımlar şunlardır:</p>
             <ul>
               <li><strong>Başlangıç Yılı:</strong> Tüm hesaplamalar <strong>2025</strong> yılı baz alınarak başlar ve ilk yıl için 2025 gelir vergisi dilimleri kullanılır.</li>
-              <li><strong>Vergi İadesi:</strong> Vergi iadesi, aylık brüt maaşınızın <strong>%15'ini aşmayacak</strong> şekilde ödediğiniz prim tutarı üzerinden, o an içinde bulunduğunuz gelir vergisi dilimi oranına göre hesaplanır.</li>
+              <li><strong>Vergi İadesi:</strong> Vergi iadesi, aylık brüt maaşınızın <strong>%15'ini aşmayacak</strong> şekilde ödediğiniz prim tutarı üzerinden, o an içinde bulunduğunuz gelir vergisi dilimi oranına göre hesaplanır. Vergi dilimi hesaplanırken SGK ve işsizlik sigortası payları düşülerek matrah hesaplanır.</li>
               <li><strong>Dinamik Projeksiyon:</strong> 10 yıllık projeksiyonda maaş, prim, kur ve vergi dilimlerinin matrahları (üst limitleri), girdiğiniz yıllık artış oranlarına göre her yıl bileşik olarak artırılır. Bu, daha gerçekçi bir senaryo sunar.</li>
               <li><strong>Kâr Payı:</strong> Kâr payı, günlük bileşik getiri varsayımıyla hesaplanır ve fonunuza eklenir.</li>
             </ul>
